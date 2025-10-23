@@ -226,12 +226,12 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
-    wrapU: 1
-    wrapV: 1
-    wrapW: 1
+    wrapU: 0
+    wrapV: 0
+    wrapW: 0
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
@@ -240,7 +240,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 16
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -263,7 +263,7 @@ TextureImporter:
     buildTarget: DefaultTexturePlatform
     maxTextureSize: 2048
     resizeAlgorithm: 0
-    textureFormat: -1
+    textureFormat: 4
     textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
@@ -305,12 +305,12 @@ TextureImporter:
       name: sea coral_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 128
-        width: 15
-        height: 13
+        x: 1
+        y: 129
+        width: 13
+        height: 11
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -327,12 +327,12 @@ TextureImporter:
       name: sea coral_1
       rect:
         serializedVersion: 2
-        x: 16
-        y: 129
-        width: 16
-        height: 14
+        x: 17
+        y: 130
+        width: 14
+        height: 12
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -349,12 +349,12 @@ TextureImporter:
       name: sea coral_2
       rect:
         serializedVersion: 2
-        x: 32
-        y: 128
-        width: 16
-        height: 14
+        x: 33
+        y: 129
+        width: 14
+        height: 12
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -371,12 +371,12 @@ TextureImporter:
       name: sea coral_3
       rect:
         serializedVersion: 2
-        x: 49
-        y: 128
-        width: 15
-        height: 15
+        x: 50
+        y: 129
+        width: 13
+        height: 13
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -393,12 +393,12 @@ TextureImporter:
       name: sea coral_4
       rect:
         serializedVersion: 2
-        x: 65
-        y: 131
-        width: 13
-        height: 8
+        x: 66
+        y: 132
+        width: 11
+        height: 6
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -415,12 +415,12 @@ TextureImporter:
       name: sea coral_5
       rect:
         serializedVersion: 2
-        x: 82
-        y: 129
-        width: 11
-        height: 11
+        x: 83
+        y: 130
+        width: 9
+        height: 9
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -437,12 +437,12 @@ TextureImporter:
       name: sea coral_6
       rect:
         serializedVersion: 2
-        x: 97
-        y: 128
-        width: 15
-        height: 15
+        x: 98
+        y: 129
+        width: 13
+        height: 13
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -459,12 +459,12 @@ TextureImporter:
       name: sea coral_7
       rect:
         serializedVersion: 2
-        x: 115
-        y: 129
-        width: 11
-        height: 11
+        x: 116
+        y: 130
+        width: 9
+        height: 9
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -481,12 +481,12 @@ TextureImporter:
       name: sea coral_8
       rect:
         serializedVersion: 2
-        x: 128
-        y: 127
-        width: 16
-        height: 14
+        x: 129
+        y: 128
+        width: 14
+        height: 12
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -503,12 +503,12 @@ TextureImporter:
       name: sea coral_9
       rect:
         serializedVersion: 2
-        x: 147
-        y: 128
-        width: 26
-        height: 15
+        x: 148
+        y: 129
+        width: 24
+        height: 13
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -525,12 +525,12 @@ TextureImporter:
       name: sea coral_10
       rect:
         serializedVersion: 2
-        x: 0
-        y: 112
-        width: 15
-        height: 13
+        x: 1
+        y: 113
+        width: 13
+        height: 11
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -547,12 +547,12 @@ TextureImporter:
       name: sea coral_11
       rect:
         serializedVersion: 2
-        x: 16
-        y: 113
-        width: 16
-        height: 14
+        x: 17
+        y: 114
+        width: 14
+        height: 12
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -569,12 +569,12 @@ TextureImporter:
       name: sea coral_12
       rect:
         serializedVersion: 2
-        x: 32
-        y: 112
-        width: 16
-        height: 14
+        x: 33
+        y: 113
+        width: 14
+        height: 12
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -591,12 +591,12 @@ TextureImporter:
       name: sea coral_13
       rect:
         serializedVersion: 2
-        x: 83
-        y: 115
-        width: 11
-        height: 9
+        x: 84
+        y: 116
+        width: 9
+        height: 7
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -613,12 +613,12 @@ TextureImporter:
       name: sea coral_14
       rect:
         serializedVersion: 2
-        x: 98
-        y: 113
-        width: 15
-        height: 14
+        x: 99
+        y: 114
+        width: 13
+        height: 12
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -635,12 +635,12 @@ TextureImporter:
       name: sea coral_15
       rect:
         serializedVersion: 2
-        x: 116
-        y: 114
-        width: 11
-        height: 10
+        x: 117
+        y: 115
+        width: 9
+        height: 8
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -657,12 +657,12 @@ TextureImporter:
       name: sea coral_16
       rect:
         serializedVersion: 2
-        x: 129
-        y: 111
-        width: 16
-        height: 14
+        x: 130
+        y: 112
+        width: 14
+        height: 12
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -679,12 +679,12 @@ TextureImporter:
       name: sea coral_17
       rect:
         serializedVersion: 2
-        x: 147
-        y: 112
-        width: 26
-        height: 15
+        x: 148
+        y: 113
+        width: 24
+        height: 13
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -701,12 +701,12 @@ TextureImporter:
       name: sea coral_18
       rect:
         serializedVersion: 2
-        x: 0
-        y: 96
-        width: 15
-        height: 13
+        x: 1
+        y: 97
+        width: 13
+        height: 11
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -723,12 +723,12 @@ TextureImporter:
       name: sea coral_19
       rect:
         serializedVersion: 2
-        x: 16
-        y: 97
-        width: 16
-        height: 14
+        x: 17
+        y: 98
+        width: 14
+        height: 12
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -745,12 +745,12 @@ TextureImporter:
       name: sea coral_20
       rect:
         serializedVersion: 2
-        x: 82
-        y: 97
-        width: 11
-        height: 11
+        x: 83
+        y: 98
+        width: 9
+        height: 9
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -767,12 +767,12 @@ TextureImporter:
       name: sea coral_21
       rect:
         serializedVersion: 2
-        x: 97
-        y: 96
-        width: 15
-        height: 15
+        x: 98
+        y: 97
+        width: 13
+        height: 13
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -789,12 +789,12 @@ TextureImporter:
       name: sea coral_22
       rect:
         serializedVersion: 2
-        x: 115
-        y: 97
-        width: 11
-        height: 11
+        x: 116
+        y: 98
+        width: 9
+        height: 9
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -811,12 +811,12 @@ TextureImporter:
       name: sea coral_23
       rect:
         serializedVersion: 2
-        x: 128
-        y: 95
-        width: 16
-        height: 14
+        x: 129
+        y: 96
+        width: 14
+        height: 12
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -833,12 +833,12 @@ TextureImporter:
       name: sea coral_24
       rect:
         serializedVersion: 2
-        x: 147
-        y: 96
-        width: 26
-        height: 15
+        x: 148
+        y: 97
+        width: 24
+        height: 13
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -855,12 +855,12 @@ TextureImporter:
       name: sea coral_25
       rect:
         serializedVersion: 2
-        x: 0
-        y: 80
-        width: 15
-        height: 13
+        x: 1
+        y: 81
+        width: 13
+        height: 11
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -877,12 +877,12 @@ TextureImporter:
       name: sea coral_26
       rect:
         serializedVersion: 2
-        x: 16
-        y: 81
-        width: 16
-        height: 14
+        x: 17
+        y: 82
+        width: 14
+        height: 12
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -899,12 +899,12 @@ TextureImporter:
       name: sea coral_27
       rect:
         serializedVersion: 2
-        x: 83
-        y: 83
-        width: 11
-        height: 9
+        x: 84
+        y: 84
+        width: 9
+        height: 7
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -921,12 +921,12 @@ TextureImporter:
       name: sea coral_28
       rect:
         serializedVersion: 2
-        x: 98
-        y: 81
-        width: 15
-        height: 14
+        x: 99
+        y: 82
+        width: 13
+        height: 12
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -943,12 +943,12 @@ TextureImporter:
       name: sea coral_29
       rect:
         serializedVersion: 2
-        x: 116
-        y: 82
-        width: 11
-        height: 10
+        x: 117
+        y: 83
+        width: 9
+        height: 8
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -965,12 +965,12 @@ TextureImporter:
       name: sea coral_30
       rect:
         serializedVersion: 2
-        x: 129
-        y: 79
-        width: 16
-        height: 14
+        x: 130
+        y: 80
+        width: 14
+        height: 12
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -987,12 +987,12 @@ TextureImporter:
       name: sea coral_31
       rect:
         serializedVersion: 2
-        x: 147
-        y: 80
-        width: 26
-        height: 15
+        x: 148
+        y: 81
+        width: 24
+        height: 13
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1009,12 +1009,12 @@ TextureImporter:
       name: sea coral_32
       rect:
         serializedVersion: 2
-        x: 0
-        y: 48
-        width: 15
-        height: 13
+        x: 1
+        y: 49
+        width: 13
+        height: 11
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1031,12 +1031,12 @@ TextureImporter:
       name: sea coral_33
       rect:
         serializedVersion: 2
-        x: 16
-        y: 49
-        width: 16
-        height: 14
+        x: 17
+        y: 50
+        width: 14
+        height: 12
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1053,12 +1053,12 @@ TextureImporter:
       name: sea coral_34
       rect:
         serializedVersion: 2
-        x: 32
-        y: 48
-        width: 16
-        height: 14
+        x: 33
+        y: 49
+        width: 14
+        height: 12
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1075,12 +1075,12 @@ TextureImporter:
       name: sea coral_35
       rect:
         serializedVersion: 2
-        x: 49
-        y: 48
-        width: 15
-        height: 15
+        x: 50
+        y: 49
+        width: 13
+        height: 13
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1097,12 +1097,12 @@ TextureImporter:
       name: sea coral_36
       rect:
         serializedVersion: 2
-        x: 65
-        y: 51
-        width: 13
-        height: 8
+        x: 66
+        y: 52
+        width: 11
+        height: 6
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1119,12 +1119,12 @@ TextureImporter:
       name: sea coral_37
       rect:
         serializedVersion: 2
-        x: 82
-        y: 49
-        width: 11
-        height: 11
+        x: 83
+        y: 50
+        width: 9
+        height: 9
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1141,12 +1141,12 @@ TextureImporter:
       name: sea coral_38
       rect:
         serializedVersion: 2
-        x: 97
-        y: 48
-        width: 15
-        height: 15
+        x: 98
+        y: 49
+        width: 13
+        height: 13
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1163,12 +1163,12 @@ TextureImporter:
       name: sea coral_39
       rect:
         serializedVersion: 2
-        x: 115
-        y: 49
-        width: 11
-        height: 11
+        x: 116
+        y: 50
+        width: 9
+        height: 9
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1185,12 +1185,12 @@ TextureImporter:
       name: sea coral_40
       rect:
         serializedVersion: 2
-        x: 128
-        y: 47
-        width: 16
-        height: 14
+        x: 129
+        y: 48
+        width: 14
+        height: 12
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1207,12 +1207,12 @@ TextureImporter:
       name: sea coral_41
       rect:
         serializedVersion: 2
-        x: 147
-        y: 48
-        width: 26
-        height: 15
+        x: 148
+        y: 49
+        width: 24
+        height: 13
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1229,12 +1229,12 @@ TextureImporter:
       name: sea coral_42
       rect:
         serializedVersion: 2
-        x: 0
-        y: 32
-        width: 15
-        height: 13
+        x: 1
+        y: 33
+        width: 13
+        height: 11
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1251,12 +1251,12 @@ TextureImporter:
       name: sea coral_43
       rect:
         serializedVersion: 2
-        x: 16
-        y: 33
-        width: 16
-        height: 14
+        x: 17
+        y: 34
+        width: 14
+        height: 12
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1273,12 +1273,12 @@ TextureImporter:
       name: sea coral_44
       rect:
         serializedVersion: 2
-        x: 32
-        y: 32
-        width: 16
-        height: 14
+        x: 33
+        y: 33
+        width: 14
+        height: 12
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1295,12 +1295,12 @@ TextureImporter:
       name: sea coral_45
       rect:
         serializedVersion: 2
-        x: 83
-        y: 35
-        width: 11
-        height: 9
+        x: 84
+        y: 36
+        width: 9
+        height: 7
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1317,12 +1317,12 @@ TextureImporter:
       name: sea coral_46
       rect:
         serializedVersion: 2
-        x: 98
-        y: 33
-        width: 15
-        height: 14
+        x: 99
+        y: 34
+        width: 13
+        height: 12
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1339,12 +1339,12 @@ TextureImporter:
       name: sea coral_47
       rect:
         serializedVersion: 2
-        x: 116
-        y: 34
-        width: 11
-        height: 10
+        x: 117
+        y: 35
+        width: 9
+        height: 8
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1361,12 +1361,12 @@ TextureImporter:
       name: sea coral_48
       rect:
         serializedVersion: 2
-        x: 129
-        y: 31
-        width: 16
-        height: 14
+        x: 130
+        y: 32
+        width: 14
+        height: 12
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1383,12 +1383,12 @@ TextureImporter:
       name: sea coral_49
       rect:
         serializedVersion: 2
-        x: 147
-        y: 32
-        width: 26
-        height: 15
+        x: 148
+        y: 33
+        width: 24
+        height: 13
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1405,12 +1405,12 @@ TextureImporter:
       name: sea coral_50
       rect:
         serializedVersion: 2
-        x: 0
-        y: 16
-        width: 15
-        height: 13
+        x: 1
+        y: 17
+        width: 13
+        height: 11
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1427,12 +1427,12 @@ TextureImporter:
       name: sea coral_51
       rect:
         serializedVersion: 2
-        x: 16
-        y: 17
-        width: 16
-        height: 14
+        x: 17
+        y: 18
+        width: 14
+        height: 12
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1449,12 +1449,12 @@ TextureImporter:
       name: sea coral_52
       rect:
         serializedVersion: 2
-        x: 82
-        y: 17
-        width: 11
-        height: 11
+        x: 83
+        y: 18
+        width: 9
+        height: 9
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1471,12 +1471,12 @@ TextureImporter:
       name: sea coral_53
       rect:
         serializedVersion: 2
-        x: 97
-        y: 16
-        width: 15
-        height: 15
+        x: 98
+        y: 17
+        width: 13
+        height: 13
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1493,12 +1493,12 @@ TextureImporter:
       name: sea coral_54
       rect:
         serializedVersion: 2
-        x: 115
-        y: 17
-        width: 11
-        height: 11
+        x: 116
+        y: 18
+        width: 9
+        height: 9
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1515,12 +1515,12 @@ TextureImporter:
       name: sea coral_55
       rect:
         serializedVersion: 2
-        x: 128
-        y: 15
-        width: 16
-        height: 14
+        x: 129
+        y: 16
+        width: 14
+        height: 12
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1537,12 +1537,12 @@ TextureImporter:
       name: sea coral_56
       rect:
         serializedVersion: 2
-        x: 147
-        y: 16
-        width: 26
-        height: 15
+        x: 148
+        y: 17
+        width: 24
+        height: 13
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1559,12 +1559,12 @@ TextureImporter:
       name: sea coral_57
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 15
-        height: 13
+        x: 1
+        y: 1
+        width: 13
+        height: 11
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1581,12 +1581,12 @@ TextureImporter:
       name: sea coral_58
       rect:
         serializedVersion: 2
-        x: 16
-        y: 1
-        width: 16
-        height: 14
+        x: 17
+        y: 2
+        width: 14
+        height: 12
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1603,12 +1603,12 @@ TextureImporter:
       name: sea coral_59
       rect:
         serializedVersion: 2
-        x: 83
-        y: 3
-        width: 11
-        height: 9
+        x: 84
+        y: 4
+        width: 9
+        height: 7
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1625,12 +1625,12 @@ TextureImporter:
       name: sea coral_60
       rect:
         serializedVersion: 2
-        x: 98
-        y: 1
-        width: 15
-        height: 14
+        x: 99
+        y: 2
+        width: 13
+        height: 12
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1647,12 +1647,12 @@ TextureImporter:
       name: sea coral_61
       rect:
         serializedVersion: 2
-        x: 116
-        y: 2
-        width: 11
-        height: 10
+        x: 117
+        y: 3
+        width: 9
+        height: 8
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1669,12 +1669,12 @@ TextureImporter:
       name: sea coral_62
       rect:
         serializedVersion: 2
-        x: 129
+        x: 130
         y: 0
-        width: 16
-        height: 13
+        width: 14
+        height: 12
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1691,12 +1691,12 @@ TextureImporter:
       name: sea coral_63
       rect:
         serializedVersion: 2
-        x: 147
-        y: 0
-        width: 26
-        height: 15
+        x: 148
+        y: 1
+        width: 24
+        height: 13
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1713,7 +1713,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: f50b93351909caf3a909b76c0ed51bb5
     internalID: 0
     vertices: []
     indices: 
@@ -1721,7 +1721,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":16.0,"y":16.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       sea coral_0: -5755595232554620247
       sea coral_1: -3101116912129011379

@@ -169,12 +169,12 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
-    wrapU: 1
-    wrapV: 1
-    wrapW: 1
+    wrapU: 0
+    wrapV: 0
+    wrapW: 0
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
@@ -183,7 +183,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 16
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -206,7 +206,7 @@ TextureImporter:
     buildTarget: DefaultTexturePlatform
     maxTextureSize: 2048
     resizeAlgorithm: 0
-    textureFormat: -1
+    textureFormat: 4
     textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
@@ -248,12 +248,12 @@ TextureImporter:
       name: Casting_0
       rect:
         serializedVersion: 2
-        x: 24
-        y: 149
-        width: 16
-        height: 22
+        x: 25
+        y: 150
+        width: 14
+        height: 20
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -270,12 +270,12 @@ TextureImporter:
       name: Casting_1
       rect:
         serializedVersion: 2
-        x: 88
-        y: 149
-        width: 16
-        height: 22
+        x: 89
+        y: 150
+        width: 14
+        height: 20
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -292,12 +292,12 @@ TextureImporter:
       name: Casting_2
       rect:
         serializedVersion: 2
-        x: 152
-        y: 149
-        width: 16
-        height: 25
+        x: 153
+        y: 150
+        width: 14
+        height: 23
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -314,12 +314,12 @@ TextureImporter:
       name: Casting_3
       rect:
         serializedVersion: 2
-        x: 210
-        y: 149
-        width: 22
-        height: 26
+        x: 211
+        y: 150
+        width: 20
+        height: 24
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -336,12 +336,12 @@ TextureImporter:
       name: Casting_4
       rect:
         serializedVersion: 2
-        x: 276
-        y: 149
-        width: 20
-        height: 29
+        x: 277
+        y: 150
+        width: 18
+        height: 27
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -358,12 +358,12 @@ TextureImporter:
       name: Casting_5
       rect:
         serializedVersion: 2
-        x: 344
-        y: 149
-        width: 16
-        height: 24
+        x: 345
+        y: 150
+        width: 14
+        height: 22
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -380,12 +380,12 @@ TextureImporter:
       name: Casting_6
       rect:
         serializedVersion: 2
-        x: 408
-        y: 149
-        width: 16
-        height: 21
+        x: 409
+        y: 150
+        width: 14
+        height: 19
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -402,12 +402,12 @@ TextureImporter:
       name: Casting_7
       rect:
         serializedVersion: 2
-        x: 472
-        y: 149
-        width: 16
-        height: 22
+        x: 473
+        y: 150
+        width: 14
+        height: 20
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -424,12 +424,12 @@ TextureImporter:
       name: Casting_8
       rect:
         serializedVersion: 2
-        x: 536
-        y: 144
-        width: 16
-        height: 27
+        x: 537
+        y: 145
+        width: 14
+        height: 25
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -446,12 +446,12 @@ TextureImporter:
       name: Casting_9
       rect:
         serializedVersion: 2
-        x: 600
-        y: 133
-        width: 16
-        height: 38
+        x: 601
+        y: 134
+        width: 14
+        height: 36
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -468,12 +468,12 @@ TextureImporter:
       name: Casting_10
       rect:
         serializedVersion: 2
-        x: 664
-        y: 128
-        width: 16
-        height: 43
+        x: 665
+        y: 129
+        width: 14
+        height: 41
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -490,12 +490,12 @@ TextureImporter:
       name: Casting_11
       rect:
         serializedVersion: 2
-        x: 728
-        y: 128
-        width: 17
-        height: 43
+        x: 729
+        y: 129
+        width: 15
+        height: 41
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -512,12 +512,12 @@ TextureImporter:
       name: Casting_12
       rect:
         serializedVersion: 2
-        x: 792
-        y: 128
-        width: 17
-        height: 43
+        x: 793
+        y: 129
+        width: 15
+        height: 41
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -534,12 +534,12 @@ TextureImporter:
       name: Casting_13
       rect:
         serializedVersion: 2
-        x: 856
-        y: 128
-        width: 17
-        height: 43
+        x: 857
+        y: 129
+        width: 15
+        height: 41
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -556,12 +556,12 @@ TextureImporter:
       name: Casting_14
       rect:
         serializedVersion: 2
-        x: 920
-        y: 129
-        width: 16
-        height: 42
+        x: 921
+        y: 130
+        width: 14
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -578,12 +578,12 @@ TextureImporter:
       name: Casting_15
       rect:
         serializedVersion: 2
-        x: 25
-        y: 85
-        width: 16
-        height: 22
+        x: 26
+        y: 86
+        width: 14
+        height: 20
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -600,12 +600,12 @@ TextureImporter:
       name: Casting_16
       rect:
         serializedVersion: 2
-        x: 89
-        y: 85
-        width: 16
-        height: 22
+        x: 90
+        y: 86
+        width: 14
+        height: 20
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -622,12 +622,12 @@ TextureImporter:
       name: Casting_17
       rect:
         serializedVersion: 2
-        x: 153
-        y: 85
-        width: 16
-        height: 25
+        x: 154
+        y: 86
+        width: 14
+        height: 23
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -644,12 +644,12 @@ TextureImporter:
       name: Casting_18
       rect:
         serializedVersion: 2
-        x: 217
-        y: 85
-        width: 22
-        height: 26
+        x: 218
+        y: 86
+        width: 20
+        height: 24
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -666,12 +666,12 @@ TextureImporter:
       name: Casting_19
       rect:
         serializedVersion: 2
-        x: 281
-        y: 85
-        width: 20
-        height: 30
+        x: 282
+        y: 86
+        width: 18
+        height: 28
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -688,12 +688,12 @@ TextureImporter:
       name: Casting_20
       rect:
         serializedVersion: 2
-        x: 345
-        y: 85
-        width: 17
-        height: 29
+        x: 346
+        y: 86
+        width: 15
+        height: 27
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -710,12 +710,12 @@ TextureImporter:
       name: Casting_21
       rect:
         serializedVersion: 2
-        x: 409
-        y: 85
-        width: 16
-        height: 29
+        x: 410
+        y: 86
+        width: 14
+        height: 27
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -732,12 +732,12 @@ TextureImporter:
       name: Casting_22
       rect:
         serializedVersion: 2
-        x: 473
-        y: 85
-        width: 16
-        height: 30
+        x: 474
+        y: 86
+        width: 14
+        height: 28
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -754,12 +754,12 @@ TextureImporter:
       name: Casting_23
       rect:
         serializedVersion: 2
-        x: 537
-        y: 85
-        width: 16
-        height: 31
+        x: 538
+        y: 86
+        width: 14
+        height: 29
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -776,12 +776,12 @@ TextureImporter:
       name: Casting_24
       rect:
         serializedVersion: 2
-        x: 601
-        y: 85
-        width: 16
-        height: 32
+        x: 602
+        y: 86
+        width: 14
+        height: 30
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -798,12 +798,12 @@ TextureImporter:
       name: Casting_25
       rect:
         serializedVersion: 2
-        x: 665
-        y: 85
-        width: 16
-        height: 35
+        x: 666
+        y: 86
+        width: 14
+        height: 33
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -820,12 +820,12 @@ TextureImporter:
       name: Casting_26
       rect:
         serializedVersion: 2
-        x: 729
-        y: 85
-        width: 16
-        height: 36
+        x: 730
+        y: 86
+        width: 14
+        height: 34
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -842,12 +842,12 @@ TextureImporter:
       name: Casting_27
       rect:
         serializedVersion: 2
-        x: 792
-        y: 85
-        width: 17
-        height: 37
+        x: 793
+        y: 86
+        width: 15
+        height: 35
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -864,12 +864,12 @@ TextureImporter:
       name: Casting_28
       rect:
         serializedVersion: 2
-        x: 857
-        y: 85
-        width: 16
-        height: 38
+        x: 858
+        y: 86
+        width: 14
+        height: 36
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -886,12 +886,12 @@ TextureImporter:
       name: Casting_29
       rect:
         serializedVersion: 2
-        x: 921
-        y: 85
-        width: 16
-        height: 32
+        x: 922
+        y: 86
+        width: 14
+        height: 30
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -908,12 +908,12 @@ TextureImporter:
       name: Casting_30
       rect:
         serializedVersion: 2
-        x: 25
-        y: 21
-        width: 22
-        height: 22
+        x: 26
+        y: 22
+        width: 20
+        height: 20
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -930,12 +930,12 @@ TextureImporter:
       name: Casting_31
       rect:
         serializedVersion: 2
-        x: 89
-        y: 21
-        width: 22
-        height: 22
+        x: 90
+        y: 22
+        width: 20
+        height: 20
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -952,12 +952,12 @@ TextureImporter:
       name: Casting_32
       rect:
         serializedVersion: 2
-        x: 153
-        y: 21
-        width: 16
-        height: 23
+        x: 154
+        y: 22
+        width: 14
+        height: 21
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -974,12 +974,12 @@ TextureImporter:
       name: Casting_33
       rect:
         serializedVersion: 2
-        x: 216
-        y: 21
-        width: 17
-        height: 26
+        x: 217
+        y: 22
+        width: 15
+        height: 24
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -996,12 +996,12 @@ TextureImporter:
       name: Casting_34
       rect:
         serializedVersion: 2
-        x: 276
-        y: 21
-        width: 21
-        height: 24
+        x: 277
+        y: 22
+        width: 19
+        height: 22
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1018,12 +1018,12 @@ TextureImporter:
       name: Casting_35
       rect:
         serializedVersion: 2
-        x: 345
-        y: 21
-        width: 21
-        height: 21
+        x: 346
+        y: 22
+        width: 19
+        height: 19
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1040,12 +1040,12 @@ TextureImporter:
       name: Casting_36
       rect:
         serializedVersion: 2
-        x: 409
-        y: 21
-        width: 23
-        height: 21
+        x: 410
+        y: 22
+        width: 21
+        height: 19
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1062,12 +1062,12 @@ TextureImporter:
       name: Casting_37
       rect:
         serializedVersion: 2
-        x: 473
-        y: 21
-        width: 27
-        height: 21
+        x: 474
+        y: 22
+        width: 25
+        height: 19
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1084,12 +1084,12 @@ TextureImporter:
       name: Casting_38
       rect:
         serializedVersion: 2
-        x: 537
-        y: 19
-        width: 27
-        height: 24
+        x: 538
+        y: 20
+        width: 25
+        height: 22
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1106,12 +1106,12 @@ TextureImporter:
       name: Casting_39
       rect:
         serializedVersion: 2
-        x: 601
-        y: 17
-        width: 28
-        height: 26
+        x: 602
+        y: 18
+        width: 26
+        height: 24
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1128,12 +1128,12 @@ TextureImporter:
       name: Casting_40
       rect:
         serializedVersion: 2
-        x: 665
-        y: 15
-        width: 31
-        height: 28
+        x: 666
+        y: 16
+        width: 29
+        height: 26
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1150,12 +1150,12 @@ TextureImporter:
       name: Casting_41
       rect:
         serializedVersion: 2
-        x: 729
-        y: 15
-        width: 33
-        height: 28
+        x: 730
+        y: 16
+        width: 31
+        height: 26
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1172,12 +1172,12 @@ TextureImporter:
       name: Casting_42
       rect:
         serializedVersion: 2
-        x: 793
-        y: 15
-        width: 33
-        height: 28
+        x: 794
+        y: 16
+        width: 31
+        height: 26
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1194,12 +1194,12 @@ TextureImporter:
       name: Casting_43
       rect:
         serializedVersion: 2
-        x: 857
-        y: 15
-        width: 30
-        height: 28
+        x: 858
+        y: 16
+        width: 28
+        height: 26
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1216,12 +1216,12 @@ TextureImporter:
       name: Casting_44
       rect:
         serializedVersion: 2
-        x: 921
-        y: 15
-        width: 29
-        height: 28
+        x: 922
+        y: 16
+        width: 27
+        height: 26
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1238,7 +1238,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: a48f3cbde58066593a1626d49531240d
     internalID: 0
     vertices: []
     indices: 
@@ -1246,7 +1246,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":16.0,"y":16.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       Casting_0: 5192994723931771104
       Casting_1: -4241851352628237820
