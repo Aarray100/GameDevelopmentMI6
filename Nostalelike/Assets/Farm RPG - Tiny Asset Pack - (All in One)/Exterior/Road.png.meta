@@ -241,12 +241,12 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
-    wrapU: 1
-    wrapV: 1
-    wrapW: 1
+    wrapU: 0
+    wrapV: 0
+    wrapW: 0
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
@@ -255,7 +255,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 16
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -278,7 +278,7 @@ TextureImporter:
     buildTarget: DefaultTexturePlatform
     maxTextureSize: 2048
     resizeAlgorithm: 0
-    textureFormat: -1
+    textureFormat: 4
     textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
@@ -321,11 +321,11 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 175
-        width: 13
-        height: 9
+        y: 176
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -342,12 +342,12 @@ TextureImporter:
       name: Road_1
       rect:
         serializedVersion: 2
-        x: 2
-        y: 184
-        width: 14
-        height: 8
+        x: 16
+        y: 176
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -364,12 +364,12 @@ TextureImporter:
       name: Road_2
       rect:
         serializedVersion: 2
-        x: 15
-        y: 183
-        width: 18
-        height: 9
+        x: 80
+        y: 176
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -386,12 +386,12 @@ TextureImporter:
       name: Road_3
       rect:
         serializedVersion: 2
-        x: 15
-        y: 175
+        x: 96
+        y: 176
         width: 16
-        height: 9
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -408,12 +408,12 @@ TextureImporter:
       name: Road_4
       rect:
         serializedVersion: 2
-        x: 79
-        y: 175
-        width: 18
-        height: 17
+        x: 112
+        y: 176
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -430,12 +430,12 @@ TextureImporter:
       name: Road_5
       rect:
         serializedVersion: 2
-        x: 97
-        y: 159
-        width: 31
-        height: 32
+        x: 0
+        y: 160
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -452,12 +452,12 @@ TextureImporter:
       name: Road_6
       rect:
         serializedVersion: 2
-        x: 0
-        y: 159
+        x: 16
+        y: 160
         width: 16
-        height: 17
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -474,12 +474,12 @@ TextureImporter:
       name: Road_7
       rect:
         serializedVersion: 2
-        x: 16
-        y: 143
-        width: 13
+        x: 32
+        y: 160
+        width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -496,12 +496,12 @@ TextureImporter:
       name: Road_8
       rect:
         serializedVersion: 2
-        x: 17
-        y: 159
+        x: 96
+        y: 160
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -518,12 +518,12 @@ TextureImporter:
       name: Road_9
       rect:
         serializedVersion: 2
-        x: 32
-        y: 159
-        width: 17
-        height: 17
+        x: 112
+        y: 160
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -540,12 +540,12 @@ TextureImporter:
       name: Road_10
       rect:
         serializedVersion: 2
-        x: 1
-        y: 143
+        x: 0
+        y: 144
         width: 16
-        height: 15
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -562,12 +562,12 @@ TextureImporter:
       name: Road_11
       rect:
         serializedVersion: 2
-        x: 1
-        y: 128
+        x: 16
+        y: 144
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -584,12 +584,12 @@ TextureImporter:
       name: Road_12
       rect:
         serializedVersion: 2
-        x: 16
+        x: 0
         y: 128
-        width: 14
+        width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -606,12 +606,12 @@ TextureImporter:
       name: Road_13
       rect:
         serializedVersion: 2
-        x: 0
-        y: 119
-        width: 17
-        height: 8
+        x: 16
+        y: 128
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -630,10 +630,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 112
-        width: 17
-        height: 8
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -650,12 +650,12 @@ TextureImporter:
       name: Road_15
       rect:
         serializedVersion: 2
-        x: 17
-        y: 111
-        width: 8
-        height: 17
+        x: 16
+        y: 112
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -672,12 +672,12 @@ TextureImporter:
       name: Road_16
       rect:
         serializedVersion: 2
-        x: 24
-        y: 111
-        width: 8
-        height: 17
+        x: 32
+        y: 112
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -694,12 +694,12 @@ TextureImporter:
       name: Road_17
       rect:
         serializedVersion: 2
-        x: 32
-        y: 119
-        width: 17
-        height: 9
+        x: 48
+        y: 112
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -716,12 +716,12 @@ TextureImporter:
       name: Road_18
       rect:
         serializedVersion: 2
-        x: 32
+        x: 64
         y: 112
-        width: 17
-        height: 8
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -738,12 +738,12 @@ TextureImporter:
       name: Road_19
       rect:
         serializedVersion: 2
-        x: 49
-        y: 111
-        width: 15
-        height: 17
+        x: 80
+        y: 112
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -760,12 +760,12 @@ TextureImporter:
       name: Road_20
       rect:
         serializedVersion: 2
-        x: 64
-        y: 112
-        width: 17
-        height: 15
+        x: 0
+        y: 96
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -782,12 +782,12 @@ TextureImporter:
       name: Road_21
       rect:
         serializedVersion: 2
-        x: 81
-        y: 112
-        width: 8
+        x: 16
+        y: 96
+        width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -804,12 +804,12 @@ TextureImporter:
       name: Road_22
       rect:
         serializedVersion: 2
-        x: 88
-        y: 111
-        width: 9
-        height: 17
+        x: 32
+        y: 96
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -826,12 +826,12 @@ TextureImporter:
       name: Road_23
       rect:
         serializedVersion: 2
-        x: 1
-        y: 79
-        width: 31
-        height: 33
+        x: 48
+        y: 96
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -848,12 +848,12 @@ TextureImporter:
       name: Road_24
       rect:
         serializedVersion: 2
-        x: 32
-        y: 96
-        width: 17
+        x: 0
+        y: 80
+        width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -870,12 +870,12 @@ TextureImporter:
       name: Road_25
       rect:
         serializedVersion: 2
-        x: 49
-        y: 95
+        x: 16
+        y: 80
         width: 16
-        height: 17
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -892,12 +892,12 @@ TextureImporter:
       name: Road_26
       rect:
         serializedVersion: 2
-        x: 1
-        y: 65
-        width: 15
-        height: 15
+        x: 0
+        y: 64
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -914,12 +914,12 @@ TextureImporter:
       name: Road_27
       rect:
         serializedVersion: 2
-        x: 17
+        x: 16
         y: 64
-        width: 15
-        height: 15
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -936,12 +936,12 @@ TextureImporter:
       name: Road_28
       rect:
         serializedVersion: 2
-        x: 33
-        y: 63
-        width: 15
-        height: 15
+        x: 32
+        y: 64
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -959,11 +959,11 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 48
-        y: 69
-        width: 10
-        height: 10
+        y: 64
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -980,12 +980,12 @@ TextureImporter:
       name: Road_30
       rect:
         serializedVersion: 2
-        x: 54
+        x: 64
         y: 64
-        width: 10
-        height: 9
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1002,12 +1002,12 @@ TextureImporter:
       name: Road_31
       rect:
         serializedVersion: 2
-        x: 64
-        y: 67
+        x: 96
+        y: 64
         width: 16
-        height: 11
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1024,12 +1024,12 @@ TextureImporter:
       name: Road_32
       rect:
         serializedVersion: 2
-        x: 96
-        y: 73
-        width: 6
-        height: 7
+        x: 112
+        y: 64
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1046,12 +1046,12 @@ TextureImporter:
       name: Road_33
       rect:
         serializedVersion: 2
-        x: 102
-        y: 71
-        width: 10
-        height: 9
+        x: 128
+        y: 64
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1068,12 +1068,12 @@ TextureImporter:
       name: Road_34
       rect:
         serializedVersion: 2
-        x: 112
-        y: 73
-        width: 6
-        height: 7
+        x: 0
+        y: 48
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1090,12 +1090,12 @@ TextureImporter:
       name: Road_35
       rect:
         serializedVersion: 2
-        x: 118
-        y: 71
-        width: 10
-        height: 9
+        x: 16
+        y: 48
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1112,12 +1112,12 @@ TextureImporter:
       name: Road_36
       rect:
         serializedVersion: 2
-        x: 128
-        y: 71
-        width: 8
-        height: 9
+        x: 32
+        y: 48
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1134,12 +1134,12 @@ TextureImporter:
       name: Road_37
       rect:
         serializedVersion: 2
-        x: 136
-        y: 64
-        width: 8
+        x: 48
+        y: 48
+        width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1156,12 +1156,12 @@ TextureImporter:
       name: Road_38
       rect:
         serializedVersion: 2
-        x: 0
-        y: 49
-        width: 14
-        height: 15
+        x: 96
+        y: 48
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1178,12 +1178,12 @@ TextureImporter:
       name: Road_39
       rect:
         serializedVersion: 2
-        x: 95
-        y: 63
-        width: 8
-        height: 9
+        x: 112
+        y: 48
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1200,12 +1200,12 @@ TextureImporter:
       name: Road_40
       rect:
         serializedVersion: 2
-        x: 96
-        y: 57
-        width: 6
-        height: 7
+        x: 0
+        y: 32
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1222,12 +1222,12 @@ TextureImporter:
       name: Road_41
       rect:
         serializedVersion: 2
-        x: 102
-        y: 55
-        width: 10
-        height: 9
+        x: 16
+        y: 32
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1244,12 +1244,12 @@ TextureImporter:
       name: Road_42
       rect:
         serializedVersion: 2
-        x: 103
-        y: 63
-        width: 9
-        height: 9
+        x: 96
+        y: 32
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1266,12 +1266,12 @@ TextureImporter:
       name: Road_43
       rect:
         serializedVersion: 2
-        x: 111
-        y: 63
-        width: 8
-        height: 9
+        x: 112
+        y: 32
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1288,12 +1288,12 @@ TextureImporter:
       name: Road_44
       rect:
         serializedVersion: 2
-        x: 112
-        y: 57
-        width: 6
-        height: 7
+        x: 0
+        y: 16
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1310,12 +1310,12 @@ TextureImporter:
       name: Road_45
       rect:
         serializedVersion: 2
-        x: 118
-        y: 55
-        width: 10
-        height: 9
+        x: 16
+        y: 16
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1328,517 +1328,11 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
-    - serializedVersion: 2
-      name: Road_46
-      rect:
-        serializedVersion: 2
-        x: 119
-        y: 63
-        width: 9
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: cd8ab52ddd3ffe100800000000000000
-      internalID: 139598247514319068
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Road_47
-      rect:
-        serializedVersion: 2
-        x: 128
-        y: 64
-        width: 8
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 38fc02481739d6330800000000000000
-      internalID: 3705780184153116547
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Road_48
-      rect:
-        serializedVersion: 2
-        x: 17
-        y: 48
-        width: 15
-        height: 15
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 01f75777941e75ef0800000000000000
-      internalID: -119379159448977648
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Road_49
-      rect:
-        serializedVersion: 2
-        x: 32
-        y: 47
-        width: 9
-        height: 10
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 7760336b869ff66d0800000000000000
-      internalID: -2994900999049378185
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Road_50
-      rect:
-        serializedVersion: 2
-        x: 38
-        y: 54
-        width: 9
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: fc2f2a6a66a804110800000000000000
-      internalID: 1243145670641251023
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Road_51
-      rect:
-        serializedVersion: 2
-        x: 50
-        y: 49
-        width: 12
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 7fcbd9d9e3b461a50800000000000000
-      internalID: 6491458645205564663
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Road_52
-      rect:
-        serializedVersion: 2
-        x: 95
-        y: 47
-        width: 8
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 016a44f7df5d4eba0800000000000000
-      internalID: -6060483913795197424
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Road_53
-      rect:
-        serializedVersion: 2
-        x: 103
-        y: 47
-        width: 9
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: d7c0ce37dfdb1e350800000000000000
-      internalID: 6044321071177141373
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Road_54
-      rect:
-        serializedVersion: 2
-        x: 111
-        y: 47
-        width: 8
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 6a4b4b01ac44f6230800000000000000
-      internalID: 3634199058965640358
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Road_55
-      rect:
-        serializedVersion: 2
-        x: 119
-        y: 47
-        width: 9
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: dad4c61efd1ddd9b0800000000000000
-      internalID: -5053652447349944915
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Road_56
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 31
-        width: 17
-        height: 13
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 5dabe75a4d9b609f0800000000000000
-      internalID: -502509985444480299
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Road_57
-      rect:
-        serializedVersion: 2
-        x: 16
-        y: 37
-        width: 7
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 02f34b427614de830800000000000000
-      internalID: 4102006746857619232
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Road_58
-      rect:
-        serializedVersion: 2
-        x: 22
-        y: 31
-        width: 11
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 4b7ae86f359d98c30800000000000000
-      internalID: 4362256668727093172
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Road_59
-      rect:
-        serializedVersion: 2
-        x: 95
-        y: 39
-        width: 10
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: b4d25e9f153e14df0800000000000000
-      internalID: -197626967403188917
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Road_60
-      rect:
-        serializedVersion: 2
-        x: 104
-        y: 32
-        width: 9
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 74f804e77b854d810800000000000000
-      internalID: 1789152497093349191
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Road_61
-      rect:
-        serializedVersion: 2
-        x: 105
-        y: 41
-        width: 6
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 4100aeee664e2f970800000000000000
-      internalID: 8787336953699368980
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Road_62
-      rect:
-        serializedVersion: 2
-        x: 111
-        y: 39
-        width: 10
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: c8ec37acedfadd9e0800000000000000
-      internalID: -1594925321605099892
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Road_63
-      rect:
-        serializedVersion: 2
-        x: 120
-        y: 32
-        width: 9
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 14d13df45164e0d70800000000000000
-      internalID: 9011216961762434369
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Road_64
-      rect:
-        serializedVersion: 2
-        x: 121
-        y: 41
-        width: 6
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 64a8b5466a3bb1770800000000000000
-      internalID: 8582651042114275910
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Road_65
-      rect:
-        serializedVersion: 2
-        x: 97
-        y: 33
-        width: 6
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: dc2c91c2426c77450800000000000000
-      internalID: 6086551280075522765
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Road_66
-      rect:
-        serializedVersion: 2
-        x: 113
-        y: 33
-        width: 6
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: b4ec7a594c39d74f0800000000000000
-      internalID: -829344283832627637
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Road_67
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 19
-        width: 17
-        height: 13
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: b7ae8a442dc84f760800000000000000
-      internalID: 7490766914946919035
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Road_68
-      rect:
-        serializedVersion: 2
-        x: 16
-        y: 19
-        width: 17
-        height: 13
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 4498fab70d0f15040800000000000000
-      internalID: 4634750269759916356
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 4e306a7508fa316ba86ae5a89dc0caa0
     internalID: 0
     vertices: []
     indices: 
@@ -1846,7 +1340,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":16.0,"y":16.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       Road_0: -7011661911796687584
       Road_1: -1327040941830986174
@@ -1889,31 +1385,8 @@ TextureImporter:
       Road_43: -611752485579884475
       Road_44: -669835252850453005
       Road_45: 8855444587573507924
-      Road_46: 139598247514319068
-      Road_47: 3705780184153116547
-      Road_48: -119379159448977648
-      Road_49: -2994900999049378185
       Road_5: -1051987289298369614
-      Road_50: 1243145670641251023
-      Road_51: 6491458645205564663
-      Road_52: -6060483913795197424
-      Road_53: 6044321071177141373
-      Road_54: 3634199058965640358
-      Road_55: -5053652447349944915
-      Road_56: -502509985444480299
-      Road_57: 4102006746857619232
-      Road_58: 4362256668727093172
-      Road_59: -197626967403188917
       Road_6: -4761944228523693652
-      Road_60: 1789152497093349191
-      Road_61: 8787336953699368980
-      Road_62: -1594925321605099892
-      Road_63: 9011216961762434369
-      Road_64: 8582651042114275910
-      Road_65: 6086551280075522765
-      Road_66: -829344283832627637
-      Road_67: 7490766914946919035
-      Road_68: 4634750269759916356
       Road_7: -2291289878801108978
       Road_8: -4967339507104349617
       Road_9: 7348036352636293528

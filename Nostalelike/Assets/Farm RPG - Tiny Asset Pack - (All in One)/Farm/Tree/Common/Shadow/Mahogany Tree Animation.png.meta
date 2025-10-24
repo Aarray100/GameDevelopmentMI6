@@ -85,12 +85,12 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
-    wrapU: 1
-    wrapV: 1
-    wrapW: 1
+    wrapU: 0
+    wrapV: 0
+    wrapW: 0
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
@@ -99,7 +99,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 16
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -122,7 +122,7 @@ TextureImporter:
     buildTarget: DefaultTexturePlatform
     maxTextureSize: 2048
     resizeAlgorithm: 0
-    textureFormat: -1
+    textureFormat: 4
     textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
@@ -165,11 +165,11 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 283
-        width: 128
-        height: 54
+        y: 336
+        width: 32
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -186,12 +186,12 @@ TextureImporter:
       name: Mahogany Tree Animation_1
       rect:
         serializedVersion: 2
-        x: 4
-        y: 335
-        width: 26
-        height: 36
+        x: 32
+        y: 336
+        width: 32
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -208,12 +208,12 @@ TextureImporter:
       name: Mahogany Tree Animation_2
       rect:
         serializedVersion: 2
-        x: 34
-        y: 335
-        width: 28
-        height: 39
+        x: 64
+        y: 336
+        width: 32
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -230,12 +230,12 @@ TextureImporter:
       name: Mahogany Tree Animation_3
       rect:
         serializedVersion: 2
-        x: 64
-        y: 335
-        width: 36
-        height: 41
+        x: 96
+        y: 336
+        width: 32
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -252,12 +252,12 @@ TextureImporter:
       name: Mahogany Tree Animation_4
       rect:
         serializedVersion: 2
-        x: 100
-        y: 335
-        width: 28
-        height: 43
+        x: 0
+        y: 288
+        width: 32
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -274,12 +274,12 @@ TextureImporter:
       name: Mahogany Tree Animation_5
       rect:
         serializedVersion: 2
-        x: 0
-        y: 240
-        width: 36
-        height: 44
+        x: 32
+        y: 288
+        width: 32
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -296,12 +296,12 @@ TextureImporter:
       name: Mahogany Tree Animation_6
       rect:
         serializedVersion: 2
-        x: 32
-        y: 240
-        width: 38
-        height: 45
+        x: 64
+        y: 288
+        width: 32
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -318,12 +318,12 @@ TextureImporter:
       name: Mahogany Tree Animation_7
       rect:
         serializedVersion: 2
-        x: 64
-        y: 240
-        width: 37
-        height: 47
+        x: 96
+        y: 288
+        width: 32
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -340,12 +340,12 @@ TextureImporter:
       name: Mahogany Tree Animation_8
       rect:
         serializedVersion: 2
-        x: 96
+        x: 0
         y: 240
         width: 32
-        height: 44
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -362,12 +362,12 @@ TextureImporter:
       name: Mahogany Tree Animation_9
       rect:
         serializedVersion: 2
-        x: 0
-        y: 144
-        width: 128
-        height: 49
+        x: 32
+        y: 240
+        width: 32
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -384,12 +384,12 @@ TextureImporter:
       name: Mahogany Tree Animation_10
       rect:
         serializedVersion: 2
-        x: 6
-        y: 192
-        width: 20
-        height: 14
+        x: 64
+        y: 240
+        width: 32
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -406,12 +406,12 @@ TextureImporter:
       name: Mahogany Tree Animation_11
       rect:
         serializedVersion: 2
-        x: 36
-        y: 192
-        width: 25
-        height: 14
+        x: 96
+        y: 240
+        width: 32
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -428,12 +428,12 @@ TextureImporter:
       name: Mahogany Tree Animation_12
       rect:
         serializedVersion: 2
-        x: 66
+        x: 0
         y: 192
-        width: 29
-        height: 14
+        width: 32
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -450,12 +450,12 @@ TextureImporter:
       name: Mahogany Tree Animation_13
       rect:
         serializedVersion: 2
-        x: 97
+        x: 32
         y: 192
-        width: 31
-        height: 14
+        width: 32
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -472,12 +472,12 @@ TextureImporter:
       name: Mahogany Tree Animation_14
       rect:
         serializedVersion: 2
-        x: 0
-        y: 96
-        width: 128
-        height: 49
+        x: 64
+        y: 192
+        width: 32
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -494,12 +494,12 @@ TextureImporter:
       name: Mahogany Tree Animation_15
       rect:
         serializedVersion: 2
-        x: 0
-        y: 48
-        width: 128
-        height: 49
+        x: 96
+        y: 192
+        width: 32
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -517,11 +517,11 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
-        width: 128
-        height: 49
+        y: 144
+        width: 32
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -534,11 +534,341 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: Mahogany Tree Animation_17
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 144
+        width: 32
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 07c347f6d0e7699b98c4aee1faaa6c9e
+      internalID: -866299393
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mahogany Tree Animation_18
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 144
+        width: 32
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b5c9f9723b8e3fd208563316b982c7db
+      internalID: -524689513
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mahogany Tree Animation_19
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 144
+        width: 32
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b260ad6633cced4dd8ea93e21a36d527
+      internalID: -977678644
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mahogany Tree Animation_20
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 96
+        width: 32
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f98d004c87b2d96e0a8b7350c039eec9
+      internalID: 1478131983
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mahogany Tree Animation_21
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 96
+        width: 32
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e2468ee506241215c940d69ee4c93f10
+      internalID: 1607744756
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mahogany Tree Animation_22
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 96
+        width: 32
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a41472c1ce23e474db79686cf027a0b5
+      internalID: -35007136
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mahogany Tree Animation_23
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 96
+        width: 32
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 535410d7b21ceeb449a8129b57d03b1b
+      internalID: -1444911493
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mahogany Tree Animation_24
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 48
+        width: 32
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b9edce6c4f8b63bfcaef0fe42ea81076
+      internalID: -1280208187
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mahogany Tree Animation_25
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 48
+        width: 32
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f9899b7c48966098691e8c047b525fb2
+      internalID: -1014262738
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mahogany Tree Animation_26
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 48
+        width: 32
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 63d33802bea337a92aeb2bd9eb8e8ef1
+      internalID: 916090345
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mahogany Tree Animation_27
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 48
+        width: 32
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8fc0bb626aecc152987275d258792a57
+      internalID: 422465510
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mahogany Tree Animation_28
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 32
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 509808b8d2f0a284e8205dcde68baadb
+      internalID: 1713702564
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mahogany Tree Animation_29
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 0
+        width: 32
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f76cde23864f6aa2080411e54eae096b
+      internalID: 376616247
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mahogany Tree Animation_30
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 32
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 77c121ae9e0ba07f88bfbc32f92fd321
+      internalID: 446489173
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mahogany Tree Animation_31
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 0
+        width: 32
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b05a6b86c0dd99accaa60f6b76fd4ab4
+      internalID: -1024301720
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 9e53aa63d2a17118686b2c1b5f7fd8f5
     internalID: 0
     vertices: []
     indices: 
@@ -546,7 +876,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":32.0,"y":48.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       Mahogany Tree Animation_0: -7669643529315636520
       Mahogany Tree Animation_1: -2949446951172698808
@@ -557,8 +889,23 @@ TextureImporter:
       Mahogany Tree Animation_14: 2873285647309829150
       Mahogany Tree Animation_15: -7403262579823332073
       Mahogany Tree Animation_16: 275490705559751595
+      Mahogany Tree Animation_17: -866299393
+      Mahogany Tree Animation_18: -524689513
+      Mahogany Tree Animation_19: -977678644
       Mahogany Tree Animation_2: 1878783767888541050
+      Mahogany Tree Animation_20: 1478131983
+      Mahogany Tree Animation_21: 1607744756
+      Mahogany Tree Animation_22: -35007136
+      Mahogany Tree Animation_23: -1444911493
+      Mahogany Tree Animation_24: -1280208187
+      Mahogany Tree Animation_25: -1014262738
+      Mahogany Tree Animation_26: 916090345
+      Mahogany Tree Animation_27: 422465510
+      Mahogany Tree Animation_28: 1713702564
+      Mahogany Tree Animation_29: 376616247
       Mahogany Tree Animation_3: 4699916894212621607
+      Mahogany Tree Animation_30: 446489173
+      Mahogany Tree Animation_31: -1024301720
       Mahogany Tree Animation_4: -7043006855757235749
       Mahogany Tree Animation_5: -8702007799128566522
       Mahogany Tree Animation_6: -5345055108661657340
