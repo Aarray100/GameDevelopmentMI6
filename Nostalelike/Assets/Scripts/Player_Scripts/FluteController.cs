@@ -33,7 +33,7 @@ public class FluteController : MonoBehaviour
         {
 
 
-            if (!animator.GetCurrentAnimatorStateInfo(0).IsName("PlayingFlute"))
+            if (!animator.GetCurrentAnimatorStateInfo(0).IsName("Playing_Flute"))
             {
                 PlayfluteAnimation();
             }
