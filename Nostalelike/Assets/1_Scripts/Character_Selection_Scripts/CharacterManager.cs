@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-
+using UnityEngine.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -31,11 +31,9 @@ public class CharacterManager : MonoBehaviour
         {
             currentCharacterIndex = characterDatabase.CharacterCount - 1;
         }
-        
+
         UpdateCharacterDisplay(currentCharacterIndex);
     }
-
-
     
     
 
@@ -52,4 +50,27 @@ public class CharacterManager : MonoBehaviour
             Debug.LogError("Character or Renderer is null");
         }
     }
+    
+
+
+    public void ConfirmSelection()
+    {
+        // Store the selected character index in PlayerPrefs
+        PlayerPrefs.SetInt("SelectedCharacterIndex", currentCharacterIndex);
+        PlayerPrefs.Save();
+
+        // Load the main game scene (replace "MainGameScene" with your actual scene name)
+        int nextSceneIndex = SceneManager.GetActiveScene().buildIndex + 1;
+        SceneManager.LoadScene(nextSceneIndex);
+    }
+
+
+
+
+
+
+
+
+
+
 }
