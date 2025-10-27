@@ -2,7 +2,9 @@ using UnityEngine;
 
 public class PlayerMovement2D : MonoBehaviour
 {
-    public float speed = 5.0f;
+    public float walkSpeed = 3.5f;
+    public float runSpeed = 6.5f;
+    private float currentSpeed;
     private Rigidbody2D rb;
     public Animator anim;
     public Transform visualsTransform; // Das Transform des visuellen Teils des Charakters (für das Flippen)
@@ -12,10 +14,10 @@ public class PlayerMovement2D : MonoBehaviour
 
     // Speichert die initiale Skalierung (zum korrekten Flippen)
     private float initialFacingDirection = 1f;
-    
-    // Speichert die letzte STABILE horizontale Blickrichtung (+1 oder -1)
-    private float lastStableHorizontal = 1f; 
 
+    // Speichert die letzte STABILE horizontale Blickrichtung (+1 oder -1)
+    private float lastStableHorizontal = 1f;
+    private Vector2 movementVector = Vector2.zero;
 
     void Start()
     {
@@ -29,54 +31,69 @@ public class PlayerMovement2D : MonoBehaviour
 
         initialFacingDirection = Mathf.Abs(visualsTransform.localScale.x);
         lastStableHorizontal = initialFacingDirection;
+        currentSpeed = walkSpeed;
+    }
+    
+    void Update()
+    {
+        float moveHorizontal = Input.GetAxis("Horizontal");
+        float moveVertical = Input.GetAxis("Vertical");
+        movementVector = new Vector2(moveHorizontal, moveVertical);
+        if (movementVector.magnitude > 1)
+        {
+            movementVector = movementVector.normalized;
+        }
+        
+        // Geschwindigkeit basierend auf Shift-Taste setzen
+        bool isShiftPressed = (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift));
+
+        bool isMoving = (Input.GetAxisRaw("Horizontal") != 0 || Input.GetAxisRaw("Vertical") != 0);
+
+
+
+        if (isShiftPressed && isMoving)
+        {
+            currentSpeed = runSpeed;
+            anim.SetBool("isRunning", true);
+        }
+        else
+        {
+            currentSpeed = walkSpeed;
+            anim.SetBool("isRunning", false);
+        }
+
+       // --- 3. IDLE-RICHTUNGS-LOGIK (KORRIGIERT) ---
+        // Wir verwenden 'isMoving', das du oben schon berechnet hast.
+        if (isMoving) 
+        {
+            // Prüfen, ob die Bewegung STÄRKER horizontal als vertikal ist
+            if (Mathf.Abs(moveHorizontal) > Mathf.Abs(moveVertical))
+            {
+                // Horizontale Bewegung dominiert:
+                lastStableHorizontal = Mathf.Sign(moveHorizontal);
+                lastMoveDirection.y = 0; // Für 1D Idle Tree (Idle Rechts/Links)
+            }
+            else
+            {
+                // Vertikale Bewegung dominiert (oder ist gleich stark):
+                // Setzt Y auf 1 (Oben) oder -1 (Unten).
+                lastMoveDirection.y = Mathf.Sign(moveVertical);
+            }
+        }
+        // Wenn isMoving = false, behält lastMoveDirection.y seinen letzten Wert,
+        // was genau das ist, was wir für Idle wollen.
+        Flip(lastStableHorizontal);
+        anim.SetFloat("horizontal", Mathf.Abs(moveHorizontal));
+        anim.SetFloat("vertical", (moveVertical));
+        anim.SetFloat("LastMoveY", lastMoveDirection.y);
+        anim.SetBool("isMoving", isMoving);
+
     }
 
 
     private void FixedUpdate()
-    {
-        float moveHorizontal = Input.GetAxis("Horizontal");
-        float moveVertical = Input.GetAxis("Vertical");
-        
-        float inputThreshold = 0.05f; 
-
-        // 1. INPUT AN DEN ANIMATOR SENDEN (für den Movement-Zustand)
-        anim.SetFloat("horizontal", moveHorizontal);
-        anim.SetFloat("vertical", moveVertical);
-
-        // 2. BEWEGUNG AUSFÜHREN
-        Vector2 movement = new Vector2(moveHorizontal, moveVertical);
-
-        if (movement.magnitude > 1)
-        {
-            movement.Normalize();
-        }
-        rb.linearVelocity = movement * speed;
-
-        // 3. LOGIK FÜR LAST MOVE DIRECTION & STABILE BLICKRICHTUNG
-        if (movement.magnitude > inputThreshold) 
-        {
-            // A) LastMoveDirection für den Idle Blend Tree
-            lastMoveDirection = movement.normalized;
-            
-            // B) Update der STABILEN horizontalen Blickrichtung 
-            // Nur aktualisieren, wenn horizontal aktiv gedrückt wird
-            if (Mathf.Abs(moveHorizontal) > inputThreshold)
-            {
-                // Speichert nur -1 oder 1
-                lastStableHorizontal = Mathf.Sign(moveHorizontal);
-                
-                // WICHTIG: Wenn wir horizontal gehen, soll Y im Blend Tree 0 sein
-                lastMoveDirection.y = 0; 
-            }
-        }
-        
-        // 4. ANWENDEN DES FLIP AUF DAS GAMEOBJECT
-        // IMMER basierend auf der stabilen Blickrichtung aufrufen
-        Flip(lastStableHorizontal);
-
-        // 5. SENDEN DER LETZTEN RICHTUNG AN DEN ANIMATOR (für den 1D Blend Tree)
-        anim.SetFloat("LastMoveX", lastMoveDirection.x);
-        anim.SetFloat("LastMoveY", lastMoveDirection.y);
+    {    
+        rb.linearVelocity = movementVector * currentSpeed;
     }
     
     
