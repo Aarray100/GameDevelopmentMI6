@@ -1,11 +1,13 @@
 using UnityEngine;
 using System.Collections.Generic;
-
+using System;
 
 public class Inventory
 {
+
+    public event Action OnInventoryChanged;
     public List<InventorySlot> slots = new List<InventorySlot>();
-    public int maxSlots = 30;
+    public int maxSlots = 49;
 
     public void AddItem(ItemData item, int quantity)
     {
@@ -15,6 +17,7 @@ public class Inventory
             if (slot != null)
             {
                 slot.quantity += quantity;
+                OnInventoryChanged?.Invoke();
                 return;
             }
         }
@@ -36,11 +39,13 @@ public class Inventory
                 if (slots.Count >= maxSlots)
                 {
                     Debug.Log("Inventory is full!");
+                    OnInventoryChanged?.Invoke();
                     return;
                 }
                 slots.Add(new InventorySlot(item, 1));
             }
         }
+        OnInventoryChanged?.Invoke();
     }
 
     public void RemoveItem(ItemData item, int quantity)
@@ -53,23 +58,23 @@ public class Inventory
             {
                 slots.Remove(slot);
             }
+            OnInventoryChanged?.Invoke();
         }
     }
-     public bool HasItem(ItemData item, int quantity)
+    public bool HasItem(ItemData item, int quantity)
     {
         InventorySlot slot = slots.Find(s => s.item == item);
-    if (slot != null)
-    {
-        return slot.quantity >= quantity;
-    }
+        if (slot != null)
+        {
+            return slot.quantity >= quantity;
+        }
         else
-    {
-        return false;
+        {
+            return false;
+        }
     }
 }
 
-
-}
    
 
 
