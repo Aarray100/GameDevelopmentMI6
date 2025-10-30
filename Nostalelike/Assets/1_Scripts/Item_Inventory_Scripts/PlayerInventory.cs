@@ -1,11 +1,13 @@
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 
 public class PlayerInventory : MonoBehaviour
 {
     public Inventory inventory = new Inventory();
+
     [SerializeField] private int inventorySize = 49;
 
     [Header("UI References")]
@@ -29,7 +31,7 @@ public class PlayerInventory : MonoBehaviour
     }
     private void Start()
     {
-        GenerateUISlots();
+        //GenerateUISlots();
         inventory.OnInventoryChanged += UpdateUISlots;
     }
     private void OnDestroy()
@@ -40,18 +42,32 @@ public class PlayerInventory : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.I))
         {
+            Debug.Log("Pressed I key to toggle inventory.", this.gameObject);
             ToggleInventory();
         }
     }
     public void ToggleInventory()
     {
+        Debug.Log("Toggling Inventory UI.", this.gameObject);
         if (inventoryPanelObject != null)
         {
             isInventoryOpen = !isInventoryOpen;
             inventoryPanelObject.SetActive(isInventoryOpen);
         }
+        else
+        {
+            Debug.LogError("Inventory Panel Object is not assigned.", this.gameObject);
+            return;
+        }
+
     }
-    void GenerateUISlots()
+
+    public void InitializeInventoryUI()
+    {
+        GenerateUISlots();
+        UpdateUISlots();
+    }
+    private void GenerateUISlots()
     {
         Debug.Log("Generating UI Slots" + inventory.maxSlots + " slots.");
 
@@ -90,6 +106,38 @@ public class PlayerInventory : MonoBehaviour
         }
     }
 
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
 
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // Update the inventory UI when a new scene is loaded
+        string targetID = SceneTransitionManager.instance.targetSpawnPointID;
+        Debug.Log("Scene loaded: " + scene.name + ", Target Spawn Point ID: " + targetID);
+
+        if (!string.IsNullOrEmpty(targetID))
+        {
+            // Here you can implement logic to position the player at the target spawn point
+            SceneSpawnPoint[] allSpawnPoints = FindObjectsOfType<SceneSpawnPoint>(false);
+            foreach (SceneSpawnPoint spawnPoint in allSpawnPoints)
+            {
+                if (spawnPoint.spawnPointID == targetID)
+                {
+                    transform.position = spawnPoint.transform.position;
+                    Debug.Log("Player spawned at: " + spawnPoint.spawnPointID);
+                    break;
+                }
+                Debug.Log("Player should spawn at: " + targetID);
+            }
+        }
+        UpdateUISlots();
+    }
 
 }

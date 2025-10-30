@@ -6,6 +6,7 @@ public class InventorySlotUI : MonoBehaviour
 {
     // Diese im Inspector des Prefabs zuweisen
     public Image itemIcon;
+    public Image slotImage;
     public TextMeshProUGUI itemCountText;
 
 
@@ -38,8 +39,8 @@ public class InventorySlotUI : MonoBehaviour
     // Leert den Slot
     public void ClearSlot()
     {
-        //itemIcon.sprite = null;
-        //itemIcon.enabled = false;
+        itemIcon.sprite = null;
+        itemIcon.enabled = false;
         itemCountText.text = "";
         itemCountText.enabled = false;
     }
