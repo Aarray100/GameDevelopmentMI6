@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &2624910141899620060
+--- !u!1 &822166505576393155
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,10 +8,10 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4321566247259545918}
-  - component: {fileID: 4139469558209403277}
-  - component: {fileID: 7951499307751938649}
-  - component: {fileID: 9062771198930260327}
+  - component: {fileID: 5988137182713965468}
+  - component: {fileID: 5025242010153485182}
+  - component: {fileID: 4544666066658708544}
+  - component: {fileID: 5877320536080227548}
   m_Layer: 0
   m_Name: Camera
   m_TagString: Untagged
@@ -19,28 +19,28 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4321566247259545918
+--- !u!4 &5988137182713965468
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2624910141899620060}
+  m_GameObject: {fileID: 822166505576393155}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.07, y: -0.04, z: -10}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5538065752614032948}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!20 &4139469558209403277
+--- !u!20 &5025242010153485182
 Camera:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2624910141899620060}
+  m_GameObject: {fileID: 822166505576393155}
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
@@ -85,21 +85,21 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!81 &7951499307751938649
+--- !u!81 &4544666066658708544
 AudioListener:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2624910141899620060}
+  m_GameObject: {fileID: 822166505576393155}
   m_Enabled: 1
---- !u!114 &9062771198930260327
+--- !u!114 &5877320536080227548
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2624910141899620060}
+  m_GameObject: {fileID: 822166505576393155}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
@@ -275,9 +275,10 @@ GameObject:
   - component: {fileID: 4573542166726395785}
   - component: {fileID: 7060053096232833951}
   - component: {fileID: 6682446047080416855}
+  - component: {fileID: 3744921628979041614}
   m_Layer: 0
   m_Name: Prefab_Character_1
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -291,12 +292,12 @@ Transform:
   m_GameObject: {fileID: 7477086312278696024}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1, y: 0.22, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3261535659778258215}
-  - {fileID: 4321566247259545918}
+  - {fileID: 5988137182713965468}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!70 &4573542166726395785
@@ -379,3 +380,19 @@ MonoBehaviour:
   runSpeed: 8
   anim: {fileID: 7922526696125178688}
   visualsTransform: {fileID: 3261535659778258215}
+--- !u!114 &3744921628979041614
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7477086312278696024}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5078475d698f7c3c284913bfadbf7f2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerInventory
+  inventorySize: 49
+  slotParent: {fileID: 0}
+  slotPrefab: {fileID: 0}
+  inventoryPanelObject: {fileID: 0}
