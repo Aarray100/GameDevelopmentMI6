@@ -1,14 +1,97 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.EventSystems;
 
-public class InventorySlotUI : MonoBehaviour
+public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler
 {
-    // Diese im Inspector des Prefabs zuweisen
+    [Header("UI References")]
     public Image itemIcon;
     public Image slotImage;
     public TextMeshProUGUI itemCountText;
 
+    // Drag-and-Drop
+    public PlayerInventory playerInventory;
+    public int slotIndex;
+    private CanvasGroup canvasGroup;
+
+    private static InventorySlotUI currentlyDraggedSlot;
+    private static GameObject currentlyDraggedIcon;
+    private static Canvas mainCanvas;
+
+
+    void Awake()
+    {
+        // CanvasGroup prüfen und ggf. hinzufügen
+        canvasGroup = GetComponent<CanvasGroup>();
+        if (canvasGroup == null)
+        {
+            canvasGroup = gameObject.AddComponent<CanvasGroup>();
+            Debug.Log("CanvasGroup wurde automatisch zu " + gameObject.name + " hinzugefügt.");
+        }
+        
+        if (currentlyDraggedIcon == null)
+        {
+            // Versuche zuerst das GameObject zu finden
+            currentlyDraggedIcon = GameObject.Find("DraggedItemIcon");
+            
+            // Falls nicht gefunden, erstelle es dynamisch
+            if (currentlyDraggedIcon == null)
+            {
+                CreateDraggedItemIcon();
+            }
+            else
+            {
+                currentlyDraggedIcon.SetActive(false);
+            }
+        }
+    }
+    
+    void CreateDraggedItemIcon()
+    {
+        // Finde das Canvas
+        if (mainCanvas == null)
+        {
+            mainCanvas = GetComponentInParent<Canvas>();
+            if (mainCanvas == null)
+            {
+                Debug.LogError("Kein Canvas gefunden! Drag-Icon kann nicht erstellt werden.");
+                return;
+            }
+        }
+        
+        // Erstelle das Drag-Icon GameObject
+        currentlyDraggedIcon = new GameObject("DraggedItemIcon");
+        currentlyDraggedIcon.transform.SetParent(mainCanvas.transform, false);
+        
+        // Füge Image-Komponente hinzu
+        Image dragImage = currentlyDraggedIcon.AddComponent<Image>();
+        dragImage.raycastTarget = false; // Wichtig! Damit es keine Raycasts blockiert
+        dragImage.preserveAspect = true; // Behalte das Seitenverhältnis
+        
+        // Setze die Größe - passe diese an deine Item-Icon-Größe an
+        RectTransform rectTransform = currentlyDraggedIcon.GetComponent<RectTransform>();
+        
+        // Hole die Größe vom aktuellen itemIcon als Referenz
+        if (itemIcon != null)
+        {
+            RectTransform itemIconRect = itemIcon.GetComponent<RectTransform>();
+            rectTransform.sizeDelta = itemIconRect.sizeDelta; // Gleiche Größe wie die Slot-Icons
+        }
+        else
+        {
+            rectTransform.sizeDelta = new Vector2(64, 64); // Fallback-Größe
+        }
+        
+        // Mache es etwas transparent
+        Color color = dragImage.color;
+        color.a = 0.8f;
+        dragImage.color = color;
+        
+        currentlyDraggedIcon.SetActive(false);
+        
+        Debug.Log("DraggedItemIcon wurde dynamisch erstellt mit Größe: " + rectTransform.sizeDelta);
+    }
 
     // Aktualisiert den Slot, um einen Gegenstand anzuzeigen
     public void UpdateSlot(InventorySlot slotData)
@@ -36,6 +119,7 @@ public class InventorySlotUI : MonoBehaviour
         }
     }
 
+
     // Leert den Slot
     public void ClearSlot()
     {
@@ -44,4 +128,75 @@ public class InventorySlotUI : MonoBehaviour
         itemCountText.text = "";
         itemCountText.enabled = false;
     }
+
+    public void OnBeginDrag(PointerEventData eventData)
+    {
+        // Nur ziehen erlauben, wenn ein Item im Slot vorhanden ist
+        if (playerInventory == null || playerInventory.inventory.slots[slotIndex].item == null)
+        {
+            return;
+        }
+        
+        if (currentlyDraggedIcon == null)
+        {
+            Debug.LogError("DraggedItemIcon ist null! Kann nicht gedragged werden.");
+            return;
+        }
+        
+        currentlyDraggedSlot = this;
+        currentlyDraggedIcon.SetActive(true);
+        
+        // Setze das Sprite
+        Image dragImage = currentlyDraggedIcon.GetComponent<Image>();
+        if (dragImage != null)
+        {
+            dragImage.sprite = itemIcon.sprite;
+            dragImage.enabled = true;
+        }
+        
+        // Setze die Position direkt auf die Mausposition
+        currentlyDraggedIcon.transform.position = Input.mousePosition;
+
+        canvasGroup.blocksRaycasts = false;
+        itemIcon.enabled = false;
+        itemCountText.enabled = false;
+        
+        Debug.Log("Drag gestartet für Item: " + playerInventory.inventory.slots[slotIndex].item.itemName);
+    }
+
+    public void OnDrag(PointerEventData eventData)
+    {
+        if (currentlyDraggedSlot == null)
+        {
+            return;
+        }
+        currentlyDraggedIcon.transform.position = Input.mousePosition;
+    }
+
+    public void OnDrop(PointerEventData eventData)
+    {
+        if (currentlyDraggedSlot == null || currentlyDraggedSlot == this)
+        {
+            return;
+        }
+        int sourceIndex = currentlyDraggedSlot.slotIndex;
+        int targetIndex = this.slotIndex;
+
+        playerInventory.SwapItems(sourceIndex, targetIndex);
+
+    }
+
+    public void OnEndDrag(PointerEventData eventData)
+    {
+        if (currentlyDraggedSlot == null)
+        {
+            return;
+        }
+        currentlyDraggedIcon.SetActive(false);
+        currentlyDraggedSlot = null;
+        canvasGroup.blocksRaycasts = true;
+        playerInventory.UpdateUISlots();
+    }
+    
+    
 }

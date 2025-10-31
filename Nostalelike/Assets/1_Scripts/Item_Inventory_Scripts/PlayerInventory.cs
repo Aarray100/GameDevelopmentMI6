@@ -19,7 +19,7 @@ public class PlayerInventory : MonoBehaviour
 
     private bool isInventoryOpen = false;
 
-    private List<InventorySlotUI> uiSlots = new List<InventorySlotUI>();
+    public List<InventorySlotUI> uiSlots = new List<InventorySlotUI>();
     private void Awake()
     {
         inventory.maxSlots = inventorySize;
@@ -83,12 +83,51 @@ public class PlayerInventory : MonoBehaviour
                 Debug.LogError("Slot Prefab is not assigned in PlayerInventory script.");
                 return;
             }
-            
+
+            // WICHTIG: Setze die Referenzen für Drag-and-Drop
+            slotUI.playerInventory = this;
+            slotUI.slotIndex = i;
+
             uiSlots.Add(slotUI);
             slotUI.ClearSlot(); //Slot initial leeren
         }
         Debug.Log("Finished generating UI Slots." + uiSlots.Count);
 
+    }
+    public void SwapItems(int indexA, int indexB)
+    {
+        // Sicherheitsüberprüfung
+        if (indexA < 0 || indexA >= inventory.slots.Count || indexB < 0 || indexB >= inventory.slots.Count)
+        {
+            Debug.LogError($"SwapItems: Ungültiger Index! indexA={indexA}, indexB={indexB}, slots.Count={inventory.slots.Count}");
+            return;
+        }
+
+        InventorySlot slotA = inventory.slots[indexA];      //wird gezogen
+        InventorySlot slotB = inventory.slots[indexB];      //wird hierauf abgelegt
+
+        if (slotB.item != null && slotA.item != null && slotA.item == slotB.item && slotA.item.isStackable)
+        {
+            // Stapeln, wenn beide Slots denselben stapelbaren Gegenstand enthalten
+            slotB.quantity += slotA.quantity;
+            slotA.item = null;
+            slotA.quantity = 0;
+
+        }
+        else
+        {
+            // Tausche die Slot-Inhalte
+            ItemData tempItem = slotA.item;
+            int tempQuantity = slotA.quantity;
+            
+            slotA.item = slotB.item;
+            slotA.quantity = slotB.quantity;
+            
+            slotB.item = tempItem;
+            slotB.quantity = tempQuantity;
+        }
+        
+        UpdateUISlots();
     }
 
     public void UpdateUISlots()
@@ -106,6 +145,7 @@ public class PlayerInventory : MonoBehaviour
         }
     }
 
+    
     void OnEnable()
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
@@ -125,7 +165,7 @@ public class PlayerInventory : MonoBehaviour
         if (!string.IsNullOrEmpty(targetID))
         {
             // Here you can implement logic to position the player at the target spawn point
-            SceneSpawnPoint[] allSpawnPoints = FindObjectsOfType<SceneSpawnPoint>(false);
+            SceneSpawnPoint[] allSpawnPoints = FindObjectsByType<SceneSpawnPoint>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             foreach (SceneSpawnPoint spawnPoint in allSpawnPoints)
             {
                 if (spawnPoint.spawnPointID == targetID)

@@ -7,45 +7,80 @@ public class Inventory
 
     public event Action OnInventoryChanged;
     public List<InventorySlot> slots = new List<InventorySlot>();
-    public int maxSlots = 49;
+    private int _maxSlots = 49;
+    public int maxSlots 
+    { 
+        get => _maxSlots; 
+        set 
+        { 
+            _maxSlots = value;
+            InitializeSlots();
+        } 
+    }
+
+    public Inventory()
+    {
+        InitializeSlots();
+    }
+
+    private void InitializeSlots()
+    {
+        slots.Clear();
+        for (int i = 0; i < _maxSlots; i++)
+        {
+            slots.Add(new InventorySlot(null, 0));
+        }
+    }
 
     public void AddItem(ItemData item, int quantity)
     {
         if (item.isStackable)
         {
-            InventorySlot slot = slots.Find(s => s.item == item);
-            if (slot != null)
+            // Suche nach einem Slot mit dem gleichen Item
+            InventorySlot existingSlot = slots.Find(s => s.item == item);
+            if (existingSlot != null)
             {
-                slot.quantity += quantity;
+                existingSlot.quantity += quantity;
                 OnInventoryChanged?.Invoke();
                 return;
             }
         }
 
-        if (slots.Count >= maxSlots)
-        {
-            Debug.Log("Inventory is full!");
-            return;
-        }
-
+        // Finde den ersten leeren Slot
         if (item.isStackable)
         {
-            slots.Add(new InventorySlot(item, quantity));
+            InventorySlot emptySlot = slots.Find(s => s.item == null);
+            if (emptySlot != null)
+            {
+                emptySlot.item = item;
+                emptySlot.quantity = quantity;
+                OnInventoryChanged?.Invoke();
+            }
+            else
+            {
+                Debug.Log("Inventory is full!");
+            }
         }
         else
         {
+            // Für nicht-stapelbare Items, füge jedes einzeln hinzu
             for (int i = 0; i < quantity; i++)
             {
-                if (slots.Count >= maxSlots)
+                InventorySlot emptySlot = slots.Find(s => s.item == null);
+                if (emptySlot != null)
+                {
+                    emptySlot.item = item;
+                    emptySlot.quantity = 1;
+                }
+                else
                 {
                     Debug.Log("Inventory is full!");
                     OnInventoryChanged?.Invoke();
                     return;
                 }
-                slots.Add(new InventorySlot(item, 1));
             }
+            OnInventoryChanged?.Invoke();
         }
-        OnInventoryChanged?.Invoke();
     }
 
     public void RemoveItem(ItemData item, int quantity)
@@ -56,7 +91,9 @@ public class Inventory
             slot.quantity -= quantity;
             if (slot.quantity <= 0)
             {
-                slots.Remove(slot);
+                // Leere den Slot statt ihn zu entfernen
+                slot.item = null;
+                slot.quantity = 0;
             }
             OnInventoryChanged?.Invoke();
         }

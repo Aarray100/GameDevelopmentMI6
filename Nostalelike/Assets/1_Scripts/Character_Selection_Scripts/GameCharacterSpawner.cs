@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameCharacterSpawner : MonoBehaviour
 {
@@ -18,6 +19,11 @@ public class GameCharacterSpawner : MonoBehaviour
         if (instance == null)
         {
             instance = this;
+            // Stelle sicher, dass das GameObject ein Root-Objekt ist
+            if (transform.parent != null)
+            {
+                transform.SetParent(null);
+            }
             DontDestroyOnLoad(gameObject);
         }
         else
@@ -62,11 +68,13 @@ public class GameCharacterSpawner : MonoBehaviour
             }
             else
             {
-                Debug.LogError("Selected character or prefab is null.");
+                Debug.LogError("PlayerInventory component not found on character.");
             }
             
             DontDestroyOnLoad(characterInstance);
             DontDestroyOnLoad(inventoryPanelObject.transform.root.gameObject);
+            
+            // Spawner hat seine Aufgabe erfüllt - kann gelöscht werden
             Destroy(this.gameObject);
             
         }
