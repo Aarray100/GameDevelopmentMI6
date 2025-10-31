@@ -12,13 +12,15 @@ public class StartMenuController : MonoBehaviour
 
     public void OnExitClicked()
     {
-       #if UNITY_EDITOR
+#if UNITY_EDITOR
         // Beendet den Play-Modus im Unity Editor
         UnityEditor.EditorApplication.isPlaying = false;
-       #endif
-        
+#endif
+
         // Beendet die Anwendung
         Application.Quit();
     }
+    
+
 
 }
