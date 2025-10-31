@@ -11,6 +11,11 @@ public class SceneTransitionManager : MonoBehaviour
         if (instance == null)
         {
             instance = this;
+            // Stelle sicher, dass das GameObject ein Root-Objekt ist
+            if (transform.parent != null)
+            {
+                transform.SetParent(null);
+            }
             DontDestroyOnLoad(gameObject);
         }
         else

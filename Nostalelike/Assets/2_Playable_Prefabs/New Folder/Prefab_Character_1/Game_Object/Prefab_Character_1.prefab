@@ -276,6 +276,7 @@ GameObject:
   - component: {fileID: 7060053096232833951}
   - component: {fileID: 6682446047080416855}
   - component: {fileID: 3744921628979041614}
+  - component: {fileID: 7589266553844486403}
   m_Layer: 0
   m_Name: Prefab_Character_1
   m_TagString: Player
@@ -396,3 +397,16 @@ MonoBehaviour:
   slotParent: {fileID: 0}
   slotPrefab: {fileID: 0}
   inventoryPanelObject: {fileID: 0}
+  uiSlots: []
+--- !u!114 &7589266553844486403
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7477086312278696024}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb6027a8fecbd53429c164a226bf7aa6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerSceneHandler
