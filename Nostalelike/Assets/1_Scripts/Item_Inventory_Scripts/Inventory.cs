@@ -98,6 +98,54 @@ public class Inventory
             OnInventoryChanged?.Invoke();
         }
     }
+
+    // Füge Item an spezifischem Index hinzu
+    public void AddItemAt(ItemData item, int index)
+    {
+        if (index < 0 || index >= slots.Count)
+        {
+            Debug.LogWarning($"Invalid slot index: {index}");
+            return;
+        }
+
+        InventorySlot targetSlot = slots[index];
+        
+        if (targetSlot.item == null)
+        {
+            // Slot ist leer - einfach hinzufügen
+            targetSlot.item = item;
+            targetSlot.quantity = 1;
+        }
+        else if (targetSlot.item == item && item.isStackable)
+        {
+            // Gleicher stackbarer Item - erhöhe quantity
+            targetSlot.quantity++;
+        }
+        else
+        {
+            Debug.LogWarning($"Slot {index} is already occupied!");
+            return;
+        }
+        
+        OnInventoryChanged?.Invoke();
+    }
+
+    // Entferne Item an spezifischem Index
+    public void RemoveItemAt(int index)
+    {
+        if (index < 0 || index >= slots.Count)
+        {
+            Debug.LogWarning($"Invalid slot index: {index}");
+            return;
+        }
+
+        InventorySlot slot = slots[index];
+        slot.item = null;
+        slot.quantity = 0;
+        
+        OnInventoryChanged?.Invoke();
+    }
+    
     public bool HasItem(ItemData item, int quantity)
     {
         InventorySlot slot = slots.Find(s => s.item == item);
