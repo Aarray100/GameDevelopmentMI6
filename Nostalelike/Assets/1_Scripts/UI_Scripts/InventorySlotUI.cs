@@ -175,6 +175,51 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     public void OnDrop(PointerEventData eventData)
     {
+        // Check: Kommt das Item von einem Equipment-Slot?
+        EquipmentSlotUI equipmentSlot = eventData.pointerDrag?.GetComponent<EquipmentSlotUI>();
+        
+        if (equipmentSlot != null)
+        {
+            // Item von Equipment zu Inventar - unequip es und lege ins target slot
+            PlayerEquipment playerEquipment = FindFirstObjectByType<PlayerEquipment>();
+            if (playerEquipment != null)
+            {
+                ItemData equippedItem = playerEquipment.GetEquippedItem(equipmentSlot.slotType);
+                if (equippedItem != null)
+                {
+                    // Unequip das Item (OHNE es ins Inventar zu legen - wir machen das manuell)
+                    playerEquipment.UnequipItem(equipmentSlot.slotType, addToInventory: false);
+                    
+                    // Lege es in diesen spezifischen Inventory-Slot
+                    Inventory inventory = playerInventory.inventory;
+                    InventorySlot targetSlot = inventory.slots[this.slotIndex];
+                    
+                    if (targetSlot.item != null)
+                    {
+                        // Target-Slot ist belegt - swap
+                        ItemData currentItem = targetSlot.item;
+                        
+                        // Entferne aktuelles Item aus diesem Slot und füge equipped item hinzu
+                        inventory.RemoveItemAt(this.slotIndex);
+                        inventory.AddItemAt(equippedItem, this.slotIndex);
+                        
+                        // Füge das verdrängte Item wieder hinzu (geht in ersten freien Slot)
+                        inventory.AddItem(currentItem, 1);
+                    }
+                    else
+                    {
+                        // Target-Slot ist leer - einfach hinlegen
+                        inventory.AddItemAt(equippedItem, this.slotIndex);
+                    }
+                    
+                    playerInventory.UpdateUISlots();
+                    Debug.Log($"Unequipped {equippedItem.itemName} to slot {this.slotIndex}");
+                }
+            }
+            return;
+        }
+        
+        // Normaler Swap zwischen Inventory-Slots
         if (currentlyDraggedSlot == null || currentlyDraggedSlot == this)
         {
             return;
@@ -192,6 +237,16 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         {
             return;
         }
+        
+        // Check: Wurde auf Equipment-Slot gedroppt?
+        EquipmentSlotUI equipmentSlot = eventData.pointerCurrentRaycast.gameObject?.GetComponent<EquipmentSlotUI>();
+        
+        if (equipmentSlot != null)
+        {
+            // Item wird zu Equipment gezogen, EquipmentSlotUI.OnDrop() handelt das
+            Debug.Log("Dropped on equipment slot");
+        }
+        
         currentlyDraggedIcon.SetActive(false);
         currentlyDraggedSlot = null;
         canvasGroup.blocksRaycasts = true;

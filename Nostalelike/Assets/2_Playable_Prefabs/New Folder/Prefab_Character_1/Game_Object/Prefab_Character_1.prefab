@@ -277,6 +277,8 @@ GameObject:
   - component: {fileID: 6682446047080416855}
   - component: {fileID: 3744921628979041614}
   - component: {fileID: 7589266553844486403}
+  - component: {fileID: -7881059819434155054}
+  - component: {fileID: -6881245915184006642}
   m_Layer: 0
   m_Name: Prefab_Character_1
   m_TagString: Player
@@ -377,8 +379,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80cfd46f636e647198bb15f9704b18c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement2D
-  walkSpeed: 5
-  runSpeed: 8
+  walkSpeed: 3.5
+  runSpeed: 6
   anim: {fileID: 7922526696125178688}
   visualsTransform: {fileID: 3261535659778258215}
 --- !u!114 &3744921628979041614
@@ -397,6 +399,7 @@ MonoBehaviour:
   slotParent: {fileID: 0}
   slotPrefab: {fileID: 0}
   inventoryPanelObject: {fileID: 0}
+  equipmentPanelObject: {fileID: 0}
   uiSlots: []
 --- !u!114 &7589266553844486403
 MonoBehaviour:
@@ -410,3 +413,68 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb6027a8fecbd53429c164a226bf7aa6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerSceneHandler
+--- !u!114 &-7881059819434155054
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7477086312278696024}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1c907fc9596cd6489a79fb52f2a4cd4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerEquipment
+  playerStats: {fileID: 0}
+  playerInventory: {fileID: 0}
+--- !u!114 &-6881245915184006642
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7477086312278696024}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54fc1a5f3c7925231a671a45b5030b81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerStats
+  baseMaxHealth: 100
+  baseMaxMana: 50
+  baseMaxStamina: 75
+  currentHealth: 0
+  currentMana: 0
+  currentStamina: 0
+  baseHealthRegenRate: 5
+  baseManaRegenRate: 3
+  baseStaminaRegenRate: 4
+  baseDamage: 10
+  baseAttackSpeed: 1
+  baseCriticalChance: 0.1
+  baseCriticalDamage: 1.5
+  baseDefense: 5
+  baseResistance: 3
+  baseEvasion: 0.05
+  maxHealth: 0
+  maxMana: 0
+  maxStamina: 0
+  totalDamage: 0
+  totalAttackSpeed: 0
+  totalCriticalChance: 0
+  totalCriticalDamage: 0
+  totalDefense: 0
+  totalResistance: 0
+  totalEvasion: 0
+  totalHealthRegen: 0
+  totalManaRegen: 0
+  totalStaminaRegen: 0
+  currentLevel: 1
+  experiencePoints: 0
+  experienceToNextLevel: 100
+  experienceRequired: 0
+  healthPerLevel: 10
+  manaPerLevel: 8
+  staminaPerLevel: 5
+  damagePerLevel: 2
+  defensePerLevel: 1
+  criticalChancePerLevel: 0.005
