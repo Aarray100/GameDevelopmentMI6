@@ -4,32 +4,121 @@ using System;
 public class Hotbar : MonoBehaviour
 {
     [Header("Hotbar Settings")]
-    [SerializeField] private int hotbarSize = 6;
+    [SerializeField] private int hotbarSize = 10;
     public HotbarSlot[] slots;
     public int activeSlotIndex = 0;
     
-    [Header("References")]
-    public PlayerStats playerStats;
-    public PlayerInventory playerInventory;
+    [Header("UI References")]
+    [SerializeField] private HotbarSlotUI[] slotUIElements; // Drag deine 10 Slot-Prefabs hier rein
+    
+    [Header("References (werden automatisch gefunden)")]
+    private PlayerStats playerStats;
+    private PlayerInventory playerInventory;
     
     // Events
     public event Action<int> OnSlotChanged;  // Slot wurde gewechselt
     public event Action OnHotbarUpdated;     // Hotbar content changed
     
+    private static Hotbar instance;
+    
     private void Awake()
     {
+        // DontDestroyOnLoad Pattern
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+            Debug.Log("Hotbar: DontDestroyOnLoad gesetzt");
+        }
+        else
+        {
+            Debug.Log("Hotbar: Duplikat gefunden, wird zerstört");
+            Destroy(gameObject);
+            return;
+        }
+        
         // Initialisiere Slots
         slots = new HotbarSlot[hotbarSize];
         for (int i = 0; i < hotbarSize; i++)
         {
             slots[i] = new HotbarSlot();
         }
+        
+        // Initialisiere UI-Slots
+        InitializeUI();
     }
     
     private void Start()
     {
-        // Setze initial aktive Waffe
+        // Finde Player-Referenzen (nach Character-Spawn)
+        FindPlayerReferences();
+        
+        // Setze initial aktive Waffe und wähle ersten Slot aus
+        UpdateAllSlotsUI();
+        SelectSlot(0); // Wähle ersten Slot beim Start
         UpdateActiveWeapon();
+    }
+    
+    /// <summary>
+    /// Findet automatisch die Player-Referenzen (nach Character-Spawn)
+    /// </summary>
+    private void FindPlayerReferences()
+    {
+        if (playerStats == null)
+        {
+            playerStats = FindFirstObjectByType<PlayerStats>();
+            if (playerStats != null)
+            {
+                Debug.Log("Hotbar: PlayerStats gefunden");
+            }
+            else
+            {
+                Debug.LogWarning("Hotbar: PlayerStats nicht gefunden! Wird später gesucht.");
+            }
+        }
+        
+        if (playerInventory == null)
+        {
+            playerInventory = FindFirstObjectByType<PlayerInventory>();
+            if (playerInventory != null)
+            {
+                Debug.Log("Hotbar: PlayerInventory gefunden");
+            }
+            else
+            {
+                Debug.LogWarning("Hotbar: PlayerInventory nicht gefunden! Wird später gesucht.");
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Wird nach Scene-Load aufgerufen um Player-Referenzen neu zu finden
+    /// </summary>
+    private void OnEnable()
+    {
+        // Versuche Player-Referenzen zu finden falls noch nicht vorhanden
+        if (playerStats == null || playerInventory == null)
+        {
+            Invoke(nameof(FindPlayerReferences), 0.1f); // Kurze Verzögerung für Spawn
+        }
+    }
+    
+    private void InitializeUI()
+    {
+        if (slotUIElements == null || slotUIElements.Length != hotbarSize)
+        {
+            Debug.LogError($"Hotbar: slotUIElements muss genau {hotbarSize} Elemente haben!");
+            return;
+        }
+        
+        // Verbinde UI-Slots mit Data-Slots
+        for (int i = 0; i < hotbarSize; i++)
+        {
+            if (slotUIElements[i] != null)
+            {
+                slotUIElements[i].Initialize(i, slots[i]);
+            }
+        }
     }
     
     private void Update()
@@ -39,13 +128,20 @@ public class Hotbar : MonoBehaviour
     
     private void HandleInput()
     {
-        // Slot-Auswahl mit Tasten 1-6 (oder mehr)
+        // Slot-Auswahl mit Tasten 1-9 und 0 für den 10. Slot
+        // Tasten 1-9 (Alpha1 bis Alpha9)
         for (int i = 0; i < Mathf.Min(hotbarSize, 9); i++)
         {
             if (Input.GetKeyDown(KeyCode.Alpha1 + i))
             {
                 SelectSlot(i);
             }
+        }
+        
+        // Taste 0 für den 10. Slot (falls hotbarSize >= 10)
+        if (hotbarSize >= 10 && Input.GetKeyDown(KeyCode.Alpha0))
+        {
+            SelectSlot(9);
         }
         
         // Nutze aktiven Slot (Linksklick)
@@ -76,15 +172,37 @@ public class Hotbar : MonoBehaviour
     {
         if (index < 0 || index >= hotbarSize) return;
         
+        // Deselect vorherigen Slot in UI
+        if (slotUIElements != null && activeSlotIndex < slotUIElements.Length && slotUIElements[activeSlotIndex] != null)
+        {
+            slotUIElements[activeSlotIndex].SetSelected(false);
+        }
+        
         activeSlotIndex = index;
+        
+        // Select neuen Slot in UI
+        if (slotUIElements != null && index < slotUIElements.Length && slotUIElements[index] != null)
+        {
+            slotUIElements[index].SetSelected(true);
+        }
+        
         UpdateActiveWeapon();
         OnSlotChanged?.Invoke(index);
-        
-        Debug.Log($"Selected hotbar slot {index + 1}");
     }
     
     private void UpdateActiveWeapon()
     {
+        // Prüfe ob PlayerStats vorhanden ist
+        if (playerStats == null)
+        {
+            FindPlayerReferences();
+            if (playerStats == null)
+            {
+                Debug.LogWarning("Hotbar: Kann Waffe nicht updaten, PlayerStats fehlt");
+                return;
+            }
+        }
+        
         HotbarSlot slot = slots[activeSlotIndex];
         
         if (slot.item != null && slot.item.itemType == ItemType.Weapon)
@@ -186,6 +304,7 @@ public class Hotbar : MonoBehaviour
                 slot.ClearSlot();
             }
             
+            UpdateSlotUI(activeSlotIndex);
             OnHotbarUpdated?.Invoke();
         }
     }
@@ -213,6 +332,7 @@ public class Hotbar : MonoBehaviour
         if (slot.IsEmpty())
         {
             slot.SetItem(item, quantity);
+            UpdateSlotUI(slotIndex);
             OnHotbarUpdated?.Invoke();
             
             // Wenn dieser Slot aktiv ist, update Waffe
@@ -227,6 +347,7 @@ public class Hotbar : MonoBehaviour
         else if (slot.item == item && item.isStackable)
         {
             slot.quantity += quantity;
+            UpdateSlotUI(slotIndex);
             OnHotbarUpdated?.Invoke();
             return true;
         }
@@ -243,6 +364,7 @@ public class Hotbar : MonoBehaviour
         ItemData removedItem = slot.item;
         
         slot.ClearSlot();
+        UpdateSlotUI(slotIndex);
         OnHotbarUpdated?.Invoke();
         
         // Wenn aktiver Slot geleert wurde, update Waffe
@@ -263,12 +385,46 @@ public class Hotbar : MonoBehaviour
         slots[indexA] = slots[indexB];
         slots[indexB] = temp;
         
+        UpdateSlotUI(indexA);
+        UpdateSlotUI(indexB);
         OnHotbarUpdated?.Invoke();
         
         // Update Waffe wenn aktiver Slot betroffen
         if (indexA == activeSlotIndex || indexB == activeSlotIndex)
         {
             UpdateActiveWeapon();
+        }
+    }
+    
+    // === UI Update Methoden ===
+    
+    /// <summary>
+    /// Update einen einzelnen UI-Slot
+    /// </summary>
+    private void UpdateSlotUI(int index)
+    {
+        if (slotUIElements != null && index >= 0 && index < slotUIElements.Length && slotUIElements[index] != null)
+        {
+            slotUIElements[index].UpdateUI();
+        }
+    }
+    
+    /// <summary>
+    /// Update alle UI-Slots (z.B. nach Load oder Initialization)
+    /// </summary>
+    private void UpdateAllSlotsUI()
+    {
+        if (slotUIElements == null) return;
+        
+        for (int i = 0; i < slotUIElements.Length; i++)
+        {
+            if (slotUIElements[i] != null)
+            {
+                slotUIElements[i].UpdateUI();
+                
+                // Setze Selection-Highlight für aktiven Slot
+                slotUIElements[i].SetSelected(i == activeSlotIndex);
+            }
         }
     }
 }

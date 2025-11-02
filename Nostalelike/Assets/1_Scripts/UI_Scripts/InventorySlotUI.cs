@@ -69,19 +69,9 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         dragImage.raycastTarget = false; // Wichtig! Damit es keine Raycasts blockiert
         dragImage.preserveAspect = true; // Behalte das Seitenverhältnis
         
-        // Setze die Größe - passe diese an deine Item-Icon-Größe an
+        // Setze FESTE Größe für Drag-Icon (unabhängig vom Slot)
         RectTransform rectTransform = currentlyDraggedIcon.GetComponent<RectTransform>();
-        
-        // Hole die Größe vom aktuellen itemIcon als Referenz
-        if (itemIcon != null)
-        {
-            RectTransform itemIconRect = itemIcon.GetComponent<RectTransform>();
-            rectTransform.sizeDelta = itemIconRect.sizeDelta; // Gleiche Größe wie die Slot-Icons
-        }
-        else
-        {
-            rectTransform.sizeDelta = new Vector2(64, 64); // Fallback-Größe
-        }
+        rectTransform.sizeDelta = new Vector2(10, 10); // Feste Größe für alle Drag-Operations
         
         // Mache es etwas transparent
         Color color = dragImage.color;
@@ -89,8 +79,6 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         dragImage.color = color;
         
         currentlyDraggedIcon.SetActive(false);
-        
-        Debug.Log("DraggedItemIcon wurde dynamisch erstellt mit Größe: " + rectTransform.sizeDelta);
     }
 
     // Aktualisiert den Slot, um einen Gegenstand anzuzeigen
@@ -175,7 +163,7 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     public void OnDrop(PointerEventData eventData)
     {
-        // Check: Kommt das Item von einem Equipment-Slot?
+        // Check 1: Kommt das Item von einem Equipment-Slot?
         EquipmentSlotUI equipmentSlot = eventData.pointerDrag?.GetComponent<EquipmentSlotUI>();
         
         if (equipmentSlot != null)
@@ -219,7 +207,57 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             return;
         }
         
-        // Normaler Swap zwischen Inventory-Slots
+        // Check 2: Kommt das Item von der Hotbar?
+        HotbarSlotUI hotbarSlot = eventData.pointerDrag?.GetComponent<HotbarSlotUI>();
+        
+        if (hotbarSlot != null)
+        {
+            HotbarSlot sourceSlot = hotbarSlot.GetHotbarSlot();
+            
+            if (sourceSlot != null && sourceSlot.item != null)
+            {
+                // Hole das Item von der Hotbar
+                ItemData hotbarItem = sourceSlot.item;
+                int hotbarQuantity = sourceSlot.quantity;
+                
+                // Füge es ins Inventar hinzu
+                Inventory inventory = playerInventory.inventory;
+                InventorySlot targetSlot = inventory.slots[this.slotIndex];
+                
+                if (targetSlot.item != null)
+                {
+                    // Target-Slot ist belegt - füge in ersten freien Slot
+                    inventory.AddItem(hotbarItem, hotbarQuantity);
+                    
+                    // Entferne von Hotbar
+                    Hotbar hotbar = hotbarSlot.GetComponentInParent<Hotbar>();
+                    if (hotbar != null)
+                    {
+                        hotbar.RemoveItemFromSlot(hotbarSlot.GetSlotIndex());
+                    }
+                    Debug.Log($"Item {hotbarItem.itemName} von Hotbar zu Inventar verschoben");
+                }
+                else
+                {
+                    // Target-Slot ist leer - direkt hinlegen
+                    inventory.AddItemAt(hotbarItem, this.slotIndex);
+                    targetSlot.quantity = hotbarQuantity;
+                    
+                    // Entferne von Hotbar
+                    Hotbar hotbar = hotbarSlot.GetComponentInParent<Hotbar>();
+                    if (hotbar != null)
+                    {
+                        hotbar.RemoveItemFromSlot(hotbarSlot.GetSlotIndex());
+                    }
+                    Debug.Log($"Item {hotbarItem.itemName} von Hotbar zu Inventar Slot {this.slotIndex} verschoben");
+                }
+                
+                playerInventory.UpdateUISlots();
+            }
+            return;
+        }
+        
+        // Check 3: Normaler Swap zwischen Inventory-Slots
         if (currentlyDraggedSlot == null || currentlyDraggedSlot == this)
         {
             return;
