@@ -59,6 +59,15 @@ public class Hotbar : MonoBehaviour
         UpdateActiveWeapon();
     }
     
+    private void OnDestroy()
+    {
+        // Reset der Instanz wenn diese Hotbar zerstört wird
+        if (instance == this)
+        {
+            instance = null;
+        }
+    }
+    
     /// <summary>
     /// Findet automatisch die Player-Referenzen (nach Character-Spawn)
     /// </summary>

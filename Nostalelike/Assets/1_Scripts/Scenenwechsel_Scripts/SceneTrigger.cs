@@ -13,7 +13,17 @@ public class SceneTrigger : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            SceneTransitionManager.instance.targetSpawnPointID = targetSpawnPointID;
+            // Stelle sicher dass SceneTransitionManager existiert (erstelle falls nötig)
+            SceneTransitionManager manager = SceneTransitionManager.EnsureInstance();
+            
+            if (manager == null)
+            {
+                Debug.LogError("SceneTrigger: SceneTransitionManager konnte nicht erstellt werden!");
+                return;
+            }
+            
+            manager.targetSpawnPointID = targetSpawnPointID;
+            Debug.Log($"SceneTrigger: Target Spawn Point ID gesetzt auf: '{targetSpawnPointID}'");
             
             // Prüfe, ob wir in der gleichen Szene bleiben
             string currentSceneName = SceneManager.GetActiveScene().name;
@@ -21,13 +31,13 @@ public class SceneTrigger : MonoBehaviour
             if (sceneToLoad == currentSceneName)
             {
                 // Gleiche Szene - nur teleportieren, nicht neu laden
-                Debug.Log("Teleportiere zum Spawn-Punkt: " + targetSpawnPointID);
+                Debug.Log($"SceneTrigger: Teleportiere in gleicher Szene zum Spawn-Punkt: {targetSpawnPointID}");
                 TeleportPlayerToSpawnPoint(targetSpawnPointID, other.gameObject);
             }
             else
             {
                 // Andere Szene - normal laden
-                Debug.Log("Wechsel zu Szene: " + sceneToLoad);
+                Debug.Log($"SceneTrigger: Wechsel von '{currentSceneName}' zu Szene: '{sceneToLoad}' → Spawn bei: '{targetSpawnPointID}'");
                 SceneManager.LoadScene(sceneToLoad);
             }
         }

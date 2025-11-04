@@ -119,6 +119,13 @@ public class EquipmentSlotUI : MonoBehaviour, IDropHandler, IBeginDragHandler, I
     {
         if (playerEquipment == null) return;
         
+        // Zusätzlicher Check ob die UI-Komponenten noch existieren
+        if (placeholderIcon == null && equippedItemIcon == null)
+        {
+            Debug.LogWarning("UI components are null in EquipmentSlotUI - slot might be destroyed");
+            return;
+        }
+        
         ItemData equippedItem = playerEquipment.GetEquippedItem(slotType);
         
         // Wenn beide Images das gleiche sind (einfache Variante)

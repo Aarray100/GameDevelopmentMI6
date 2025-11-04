@@ -110,6 +110,13 @@ public class HotbarSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
     {
         if (hotbarSlot == null) return;
         
+        // Null-Checks für UI-Komponenten
+        if (itemIcon == null || itemCountText == null)
+        {
+            Debug.LogWarning("UI components are null in HotbarSlotUI - slot might be destroyed");
+            return;
+        }
+        
         // Item Icon: Nur sichtbar wenn Item vorhanden
         if (hotbarSlot.item != null)
         {
@@ -139,10 +146,18 @@ public class HotbarSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
     /// </summary>
     public void ClearSlot()
     {
-        itemIcon.sprite = null;
-        itemIcon.enabled = false;
-        itemCountText.text = "";
-        itemCountText.enabled = false;
+        // Null-Checks um Fehler bei zerstörten UI-Elementen zu vermeiden
+        if (itemIcon != null)
+        {
+            itemIcon.sprite = null;
+            itemIcon.enabled = false;
+        }
+        
+        if (itemCountText != null)
+        {
+            itemCountText.text = "";
+            itemCountText.enabled = false;
+        }
     }
     
     /// <summary>

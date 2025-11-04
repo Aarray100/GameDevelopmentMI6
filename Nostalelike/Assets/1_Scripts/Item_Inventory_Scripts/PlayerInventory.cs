@@ -42,6 +42,9 @@ public class PlayerInventory : MonoBehaviour
     private void OnDestroy()
     {
         inventory.OnInventoryChanged -= UpdateUISlots;
+        
+        // Unsubscribe von Scene-Events
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
     private void Update()
     {
@@ -55,31 +58,34 @@ public class PlayerInventory : MonoBehaviour
     {
         Debug.Log("Toggling Inventory UI.", this.gameObject);
         
+        // Prüfe ob UI überhaupt initialisiert ist
+        if (inventoryPanelObject == null || equipmentPanelObject == null)
+        {
+            Debug.LogWarning("PlayerInventory: UI ist noch nicht initialisiert! Warte bis GameCharacterSpawner die UI zuweist.", this.gameObject);
+            return;
+        }
+        
         isInventoryOpen = !isInventoryOpen;
         
         // Toggle Inventar
-        if (inventoryPanelObject != null)
-        {
-            inventoryPanelObject.SetActive(isInventoryOpen);
-        }
-        else
-        {
-            Debug.LogError("Inventory Panel Object is not assigned.", this.gameObject);
-        }
+        inventoryPanelObject.SetActive(isInventoryOpen);
         
         // Toggle Equipment (zusammen mit Inventar)
-        if (equipmentPanelObject != null)
-        {
-            equipmentPanelObject.SetActive(isInventoryOpen);
-        }
-        else
-        {
-            Debug.LogWarning("Equipment Panel Object is not assigned.", this.gameObject);
-        }
+        equipmentPanelObject.SetActive(isInventoryOpen);
     }
 
     public void InitializeInventoryUI()
     {
+        // Prüfe ob bereits UI-Slots vorhanden sind (verhindert doppelte Initialisierung)
+        if (uiSlots != null && uiSlots.Count > 0)
+        {
+            Debug.Log("UI Slots already initialized - skipping generation");
+            // Bereinige die Liste von null-Einträgen
+            uiSlots.RemoveAll(slot => slot == null);
+            UpdateUISlots();
+            return;
+        }
+        
         GenerateUISlots();
         UpdateUISlots();
     }
@@ -150,6 +156,13 @@ public class PlayerInventory : MonoBehaviour
     {
         for (int i = 0; i < uiSlots.Count; i++)
         {
+            // Prüfe ob der UI-Slot noch existiert (nicht zerstört wurde)
+            if (uiSlots[i] == null)
+            {
+                Debug.LogWarning($"UI Slot {i} is null - skipping update");
+                continue;
+            }
+            
             if (i < inventory.slots.Count)
             {
                 uiSlots[i].UpdateSlot(inventory.slots[i]);
@@ -175,25 +188,16 @@ public class PlayerInventory : MonoBehaviour
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         // Update the inventory UI when a new scene is loaded
-        string targetID = SceneTransitionManager.instance.targetSpawnPointID;
-        Debug.Log("Scene loaded: " + scene.name + ", Target Spawn Point ID: " + targetID);
-
-        if (!string.IsNullOrEmpty(targetID))
+        Debug.Log("PlayerInventory: Scene loaded: " + scene.name);
+        
+        // WICHTIG: Teleportation wird NUR vom PlayerSceneHandler gemacht!
+        // Hier nur UI-Updates durchführen
+        
+        // Nur UI updaten wenn die Slots noch gültig sind
+        if (uiSlots != null && uiSlots.Count > 0)
         {
-            // Here you can implement logic to position the player at the target spawn point
-            SceneSpawnPoint[] allSpawnPoints = FindObjectsByType<SceneSpawnPoint>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
-            foreach (SceneSpawnPoint spawnPoint in allSpawnPoints)
-            {
-                if (spawnPoint.spawnPointID == targetID)
-                {
-                    transform.position = spawnPoint.transform.position;
-                    Debug.Log("Player spawned at: " + spawnPoint.spawnPointID);
-                    break;
-                }
-                Debug.Log("Player should spawn at: " + targetID);
-            }
+            UpdateUISlots();
         }
-        UpdateUISlots();
     }
 
 }
