@@ -15,6 +15,12 @@ public class GameCharacterSpawner : MonoBehaviour
     public GameObject slotPrefab;
     public static GameCharacterSpawner instance;
     private static bool hasSpawnedCharacter = false;  // Flag um mehrfaches Spawnen zu verhindern
+    
+    // Statische Referenzen zu den persistenten UI-Objekten
+    private static GameObject persistentInventoryPanel;
+    private static GameObject persistentEquipmentPanel;
+    private static Transform persistentSlotParent;
+    private static GameObject persistentSlotPrefab;
 
     private void Awake()
     {
@@ -27,9 +33,38 @@ public class GameCharacterSpawner : MonoBehaviour
                 transform.SetParent(null);
             }
             DontDestroyOnLoad(gameObject);
+            
+            // Speichere die UI-Referenzen statisch (nur beim ersten Mal)
+            if (persistentInventoryPanel == null && inventoryPanelObject != null)
+            {
+                persistentInventoryPanel = inventoryPanelObject;
+                Debug.Log("GameCharacterSpawner: Persistent Inventory Panel gespeichert");
+            }
+            if (persistentEquipmentPanel == null && equipmentPanelObject != null)
+            {
+                persistentEquipmentPanel = equipmentPanelObject;
+                Debug.Log("GameCharacterSpawner: Persistent Equipment Panel gespeichert");
+            }
+            if (persistentSlotParent == null && slotParent != null)
+            {
+                persistentSlotParent = slotParent;
+                Debug.Log("GameCharacterSpawner: Persistent SlotParent gespeichert");
+            }
+            if (persistentSlotPrefab == null && slotPrefab != null)
+            {
+                persistentSlotPrefab = slotPrefab;
+                Debug.Log("GameCharacterSpawner: Persistent SlotPrefab gespeichert");
+            }
         }
         else
         {
+            // Duplikat gefunden - prüfe ob es UI-Referenzen hat die NICHT die persistenten sind
+            if (inventoryPanelObject != null && inventoryPanelObject != persistentInventoryPanel)
+            {
+                Debug.LogWarning("ACHTUNG: Duplikat GameCharacterSpawner hat ein ANDERES Inventory Panel! " +
+                    "Dies könnte das Problem verursachen. Bitte entferne die UI-Referenzen aus diesem Spawner in der Szene.");
+            }
+            
             Destroy(gameObject);
         }
     }
@@ -68,10 +103,11 @@ public class GameCharacterSpawner : MonoBehaviour
 
             if (playerInventory != null)
             {
-                playerInventory.slotParent = slotParent;
-                playerInventory.inventoryPanelObject = inventoryPanelObject;
-                playerInventory.equipmentPanelObject = equipmentPanelObject;  // Equipment-Panel zuweisen
-                playerInventory.slotPrefab = slotPrefab;
+                // Verwende die statischen (persistenten) Referenzen
+                playerInventory.slotParent = persistentSlotParent;
+                playerInventory.inventoryPanelObject = persistentInventoryPanel;
+                playerInventory.equipmentPanelObject = persistentEquipmentPanel;
+                playerInventory.slotPrefab = persistentSlotPrefab;
 
                 playerInventory.InitializeInventoryUI();
             }
@@ -93,22 +129,29 @@ public class GameCharacterSpawner : MonoBehaviour
             DontDestroyOnLoad(characterInstance);
             
             // UI-Panels persistent machen - prüfe ob sie nicht bereits persistent sind
-            if (inventoryPanelObject != null)
+            // Verwende die statischen Referenzen
+            if (persistentInventoryPanel != null)
             {
-                GameObject inventoryRoot = inventoryPanelObject.transform.root.gameObject;
+                GameObject inventoryRoot = persistentInventoryPanel.transform.root.gameObject;
                 if (inventoryRoot.scene.name != "DontDestroyOnLoad")
                 {
                     DontDestroyOnLoad(inventoryRoot);
+                    Debug.Log("Canvas (Inventory) set to DontDestroyOnLoad");
+                }
+                else
+                {
+                    Debug.Log("Canvas (Inventory) is already DontDestroyOnLoad");
                 }
             }
             
             // Equipment-Panel ebenfalls persistent machen (falls separates Root-GameObject)
-            if (equipmentPanelObject != null)
+            if (persistentEquipmentPanel != null)
             {
-                GameObject equipmentRoot = equipmentPanelObject.transform.root.gameObject;
-                if (equipmentRoot.scene.name != "DontDestroyOnLoad")
+                GameObject equipmentRoot = persistentEquipmentPanel.transform.root.gameObject;
+                if (equipmentRoot.scene.name != "DontDestroyOnLoad" && equipmentRoot != persistentInventoryPanel.transform.root.gameObject)
                 {
                     DontDestroyOnLoad(equipmentRoot);
+                    Debug.Log("Canvas (Equipment) set to DontDestroyOnLoad");
                 }
             }
             
