@@ -1,11 +1,11 @@
 using UnityEngine;
+using UnityEngine.XR;
 
 
 
 public class NewEmptyCSharpScript : MonoBehaviour
 {
     public float speed;
-    private bool isChasing;
     private int facingDirection = 1;
     private EnemyState enemyState;
 
@@ -17,39 +17,30 @@ public class NewEmptyCSharpScript : MonoBehaviour
 
     void Start()
     {
+
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+        ChangeState(EnemyState.Idle);
     }
 
 
 
     void Update()
     {
-        if (isChasing == true)
+        if (enemyState == EnemyState.Chasing)
         {
-            if (player.position.x < transform.position.x && facingDirection == -1
-        || player.position.x > transform.position.x && facingDirection == 1)
+            if(player.position.x < transform.position.x && facingDirection == -1||
+                player.position.x > transform.position.x && facingDirection == 1)
             {
                 Flip();
             }
-            {
-                if (player.position.x < transform.position.x && facingDirection == 1)
-                {
-                    facingDirection = -1;
-                    Vector3 localScale = transform.localScale;
-                    localScale.x *= -1;
-                    transform.localScale = localScale;
-                }
-                else if (player.position.x > transform.position.x && facingDirection == -1)
-                {
-                    facingDirection = 1;
-                    Vector3 localScale = transform.localScale;
-                    localScale.x *= -1;
-                    transform.localScale = localScale;
-                }
-                Vector2 direction = (player.position - transform.position).normalized;
-                rb.linearVelocity = direction * speed;
-            }
+
+            Vector2 direction = (player.position - transform.position).normalized;
+            rb.linearVelocity = direction * speed;
+        }
+        else if (enemyState == EnemyState.Idle)
+        {
+            rb.linearVelocity = Vector2.zero;
         }
     }
 
@@ -67,18 +58,44 @@ public class NewEmptyCSharpScript : MonoBehaviour
             {
                 player = collision.transform;
             }
-            isChasing = true;
+            ChangeState(EnemyState.Chasing);
     }
     }
-    
+
 
     private void OnTriggerExit2D(Collider2D collision)
     {
         if (collision.gameObject.tag == "Player")
         {
-            isChasing = false;
-            rb.linearVelocity = Vector2.zero;
+            ChangeState(EnemyState.Idle);
         }
+    }
+    
+    void ChangeState(EnemyState newState)
+    {
+        //Exit the current animation state
+        if (enemyState == EnemyState.Idle)
+        {
+            anim.SetBool("isIdle", false);
+        }
+        else if (enemyState == EnemyState.Chasing)
+        {
+            anim.SetBool("isChasing", false);
+        }
+
+        //Update our current state
+        enemyState = newState;
+
+        //Enter the new animation state)
+         if (enemyState == EnemyState.Idle)
+        {
+            anim.SetBool("isIdle", true);
+        }
+        else if (enemyState == EnemyState.Chasing)
+        {
+            anim.SetBool("isChasing", true);
+        }
+
     }
 }
 
