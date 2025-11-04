@@ -3,6 +3,22 @@ using UnityEngine.SceneManagement;
 
 public class PlayerSceneHandler : MonoBehaviour
 {
+    // Singleton Pattern um sicherzustellen, dass nur ein Player existiert
+    private static PlayerSceneHandler instance;
+    
+    private void Awake()
+    {
+        // Prüfe ob bereits eine Player-Instanz existiert
+        if (instance != null && instance != this)
+        {
+            Debug.Log("Duplicate Player detected - destroying this instance");
+            Destroy(gameObject);
+            return;
+        }
+        
+        instance = this;
+    }
+    
     private void OnEnable()
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
@@ -11,6 +27,15 @@ public class PlayerSceneHandler : MonoBehaviour
     private void OnDisable()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+    
+    private void OnDestroy()
+    {
+        // Reset der Instanz wenn dieser Player zerstört wird
+        if (instance == this)
+        {
+            instance = null;
+        }
     }
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
