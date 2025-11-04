@@ -19,16 +19,26 @@ MonoBehaviour:
   itemValue: 3
   itemRarity: 0
   itemType: 1
-  equipmentType: 1
-  defense: 1
+  equipSlot: 3
+  weaponType: 3
   accessoryType: 3
-  weaponType: 5
-  attackPower: 0
-  attackSpeed: 0
-  range: 0
-  criticalChance: 0
-  criticalDamageMultiplier: 0
-  knockback: 0
+  stats:
+    bonusDamage: 0
+    damageMultiplier: 1
+    bonusCritChance: 0
+    bonusCritDamage: 0
+    bonusAttackSpeed: 0
+    bonusDefense: 0
+    bonusResistance: 0
+    bonusEvasion: 0
+    bonusHealth: 0
+    bonusMana: 0
+    bonusStamina: 0
+    bonusHealthRegen: 0
+    bonusManaRegen: 0
+    bonusStaminaRegen: 0
+    bonusMagicDamage: 0
+    bonusMagicPower: 0
   consumableType: 5
   healAmount: 0
   manaAmount: 0
