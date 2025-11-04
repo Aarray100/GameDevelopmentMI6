@@ -44,7 +44,18 @@ public class EquipmentSlotUI : MonoBehaviour, IDropHandler, IBeginDragHandler, I
                 currentlyDraggedIcon = new GameObject("DraggedItemIcon");
                 Image img = currentlyDraggedIcon.AddComponent<Image>();
                 img.raycastTarget = false;
-                currentlyDraggedIcon.transform.SetParent(mainCanvas.transform);
+                img.preserveAspect = true;
+                
+                // Feste Größe für Drag-Icon (wie im Inventory)
+                RectTransform rectTransform = currentlyDraggedIcon.GetComponent<RectTransform>();
+                rectTransform.sizeDelta = new Vector2(10, 10);
+                
+                // Transparenz
+                Color color = img.color;
+                color.a = 0.8f;
+                img.color = color;
+                
+                currentlyDraggedIcon.transform.SetParent(mainCanvas.transform, false);
                 currentlyDraggedIcon.SetActive(false);
             }
         }

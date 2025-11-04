@@ -14,6 +14,7 @@ public class GameCharacterSpawner : MonoBehaviour
     public GameObject equipmentPanelObject;  // Equipment-Panel Referenz
     public GameObject slotPrefab;
     public static GameCharacterSpawner instance;
+    private static bool hasSpawnedCharacter = false;  // Flag um mehrfaches Spawnen zu verhindern
 
     private void Awake()
     {
@@ -35,7 +36,12 @@ public class GameCharacterSpawner : MonoBehaviour
 
     void Start()
     {
-        SpawnSelectedCharacter();
+        // Spawne nur, wenn noch kein Character gespawnt wurde
+        if (!hasSpawnedCharacter)
+        {
+            SpawnSelectedCharacter();
+            hasSpawnedCharacter = true;
+        }
     }
 
 
@@ -85,12 +91,25 @@ public class GameCharacterSpawner : MonoBehaviour
             }
             
             DontDestroyOnLoad(characterInstance);
-            DontDestroyOnLoad(inventoryPanelObject.transform.root.gameObject);
+            
+            // UI-Panels persistent machen - prüfe ob sie nicht bereits persistent sind
+            if (inventoryPanelObject != null)
+            {
+                GameObject inventoryRoot = inventoryPanelObject.transform.root.gameObject;
+                if (inventoryRoot.scene.name != "DontDestroyOnLoad")
+                {
+                    DontDestroyOnLoad(inventoryRoot);
+                }
+            }
             
             // Equipment-Panel ebenfalls persistent machen (falls separates Root-GameObject)
             if (equipmentPanelObject != null)
             {
-                DontDestroyOnLoad(equipmentPanelObject.transform.root.gameObject);
+                GameObject equipmentRoot = equipmentPanelObject.transform.root.gameObject;
+                if (equipmentRoot.scene.name != "DontDestroyOnLoad")
+                {
+                    DontDestroyOnLoad(equipmentRoot);
+                }
             }
             
             // Spawner hat seine Aufgabe erfüllt - kann gelöscht werden
