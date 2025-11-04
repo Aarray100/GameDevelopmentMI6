@@ -16,6 +16,7 @@ public class PlayerInventory : MonoBehaviour
 
     [Header("UI Toggle Key")]
     public GameObject inventoryPanelObject;
+    public GameObject equipmentPanelObject;  // Equipment-Panel Referenz
 
     private bool isInventoryOpen = false;
 
@@ -27,6 +28,10 @@ public class PlayerInventory : MonoBehaviour
         {
             inventoryPanelObject.SetActive(false);
             isInventoryOpen = false;
+        }
+        if (equipmentPanelObject != null)
+        {
+            equipmentPanelObject.SetActive(false);
         }
     }
     private void Start()
@@ -49,17 +54,28 @@ public class PlayerInventory : MonoBehaviour
     public void ToggleInventory()
     {
         Debug.Log("Toggling Inventory UI.", this.gameObject);
+        
+        isInventoryOpen = !isInventoryOpen;
+        
+        // Toggle Inventar
         if (inventoryPanelObject != null)
         {
-            isInventoryOpen = !isInventoryOpen;
             inventoryPanelObject.SetActive(isInventoryOpen);
         }
         else
         {
             Debug.LogError("Inventory Panel Object is not assigned.", this.gameObject);
-            return;
         }
-
+        
+        // Toggle Equipment (zusammen mit Inventar)
+        if (equipmentPanelObject != null)
+        {
+            equipmentPanelObject.SetActive(isInventoryOpen);
+        }
+        else
+        {
+            Debug.LogWarning("Equipment Panel Object is not assigned.", this.gameObject);
+        }
     }
 
     public void InitializeInventoryUI()
