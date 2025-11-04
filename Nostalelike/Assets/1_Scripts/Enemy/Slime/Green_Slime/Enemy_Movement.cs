@@ -5,7 +5,7 @@ using UnityEngine;
 public class NewEmptyCSharpScript : MonoBehaviour
 {
     public float speed;
-    private boolean isChasing;
+    private bool isChasing;
     private int facingDirection = 1;
     private EnemyState enemyState;
 
@@ -72,7 +72,7 @@ public class NewEmptyCSharpScript : MonoBehaviour
     }
     
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerExit2D(Collider2D collision)
     {
         if (collision.gameObject.tag == "Player")
         {

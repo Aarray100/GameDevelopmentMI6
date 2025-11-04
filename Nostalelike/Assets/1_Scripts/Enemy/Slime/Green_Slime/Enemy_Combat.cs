@@ -8,8 +8,7 @@ public class Enemy_Combat : MonoBehaviour
     {
         if (collision.gameObject.tag == "Player")
         {
-            // Assuming the player has a script with a method 'TakeDamage(int amount)'
-            collision.gameObject.GetComponent<PlayerHealth>().ChangeHealth(-damage);
+            //collision.gameObject.GetComponent<PlayerHealth>().ChangeHealth(-damage);
         }
     }    void Start()
     {
