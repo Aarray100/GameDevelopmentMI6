@@ -84,6 +84,13 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     // Aktualisiert den Slot, um einen Gegenstand anzuzeigen
     public void UpdateSlot(InventorySlot slotData)
     {
+        // Null-Checks für UI-Komponenten
+        if (itemIcon == null || itemCountText == null)
+        {
+            Debug.LogWarning("UI components are null in InventorySlotUI - slot might be destroyed");
+            return;
+        }
+        
         if (slotData != null && slotData.item != null)
         {
             itemIcon.sprite = slotData.item.itemIcon;
@@ -111,10 +118,18 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     // Leert den Slot
     public void ClearSlot()
     {
-        itemIcon.sprite = null;
-        itemIcon.enabled = false;
-        itemCountText.text = "";
-        itemCountText.enabled = false;
+        // Null-Checks um Fehler bei zerstörten UI-Elementen zu vermeiden
+        if (itemIcon != null)
+        {
+            itemIcon.sprite = null;
+            itemIcon.enabled = false;
+        }
+        
+        if (itemCountText != null)
+        {
+            itemCountText.text = "";
+            itemCountText.enabled = false;
+        }
     }
 
     public void OnBeginDrag(PointerEventData eventData)
