@@ -54,6 +54,7 @@ public class CharacterManager : MonoBehaviour
 
 
     public void ConfirmSelection()
+    
     {
         // Store the selected character index in PlayerPrefs
         PlayerPrefs.SetInt("SelectedCharacterIndex", currentCharacterIndex);
