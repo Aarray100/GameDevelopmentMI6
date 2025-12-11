@@ -142,6 +142,7 @@ GameObject:
   - component: {fileID: 5481757460807396862}
   - component: {fileID: -5251270851385542731}
   - component: {fileID: 645518525903070816}
+  - component: {fileID: 3670830023860453980}
   m_Layer: 0
   m_Name: Prefab_Character_3
   m_TagString: Player
@@ -341,6 +342,18 @@ MonoBehaviour:
   damagePerLevel: 2
   defensePerLevel: 1
   criticalChancePerLevel: 0.005
+--- !u!114 &3670830023860453980
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6627490464813798607}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1135cd2c2871d6b75bfdcdd70946ea23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerCombat
 --- !u!1 &7117355210593490008
 GameObject:
   m_ObjectHideFlags: 0
@@ -355,7 +368,7 @@ GameObject:
   - component: {fileID: 9136776046421608411}
   m_Layer: 0
   m_Name: Camera
-  m_TagString: Untagged
+  m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
