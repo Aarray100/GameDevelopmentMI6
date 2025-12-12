@@ -14,6 +14,7 @@ public class Hotbar : MonoBehaviour
     [Header("References (werden automatisch gefunden)")]
     private PlayerStats playerStats;
     private PlayerInventory playerInventory;
+    private PlayerCombat playerCombat;
     
     // Events
     public event Action<int> OnSlotChanged;  // Slot wurde gewechselt
@@ -96,6 +97,19 @@ public class Hotbar : MonoBehaviour
             else
             {
                 Debug.LogWarning("Hotbar: PlayerInventory nicht gefunden! Wird später gesucht.");
+            }
+        }
+
+        if (playerCombat == null)
+        {
+            playerCombat = FindFirstObjectByType<PlayerCombat>();
+            if (playerCombat != null)
+            {
+                Debug.Log("Hotbar: PlayerCombat gefunden");
+            }
+            else
+            {
+                Debug.LogWarning("Hotbar: PlayerCombat nicht gefunden! Wird später gesucht.");
             }
         }
     }
@@ -254,7 +268,22 @@ public class Hotbar : MonoBehaviour
         {
             // Trigger Melee Attack
             Debug.Log("Melee attack with sword!");
-            // Später: playerCombat.MeleeAttack();
+            
+            // Sicherheits-Check: Wenn Referenz fehlt, versuche sie JETZT zu finden
+            if (playerCombat == null)
+            {
+                playerCombat = FindFirstObjectByType<PlayerCombat>();
+            }
+
+            if (playerCombat != null)
+            {
+                Debug.Log($"Hotbar: Found PlayerCombat on GameObject '{playerCombat.gameObject.name}'. Calling Attack...");
+                playerCombat.MeleeAttack();
+            }
+            else
+            {
+                Debug.LogError("Hotbar: CRITICAL - PlayerCombat Script not found on Player! Did you attach it?");
+            }
         }
         else if (slot.item.weaponType == WeaponType.Staff)
         {

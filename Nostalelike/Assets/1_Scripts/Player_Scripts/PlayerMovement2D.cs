@@ -97,9 +97,18 @@ public class PlayerMovement2D : MonoBehaviour
     }
     
     
+    public void FaceDirection(Vector2 direction)
+    {
+        if (Mathf.Abs(direction.x) > 0.1f)
+        {
+            lastStableHorizontal = Mathf.Sign(direction.x);
+            Flip(lastStableHorizontal);
+        }
+    }
+
     // Die NEU KORRIGIERTE Flip-Methode
- // Die Methode zum Spiegeln (flippen) des Sprites
-void Flip(float horizontalDirection)
+    // Die Methode zum Spiegeln (flippen) des Sprites
+    void Flip(float horizontalDirection)
 {
     // Die gewünschte X-Skala (entweder initialFacingDirection oder -initialFacingDirection)
     float targetScaleX = transform.localScale.x; 
