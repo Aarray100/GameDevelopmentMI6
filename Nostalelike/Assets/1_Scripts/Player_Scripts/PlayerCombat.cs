@@ -2,6 +2,15 @@ using UnityEngine;
 
 public class PlayerCombat : MonoBehaviour
 {
+    [Header("Combat Settings")]
+    public float attackRange = 1.0f;
+    public LayerMask enemyLayers; // Bitmaske für Filterung
+    public float attackDamage = 20f; // Später aus PlayerStats holen
+
+    [Header("Rate Limiter")]
+    public float attackRate = 2f; 
+    private float nextAttackTime = 0f;
+
     private Animator anim;
     private PlayerMovement2D playerMovement;
 
@@ -13,6 +22,10 @@ public class PlayerCombat : MonoBehaviour
 
     public void MeleeAttack()
     {
+        // 0. Cooldown Check (Rate Limiting)
+        if (Time.time < nextAttackTime) return;
+        nextAttackTime = Time.time + 1f / attackRate;
+
         Debug.Log("PlayerCombat: MeleeAttack called");
 
         Camera cam = Camera.main;
@@ -55,5 +68,42 @@ public class PlayerCombat : MonoBehaviour
         {
             Debug.LogError("PlayerCombat: Animator is null!");
         }
+
+        // 5. Treffererkennung (Physics Overlap)
+        DetectAndDamageEnemies(transform.position, direction);
+    }
+
+    void DetectAndDamageEnemies(Vector2 origin, Vector2 direction)
+    {
+        // Wir berechnen den Mittelpunkt des Angriffskreises
+        // Der Kreis ist um 'attackRange' in Richtung der Maus verschoben
+        Vector2 attackPoint = origin + direction * 0.5f; 
+
+        // Physics2D.OverlapCircleAll:
+        // Fragt die Physics Engine (Box2D) nach allen Collidern in diesem Radius.
+        // Nutzt intern einen Spatial Partitioning Algorithmus (Dynamic AABB Tree).
+        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint, attackRange, enemyLayers);
+
+        foreach (Collider2D enemy in hitEnemies)
+        {
+            // GetComponent: Sucht im Speicherbereich des GameObjects nach der Komponente.
+            // Das ist ein O(n) Lookup, aber bei wenigen Komponenten vernachlässigbar.
+            EnemyHealth healthScript = enemy.GetComponent<EnemyHealth>();
+            
+            if (healthScript != null)
+            {
+                healthScript.TakeDamage(attackDamage);
+            }
+        }
+    }
+
+    // Visualisierung im Editor (Gizmos)
+    void OnDrawGizmosSelected()
+    {
+        if (playerMovement == null) return;
+        
+        // Da wir im Editor keine Mausposition haben, zeichnen wir einfach einen Kreis um den Spieler
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, attackRange);
     }
 }
