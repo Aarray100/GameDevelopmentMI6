@@ -1,17 +1,15 @@
 using UnityEngine;
 
-using UnityEngine;
-
 public class BridgeTrigger : MonoBehaviour
 {
     //Trigger betreten
     private void OnTriggerEnter2D(Collider2D other)
     {
-        //Überprüfung Player betreten
+        //ï¿½berprï¿½fung Player betreten
         if (other.CompareTag("Player"))
         {
             
-            Debug.Log("Spieler betritt die Brücke. Kollision mit Wasser wird ignoriert.");
+            Debug.Log("Spieler betritt die Brï¿½cke. Kollision mit Wasser wird ignoriert.");
 
             
             Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Player"), LayerMask.NameToLayer("Water"), true);
@@ -21,11 +19,11 @@ public class BridgeTrigger : MonoBehaviour
     //Trigger verlassen
     private void OnTriggerExit2D(Collider2D other)
     {
-        //Überprüfung Player verlassen 
+        //ï¿½berprï¿½fung Player verlassen 
         if (other.CompareTag("Player"))
         {
             
-            Debug.Log("Spieler verlässt die Brücke. Kollision mit Wasser ist wieder aktiv.");
+            Debug.Log("Spieler verlï¿½sst die Brï¿½cke. Kollision mit Wasser ist wieder aktiv.");
 
             
             Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Player"), LayerMask.NameToLayer("Water"), false);

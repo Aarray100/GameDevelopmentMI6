@@ -7,28 +7,39 @@ public class EnemyHealth : MonoBehaviour
     private float currentHealth;
 
     private Animator anim;
+    
+    // Speichert die aktuelle Blickrichtung für Animationen (Up, Down, Left)
+    private Vector2 facingDirection = Vector2.down;
 
     void Start()
     {
-        // Initialisierung: Wir laden den Wert aus dem RAM in den Cache
         currentHealth = maxHealth;
         anim = GetComponent<Animator>();
     }
 
+    /// <summary>
+    /// Wird vom Movement-Script aufgerufen, um die Blickrichtung zu aktualisieren.
+    /// </summary>
+    public void SetFacingDirection(Vector2 direction)
+    {
+        if (direction != Vector2.zero)
+        {
+            facingDirection = direction.normalized;
+        }
+    }
+
     public void TakeDamage(float damage)
     {
-        // Subtraktion auf der ALU (Arithmetic Logic Unit)
         currentHealth -= damage;
 
-        // Animation Trigger setzen
         if (anim != null)
         {
+            SetAnimationDirection();
             anim.SetTrigger("Hurt");
         }
 
         Debug.Log($"{gameObject.name} took {damage} damage. Current HP: {currentHealth}");
 
-        // Branch Prediction: Die CPU versucht zu raten, ob dieser Block ausgeführt wird
         if (currentHealth <= 0)
         {
             Die();
@@ -39,10 +50,27 @@ public class EnemyHealth : MonoBehaviour
     {
         Debug.Log($"{gameObject.name} died!");
         
-        // Animation Trigger könnte hier hin
-        // Loot Drop Logik könnte hier hin
-
-        // Markiert das Objekt für den Garbage Collector bzw. entfernt es aus der Szenen-Hierarchie
-        Destroy(gameObject);
+        if (anim != null)
+        {
+            SetAnimationDirection();
+            anim.SetTrigger("Death");
+        }
+        
+        // Deaktiviere Kollision sofort, damit der Gegner nicht mehr getroffen werden kann
+        GetComponent<Collider2D>().enabled = false;
+        
+        // Warte auf Death-Animation, dann zerstöre das Objekt
+        Destroy(gameObject, 1f);
+    }
+    
+    /// <summary>
+    /// Setzt die Animator-Parameter für Richtungs-Animationen.
+    /// Blend Tree nutzt 4 Animationen (Down, Up, Left für links, Left nochmal für rechts).
+    /// </summary>
+    private void SetAnimationDirection()
+    {
+        // Direkte Übergabe der Richtung an den Blend Tree
+        anim.SetFloat("FaceX", facingDirection.x);
+        anim.SetFloat("FaceY", facingDirection.y);
     }
 }
