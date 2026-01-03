@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
 
-public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler
+public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler, IPointerClickHandler
 {
     [Header("UI References")]
     public Image itemIcon;
@@ -306,5 +306,28 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         playerInventory.UpdateUISlots();
     }
     
+    public void OnPointerClick(PointerEventData eventData)
+{
+    // Wir prüfen auf Linksklick (PointerId -1 ist meistens links)
+    if (eventData.button == PointerEventData.InputButton.Left)
+    {
+        // Sicherstellen, dass ein Item im Slot liegt
+        InventorySlot slot = playerInventory.inventory.slots[slotIndex];
+
+        if (slot != null && slot.item != null)
+        {
+            // PRÜFUNG: Ist das Item ein Buch?
+            if (slot.item is BookData book)
+            {
+                Debug.Log("Buch wird geöffnet: " + book.bookTitle);
+                BookUIManager.Instance.OpenBook(book);
+            }
+            else
+            {
+                Debug.Log("Dies ist ein normales Item: " + slot.item.itemName);
+            }
+        }
+    }
+}
     
 }

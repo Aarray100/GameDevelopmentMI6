@@ -18,7 +18,8 @@ public enum ItemType
     Currency,
     Tool,
     Weapon,
-    Accessory
+    Accessory,
+    Book
 }
 public enum EquipmentSlot
 {
