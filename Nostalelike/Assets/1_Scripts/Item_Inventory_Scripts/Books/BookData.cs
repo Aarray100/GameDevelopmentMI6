@@ -1,16 +1,13 @@
+using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "NewBook", menuName = "Inventory/Items/Book")]
-public class BookData : ItemData 
+[CreateAssetMenu(menuName = "Items/Book", fileName = "Book_")]
+public class BookData : ScriptableObject
 {
-    [Header("Story Content")]
-    public string bookTitle;
-    [TextArea(15, 20)] // Makes the text box big in the Inspector
-    public string storyContent;
+    public string bookId;          // z.B. "book_intro_01"
+    public string title;
+    public Sprite icon;
 
-    private void OnValidate()
-    {
-        itemType = ItemType.Book; // Ensure you added 'Book' to your ItemType Enum
-        isStackable = false;
-    }
+    [TextArea(3, 10)]
+    public List<string> pages = new();
 }

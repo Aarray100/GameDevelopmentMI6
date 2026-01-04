@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
 
-public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler, IPointerClickHandler
+public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
     [Header("UI References")]
     public Image itemIcon;
@@ -13,6 +13,7 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     // Drag-and-Drop
     public PlayerInventory playerInventory;
     public int slotIndex;
+    private bool isHovering = false;
     private CanvasGroup canvasGroup;
 
     private static InventorySlotUI currentlyDraggedSlot;
@@ -326,6 +327,33 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             {
                 Debug.Log("Dies ist ein normales Item: " + slot.item.itemName);
             }
+        }
+    }
+
+
+}
+
+// Wird aufgerufen, wenn die Maus über den Slot fährt
+public void OnPointerEnter(PointerEventData eventData)
+{
+    isHovering = true;
+}
+
+// Wird aufgerufen, wenn die Maus den Slot verlässt
+public void OnPointerExit(PointerEventData eventData)
+{
+    isHovering = false;
+}
+
+void Update()
+{
+    // Wenn die Maus drüber ist UND E gedrückt wird
+    if (isHovering && Input.GetKeyDown(KeyCode.E))
+    {
+        InventorySlot slot = playerInventory.inventory.slots[slotIndex];
+        if (slot != null && slot.item != null && slot.item is BookData book)
+        {
+            BookUIManager.Instance.OpenBook(book);
         }
     }
 }

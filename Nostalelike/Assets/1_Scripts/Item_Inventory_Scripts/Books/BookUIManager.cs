@@ -20,16 +20,25 @@ public class BookUIManager : MonoBehaviour
     }
 
     public void OpenBook(BookData book)
-    {
-        if (bookPanel == null) return;
-
-        titleText.text = book.bookTitle;
-        contentText.text = book.storyContent;
-        bookPanel.SetActive(true);
-
-        // Optional: Spiel pausieren
-        // Time.timeScale = 0f; 
+{
+    // 1. Check: Ist das UI-Fenster überhaupt da?
+    if (bookPanel == null) {
+        Debug.LogError("BookUIManager: bookPanel ist nicht im Inspector zugewiesen!");
+        return;
     }
+
+    // 2. Check: Sind die Textfelder zugewiesen?
+    if (titleText == null || contentText == null) {
+        Debug.LogError("BookUIManager: Textfelder sind nicht im Inspector zugewiesen!");
+        return;
+    }
+
+    // 3. Daten zuweisen
+    titleText.text = book.bookTitle;
+    contentText.text = book.storyContent; // Stelle sicher, dass das in BookData.cs so heißt!
+    
+    bookPanel.SetActive(true);
+}
 
     public void CloseBook()
     {
