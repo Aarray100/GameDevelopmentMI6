@@ -6,6 +6,10 @@ public class EnemyHealth : MonoBehaviour
     public float maxHealth = 100f;
     private float currentHealth;
 
+    [Header("Debug - Zum Testen!")]
+    public bool debugTakeDamage = false;  // Im Inspector anklicken = 20 Schaden
+    public bool debugKill = false;         // Im Inspector anklicken = Sofort töten
+
     private Animator anim;
     
     // Speichert die aktuelle Blickrichtung für Animationen (Up, Down, Left)
@@ -15,6 +19,21 @@ public class EnemyHealth : MonoBehaviour
     {
         currentHealth = maxHealth;
         anim = GetComponent<Animator>();
+    }
+
+    void Update()
+    {
+        // DEBUG: Im Play-Mode im Inspector anklicken zum Testen!
+        if (debugTakeDamage)
+        {
+            debugTakeDamage = false;
+            TakeDamage(20f);
+        }
+        if (debugKill)
+        {
+            debugKill = false;
+            TakeDamage(currentHealth + 10f);
+        }
     }
 
     /// <summary>
@@ -35,10 +54,12 @@ public class EnemyHealth : MonoBehaviour
         if (anim != null)
         {
             SetAnimationDirection();
+            // Reset trigger first to avoid stuck animations
+            anim.ResetTrigger("Hurt");
             anim.SetTrigger("Hurt");
         }
 
-        Debug.Log($"{gameObject.name} took {damage} damage. Current HP: {currentHealth}");
+        Debug.Log($"<color=red>{gameObject.name} took {damage} damage. Current HP: {currentHealth}</color>");
 
         if (currentHealth <= 0)
         {

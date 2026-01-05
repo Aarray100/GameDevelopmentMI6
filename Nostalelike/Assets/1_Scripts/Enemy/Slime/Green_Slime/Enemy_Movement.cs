@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class Enemy_Movement : MonoBehaviour
 {
@@ -7,15 +8,23 @@ public class Enemy_Movement : MonoBehaviour
     
     [Header("Detection")]
     public float detectionRange = 5f;   // Reichweite um Spieler zu entdecken
-    public float attackRange = 1f;       // Reichweite für Angriff
+    public float attackRange = 1.5f;    // Reichweite für Angriffs-ENTSCHEIDUNG (größer)
+    public float attackHitRange = 1.2f; // Reichweite für tatsächlichen TREFFER (kleiner)
     
     [Header("Combat")]
     public float attackCooldown = 1.5f;  // Zeit zwischen Angriffen
     public float attackDamage = 10f;
+    public float attackWindupTime = 0.4f; // Zeit bevor der Schlag trifft (Ausweichen möglich!)
+    
+    [Header("Visuals")]
+    public Transform visualsTransform;   // Das Sprite/Animator-Objekt zum Flippen
     
     private EnemyState enemyState;
     private float nextAttackTime = 0f;
     private Vector2 lastDirection = Vector2.down;
+    private float initialFacingDirection = 1f;
+    private float lastStableHorizontal = 1f;
+    private bool isAttacking = false;    // Verhindert Spam während Attack-Animation
 
     private Rigidbody2D rb;
     private Transform player;
@@ -27,6 +36,25 @@ public class Enemy_Movement : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         enemyHealth = GetComponent<EnemyHealth>();
+        
+        // Visuals Transform automatisch finden falls nicht zugewiesen
+        if (visualsTransform == null)
+        {
+            // Versuche SpriteRenderer zu finden
+            SpriteRenderer sr = GetComponentInChildren<SpriteRenderer>();
+            if (sr != null)
+            {
+                visualsTransform = sr.transform;
+            }
+            else
+            {
+                visualsTransform = transform; // Fallback auf eigenes Transform
+            }
+        }
+        
+        // Initiale Blickrichtung speichern
+        initialFacingDirection = Mathf.Abs(visualsTransform.localScale.x);
+        lastStableHorizontal = initialFacingDirection;
         
         // Spieler-Referenz holen
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
@@ -99,6 +127,13 @@ public class Enemy_Movement : MonoBehaviour
             enemyHealth.SetFacingDirection(direction);
         }
         
+        // Sprite flippen basierend auf horizontaler Richtung
+        if (Mathf.Abs(direction.x) > 0.1f)
+        {
+            lastStableHorizontal = Mathf.Sign(direction.x);
+            Flip(lastStableHorizontal);
+        }
+        
         // Animator Parameter setzen für Blend Tree
         UpdateAnimatorDirection(direction);
     }
@@ -107,8 +142,11 @@ public class Enemy_Movement : MonoBehaviour
     {
         rb.linearVelocity = Vector2.zero;
         
+        // Während eines Angriffs nicht unterbrechen
+        if (isAttacking) return;
+        
         // Spieler zu weit weg? Zurück zum Verfolgen
-        if (distanceToPlayer > attackRange * 1.5f)
+        if (distanceToPlayer > attackRange * 2f)
         {
             ChangeState(EnemyState.Chasing);
             return;
@@ -117,31 +155,96 @@ public class Enemy_Movement : MonoBehaviour
         // Angriff ausführen wenn Cooldown abgelaufen
         if (Time.time >= nextAttackTime)
         {
-            Attack();
+            StartCoroutine(AttackWithWindup());
             nextAttackTime = Time.time + attackCooldown;
         }
     }
     
-    void Attack()
+    /// <summary>
+    /// Angriff mit Wind-up Zeit - Spieler kann ausweichen!
+    /// </summary>
+    IEnumerator AttackWithWindup()
     {
+        isAttacking = true;
+        
+        // Animation starten
         anim.SetTrigger("Attack");
         
-        // Schaden am Spieler (wird durch Animation Event oder direkt aufgerufen)
-        PlayerStats playerStats = player.GetComponent<PlayerStats>();
-        if (playerStats != null)
+        Debug.Log($"{gameObject.name} beginnt Angriff! (Wind-up: {attackWindupTime}s)");
+        
+        // Wind-up Zeit - Spieler kann noch ausweichen!
+        yield return new WaitForSeconds(attackWindupTime);
+        
+        // JETZT prüfen ob Spieler noch in Reichweite ist
+        if (player != null)
         {
-            playerStats.TakeDamage(attackDamage);
+            float currentDistance = Vector2.Distance(transform.position, player.position);
+        
+            if (currentDistance <= attackHitRange)
+            {
+                // TREFFER! Spieler ist noch in Range
+                PlayerStats playerStats = player.GetComponent<PlayerStats>();
+                if (playerStats != null)
+                {
+                    playerStats.TakeDamage(attackDamage);
+                    Debug.Log($"{gameObject.name} TRIFFT für {attackDamage} Schaden!");
+                }
+            }
+            else
+            {
+                // VERFEHLT! Spieler ist ausgewichen
+                Debug.Log($"{gameObject.name} hat VERFEHLT! Spieler ist ausgewichen.");
+            }
         }
         
-        Debug.Log($"{gameObject.name} attacked player for {attackDamage} damage!");
+        // Kurz warten bis Animation fertig ist
+        yield return new WaitForSeconds(0.3f);
+        
+        isAttacking = false;
+        
+        // Nach Angriff: Prüfen ob wir weiter angreifen oder verfolgen sollen
+        if (player != null)
+        {
+            float dist = Vector2.Distance(transform.position, player.position);
+            if (dist > attackRange)
+            {
+                ChangeState(EnemyState.Chasing);
+            }
+        }
     }
     
     void UpdateAnimatorDirection(Vector2 direction)
     {
         // Für Blend Tree mit 4 Animationen (Down, Up, Left, Right)
-        // Left-Animation wird für Right wiederverwendet (mit PosX = 1)
+        // Left-Animation wird für Right wiederverwendet (mit Sprite Flip)
         anim.SetFloat("FaceX", direction.x);
         anim.SetFloat("FaceY", direction.y);
+    }
+    
+    /// <summary>
+    /// Flippt das Sprite horizontal basierend auf der Bewegungsrichtung.
+    /// Gleiche Logik wie beim Player für Konsistenz.
+    /// </summary>
+    void Flip(float horizontalDirection)
+    {
+        if (visualsTransform == null) return;
+
+        float targetScaleX = visualsTransform.localScale.x;
+
+        // INVERTIERT: Slime-Sprite schaut standardmäßig nach links
+        if (horizontalDirection > 0) 
+            targetScaleX = -Mathf.Abs(initialFacingDirection); // Rechts = negative Scale (geflippt)
+        else if (horizontalDirection < 0) 
+            targetScaleX = Mathf.Abs(initialFacingDirection);  // Links = positive Scale (normal)
+
+        if (visualsTransform.localScale.x != targetScaleX)
+        {
+            visualsTransform.localScale = new Vector3(
+                targetScaleX, 
+                visualsTransform.localScale.y, 
+                visualsTransform.localScale.z
+            );
+        }
     }
     
     void ChangeState(EnemyState newState)
