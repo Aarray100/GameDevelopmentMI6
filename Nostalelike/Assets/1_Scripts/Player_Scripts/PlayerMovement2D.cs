@@ -1,140 +1,84 @@
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
+[RequireComponent(typeof(Rigidbody2D))]
 public class PlayerMovement2D : MonoBehaviour
 {
-    [Header("Movement Settings")]
+    [Header("Geschwindigkeit")]
     public float walkSpeed = 3.5f;
-    public float runSpeed = 6.5f;
-    [Range(0.1f, 1f)] public float mudSpeedMultiplier = 0.5f; 
+    public float runSpeed = 6.0f;
+    [Range(0.1f, 1f)] public float mudSpeedMultiplier = 0.4f;
 
-    [Header("Detection")]
-    public Tilemap groundTilemap; 
-    public string mudTileNamePart = "Matsch"; 
+    [Header("Fuß-Sensor")]
+    public Vector3 footOffset = new Vector3(0, -0.7f, 0); 
+    public float sensorRadius = 0.15f;
 
-    [Header("References")]
+    [Header("Referenzen")]
     public Animator anim;
-    public Transform visualsTransform;
+    public Transform visuals;
 
     private Rigidbody2D rb;
     private float currentSpeed;
-    private Vector2 lastMoveDirection = new Vector2(0, -1);
-    private float initialFacingDirection = 1f;
-    private float lastStableHorizontal = 1f;
-    private Vector2 movementVector = Vector2.zero;
+    private float initialScaleX;
 
-    void Start()
-    {
+    void Start() {
         rb = GetComponent<Rigidbody2D>();
-        anim = GetComponentInChildren<Animator>();
+        // Top-Down Einstellungen erzwingen
+        rb.gravityScale = 0; 
+        rb.freezeRotation = true;
 
-        if (visualsTransform == null)
-        {
-            visualsTransform = transform.GetComponentInChildren<Animator>().transform;
-        }
-
-        // --- AUTOMATISCHE SUCHE FÜR MULTI-SCENES ---
-        // Wenn im Inspector nichts zugewiesen ist, suchen wir zuerst nach einem Objekt namens "Mud"
-        if (groundTilemap == null)
-        {
-            GameObject mudObj = GameObject.Find("Mud");
-            if (mudObj != null) groundTilemap = mudObj.GetComponent<Tilemap>();
-            
-            // Falls es kein Objekt "Mud" gibt, nehmen wir die erste Tilemap, die wir finden
-            if (groundTilemap == null) groundTilemap = Object.FindFirstObjectByType<Tilemap>();
-        }
-
-        initialFacingDirection = Mathf.Abs(visualsTransform.localScale.x);
-        lastStableHorizontal = initialFacingDirection;
-        currentSpeed = walkSpeed;
+        if (anim == null) anim = GetComponentInChildren<Animator>();
+        if (visuals == null) visuals = transform;
+        initialScaleX = Mathf.Abs(visuals.localScale.x);
     }
 
-    void Update()
-    {
-        float moveHorizontal = Input.GetAxis("Horizontal");
-        float moveVertical = Input.GetAxis("Vertical");
-        movementVector = new Vector2(moveHorizontal, moveVertical);
+    void Update() {
+        float x = Input.GetAxisRaw("Horizontal");
+        float y = Input.GetAxisRaw("Vertical");
+        Vector2 dir = new Vector2(x, y).normalized;
 
-        if (movementVector.magnitude > 1)
-        {
-            movementVector = movementVector.normalized;
+        bool isMoving = dir.magnitude > 0.1f;
+        bool isRunning = (Input.GetKey(KeyCode.LeftShift)) && isMoving;
+
+        // MATSCH-LOGIK: Prüfen, ob das Objekt unter den Füßen die "Mud"-Komponente hat
+        bool onMud = CheckFootSensor();
+
+        float baseSpeed = isRunning ? runSpeed : walkSpeed;
+        currentSpeed = onMud ? baseSpeed * mudSpeedMultiplier : baseSpeed;
+
+        rb.linearVelocity = dir * currentSpeed;
+
+        // Animationen & Flip
+        if (anim != null) {
+            anim.SetBool("isMoving", isMoving);
+            anim.SetFloat("horizontal", Mathf.Abs(x));
+            anim.SetFloat("vertical", y);
         }
+        if (x != 0) visuals.localScale = new Vector3(Mathf.Sign(x) * initialScaleX, visuals.localScale.y, visuals.localScale.z);
+    }
 
-        bool isShiftPressed = (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift));
-        bool isMoving = (Input.GetAxisRaw("Horizontal") != 0 || Input.GetAxisRaw("Vertical") != 0);
-
-        // --- MATSCH LOGIK ---
-        float targetBaseSpeed = (isShiftPressed && isMoving) ? runSpeed : walkSpeed;
+    private bool CheckFootSensor() {
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position + footOffset, sensorRadius);
         
-        if (IsOnMud())
-        {
-            currentSpeed = targetBaseSpeed * mudSpeedMultiplier;
+        Debug.Log($"Sensor findet {hits.Length} Collider"); // DEBUG
+        
+        foreach (Collider2D hit in hits) {
+            if (hit.transform == transform || hit.transform.IsChildOf(transform)) continue;
+            
+            Debug.Log($"Gefunden: {hit.gameObject.name}, Hat Mud: {hit.GetComponent<Mud>() != null}"); // DEBUG
+            
+            if (hit.GetComponent<Mud>() != null) return true;
         }
-        else
-        {
-            currentSpeed = targetBaseSpeed;
-        }
-
-        anim.SetBool("isRunning", isShiftPressed && isMoving);
-
-        if (isMoving)
-        {
-            if (Mathf.Abs(moveHorizontal) > Mathf.Abs(moveVertical))
-            {
-                lastStableHorizontal = Mathf.Sign(moveHorizontal);
-                lastMoveDirection.y = 0;
-            }
-            else
-            {
-                lastMoveDirection.y = Mathf.Sign(moveVertical);
-            }
-        }
-
-        Flip(lastStableHorizontal);
-        anim.SetFloat("horizontal", Mathf.Abs(moveHorizontal));
-        anim.SetFloat("vertical", moveVertical);
-        anim.SetFloat("LastMoveY", lastMoveDirection.y);
-        anim.SetBool("isMoving", isMoving);
+        return false;
     }
 
-    private void FixedUpdate()
-    {
-        rb.linearVelocity = movementVector * currentSpeed;
+    // Damit dein Combat-Script nicht meckert
+    public void FaceDirection(Vector2 direction) {
+        if (Mathf.Abs(direction.x) > 0.1f) 
+            visuals.localScale = new Vector3(Mathf.Sign(direction.x) * initialScaleX, visuals.localScale.y, visuals.localScale.z);
     }
 
-    // --- MATSCH PRÜFUNG ---
-    private bool IsOnMud()
-    {
-        if (groundTilemap == null) return false;
-
-        Vector3Int cellPosition = groundTilemap.WorldToCell(transform.position);
-        TileBase currentTile = groundTilemap.GetTile(cellPosition);
-
-        return currentTile != null && currentTile.name.Contains(mudTileNamePart);
-    }
-
-    // --- DIESE FUNKTION IST WICHTIG FÜR PlayerCombat ---
-    public void FaceDirection(Vector2 direction)
-    {
-        if (Mathf.Abs(direction.x) > 0.1f)
-        {
-            lastStableHorizontal = Mathf.Sign(direction.x);
-            Flip(lastStableHorizontal);
-        }
-    }
-
-    void Flip(float horizontalDirection)
-    {
-        if (visualsTransform == null) return;
-
-        float targetScaleX = visualsTransform.localScale.x;
-
-        if (horizontalDirection > 0) targetScaleX = Mathf.Abs(initialFacingDirection);
-        else if (horizontalDirection < 0) targetScaleX = -Mathf.Abs(initialFacingDirection);
-
-        if (visualsTransform.localScale.x != targetScaleX)
-        {
-            visualsTransform.localScale = new Vector3(targetScaleX, visualsTransform.localScale.y, visualsTransform.localScale.z);
-        }
+    private void OnDrawGizmosSelected() {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position + footOffset, sensorRadius);
     }
 }
