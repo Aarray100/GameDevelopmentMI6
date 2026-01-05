@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 6173184640512335883}
   - component: {fileID: 3640932323263258614}
   - component: {fileID: 4082221159162644116}
+  - component: {fileID: -5608270500329442374}
   m_Layer: 0
   m_Name: Prefab_Character_0
   m_TagString: Player
@@ -119,8 +120,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement2D
   walkSpeed: 3.5
   runSpeed: 6
+  mudSpeedMultiplier: 0.4
+  footOffset: {x: 0, y: -0.7, z: 0}
+  sensorRadius: 0.15
   anim: {fileID: 3122313092554256911}
-  visualsTransform: {fileID: 30274362231862778}
+  visuals: {fileID: 0}
+  movementLocked: 0
 --- !u!114 &8885537461081641452
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -228,6 +233,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1135cd2c2871d6b75bfdcdd70946ea23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCombat
+--- !u!114 &-5608270500329442374
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 183428855668308988}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5175e2f243cd389d2b305a89f817274b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::JournalOverlay
+  panel: {fileID: 0}
+  movement: {fileID: 0}
 --- !u!1 &5731777635977914205
 GameObject:
   m_ObjectHideFlags: 0

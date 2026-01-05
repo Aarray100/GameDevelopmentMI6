@@ -309,29 +309,15 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     
     public void OnPointerClick(PointerEventData eventData)
 {
-    // Wir prüfen auf Linksklick (PointerId -1 ist meistens links)
-    if (eventData.button == PointerEventData.InputButton.Left)
-    {
-        // Sicherstellen, dass ein Item im Slot liegt
-        InventorySlot slot = playerInventory.inventory.slots[slotIndex];
+    if (eventData.button != PointerEventData.InputButton.Left) return;
 
-        if (slot != null && slot.item != null)
-        {
-            // PRÜFUNG: Ist das Item ein Buch?
-            if (slot.item is BookData book)
-            {
-                Debug.Log("Buch wird geöffnet: " + book.bookTitle);
-                BookUIManager.Instance.OpenBook(book);
-            }
-            else
-            {
-                Debug.Log("Dies ist ein normales Item: " + slot.item.itemName);
-            }
-        }
-    }
+    InventorySlot slot = playerInventory.inventory.slots[slotIndex];
+    if (slot == null || slot.item == null) return;
 
-
+    if (slot.item is BookData book)
+        BookUIManager.Instance.OpenBook(book);
 }
+
 
 // Wird aufgerufen, wenn die Maus über den Slot fährt
 public void OnPointerEnter(PointerEventData eventData)

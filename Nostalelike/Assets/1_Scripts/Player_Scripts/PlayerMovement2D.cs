@@ -19,6 +19,7 @@ public class PlayerMovement2D : MonoBehaviour
     private Rigidbody2D rb;
     private float currentSpeed;
     private float initialScaleX;
+    public bool movementLocked;
 
     void Start() {
         rb = GetComponent<Rigidbody2D>();
@@ -31,30 +32,36 @@ public class PlayerMovement2D : MonoBehaviour
         initialScaleX = Mathf.Abs(visuals.localScale.x);
     }
 
-    void Update() {
-        float x = Input.GetAxisRaw("Horizontal");
-        float y = Input.GetAxisRaw("Vertical");
-        Vector2 dir = new Vector2(x, y).normalized;
+    void Update()
+{
+    if (movementLocked)
+{
+    rb.linearVelocity = Vector2.zero;
+    if (anim != null) anim.SetBool("isMoving", false);
+    return;
+}
 
-        bool isMoving = dir.magnitude > 0.1f;
-        bool isRunning = (Input.GetKey(KeyCode.LeftShift)) && isMoving;
 
-        // MATSCH-LOGIK: Prüfen, ob das Objekt unter den Füßen die "Mud"-Komponente hat
-        bool onMud = CheckFootSensor();
+    float x = Input.GetAxisRaw("Horizontal");
+    float y = Input.GetAxisRaw("Vertical");
+    Vector2 dir = new Vector2(x, y).normalized;
 
-        float baseSpeed = isRunning ? runSpeed : walkSpeed;
-        currentSpeed = onMud ? baseSpeed * mudSpeedMultiplier : baseSpeed;
+    bool isMoving = dir.magnitude > 0.1f;
+    bool isRunning = (Input.GetKey(KeyCode.LeftShift)) && isMoving;
 
-        rb.linearVelocity = dir * currentSpeed;
+    bool onMud = CheckFootSensor();
+    float baseSpeed = isRunning ? runSpeed : walkSpeed;
+    currentSpeed = onMud ? baseSpeed * mudSpeedMultiplier : baseSpeed;
 
-        // Animationen & Flip
-        if (anim != null) {
-            anim.SetBool("isMoving", isMoving);
-            anim.SetFloat("horizontal", Mathf.Abs(x));
-            anim.SetFloat("vertical", y);
-        }
-        if (x != 0) visuals.localScale = new Vector3(Mathf.Sign(x) * initialScaleX, visuals.localScale.y, visuals.localScale.z);
+    rb.linearVelocity = dir * currentSpeed;
+
+    if (anim != null) {
+        anim.SetBool("isMoving", isMoving);
+        anim.SetFloat("horizontal", Mathf.Abs(x));
+        anim.SetFloat("vertical", y);
     }
+    if (x != 0) visuals.localScale = new Vector3(Mathf.Sign(x) * initialScaleX, visuals.localScale.y, visuals.localScale.z);
+}
 
     private bool CheckFootSensor() {
         Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position + footOffset, sensorRadius);
@@ -81,4 +88,11 @@ public class PlayerMovement2D : MonoBehaviour
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position + footOffset, sensorRadius);
     }
+
+public void ForceStop()
+{
+    if (rb != null) rb.linearVelocity = Vector2.zero;
+}
+
+
 }
