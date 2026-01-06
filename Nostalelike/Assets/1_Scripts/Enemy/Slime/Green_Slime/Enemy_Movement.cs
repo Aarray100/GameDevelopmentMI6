@@ -45,10 +45,12 @@ public class Enemy_Movement : MonoBehaviour
             if (sr != null)
             {
                 visualsTransform = sr.transform;
+                Debug.Log($"{gameObject.name}: visualsTransform automatisch gefunden: {sr.gameObject.name}");
             }
             else
             {
                 visualsTransform = transform; // Fallback auf eigenes Transform
+                Debug.LogWarning($"{gameObject.name}: Kein SpriteRenderer gefunden, nutze eigenes Transform als Fallback!");
             }
         }
         
@@ -57,18 +59,35 @@ public class Enemy_Movement : MonoBehaviour
         lastStableHorizontal = initialFacingDirection;
         
         // Spieler-Referenz holen
+        TryFindPlayer();
+        
+        ChangeState(EnemyState.Idle);
+    }
+    
+    /// <summary>
+    /// Versucht den Player zu finden. Wird in Start() und Update() aufgerufen,
+    /// falls der Player erst später gespawnt wird.
+    /// </summary>
+    void TryFindPlayer()
+    {
+        if (player != null) return; // Bereits gefunden
+        
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
         if (playerObj != null)
         {
             player = playerObj.transform;
+            Debug.Log($"{gameObject.name}: Player gefunden: {playerObj.name}");
         }
-        
-        ChangeState(EnemyState.Idle);
     }
 
     void Update()
     {
-        if (player == null) return;
+        // Falls Player noch nicht gefunden, weiter suchen
+        if (player == null)
+        {
+            TryFindPlayer();
+            return; // Warte bis Player gefunden
+        }
         
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);
         
