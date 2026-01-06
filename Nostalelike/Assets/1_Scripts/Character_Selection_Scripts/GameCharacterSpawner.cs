@@ -97,6 +97,23 @@ public class GameCharacterSpawner : MonoBehaviour
         {
             GameObject characterInstance = Instantiate(characterToSpawn.characterPrefab, spawnPoint.position, spawnPoint.rotation);
             Debug.Log("Spawned Character: " + selectedCharacterIndex);
+            
+            // WICHTIG: Layer auf "Player" setzen (für Physics2D Collision Matrix)
+            int playerLayer = LayerMask.NameToLayer("Player");
+            if (playerLayer != -1)
+            {
+                characterInstance.layer = playerLayer;
+                // Auch alle Child-Objekte auf den Player-Layer setzen
+                foreach (Transform child in characterInstance.GetComponentsInChildren<Transform>(true))
+                {
+                    child.gameObject.layer = playerLayer;
+                }
+                Debug.Log("Character Layer set to: Player");
+            }
+            else
+            {
+                Debug.LogWarning("Layer 'Player' not found! Please create it in Tags and Layers.");
+            }
 
             PlayerInventory playerInventory = characterInstance.GetComponent<PlayerInventory>();
             PlayerEquipment playerEquipment = characterInstance.GetComponent<PlayerEquipment>();

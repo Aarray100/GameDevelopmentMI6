@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2028336214400535338}
   - component: {fileID: 5330989074998959478}
   - component: {fileID: 616903729556572748}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Visuals
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -102,7 +102,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 5
+  m_SortingOrder: 6
   m_Sprite: {fileID: 4723107735738678597, guid: 61363a0f661d5e26187c9ea85d7040d4, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -143,8 +143,7 @@ GameObject:
   - component: {fileID: -5251270851385542731}
   - component: {fileID: 645518525903070816}
   - component: {fileID: 3670830023860453980}
-  - component: {fileID: 4207589793058974718}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Prefab_Character_3
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -251,7 +250,6 @@ MonoBehaviour:
   sensorRadius: 0.15
   anim: {fileID: 2028336214400535338}
   visuals: {fileID: 0}
-  movementLocked: 0
 --- !u!114 &8305257435922819359
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -366,21 +364,6 @@ MonoBehaviour:
     m_Bits: 128
   attackDamage: 20
   attackRate: 2
---- !u!114 &4207589793058974718
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6627490464813798607}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5175e2f243cd389d2b305a89f817274b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::JournalOverlay
-  journalCanvasPrefab: {fileID: 3840265824916444147, guid: 06229a07f1b8dac6ea0a0fa9e266d457, type: 3}
-  panelName: JournalRoot
-  movement: {fileID: 0}
 --- !u!1 &7117355210593490008
 GameObject:
   m_ObjectHideFlags: 0
@@ -393,7 +376,7 @@ GameObject:
   - component: {fileID: 4164603074541463195}
   - component: {fileID: 5120652899860379285}
   - component: {fileID: 9136776046421608411}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
