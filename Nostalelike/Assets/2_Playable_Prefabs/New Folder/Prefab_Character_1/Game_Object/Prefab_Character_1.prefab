@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5025242010153485182}
   - component: {fileID: 4544666066658708544}
   - component: {fileID: 5877320536080227548}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
@@ -149,7 +149,7 @@ GameObject:
   - component: {fileID: 7922526696125178688}
   - component: {fileID: 3533204307574623890}
   - component: {fileID: 7571033037897696558}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Visuals
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -239,7 +239,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 5
+  m_SortingOrder: 6
   m_Sprite: {fileID: 4723107735738678597, guid: 133221cb0da6ea26dabdf0fff299aed1, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -280,7 +280,7 @@ GameObject:
   - component: {fileID: -7881059819434155054}
   - component: {fileID: -6881245915184006642}
   - component: {fileID: -4128209418525308761}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Prefab_Character_1
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -382,8 +382,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement2D
   walkSpeed: 3.5
   runSpeed: 6
+  mudSpeedMultiplier: 0.5
+  footOffset: {x: 0, y: -0.7, z: 0}
+  sensorRadius: 0.15
   anim: {fileID: 7922526696125178688}
-  visualsTransform: {fileID: 3261535659778258215}
+  visuals: {fileID: 0}
 --- !u!114 &3744921628979041614
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -491,3 +494,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1135cd2c2871d6b75bfdcdd70946ea23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCombat
+  attackRange: 1
+  attackAngle: 90
+  enemyLayers:
+    serializedVersion: 2
+    m_Bits: 128
+  attackDamage: 20
+  attackRate: 2

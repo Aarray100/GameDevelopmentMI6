@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
 
-public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler, IPointerClickHandler
+public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
     [Header("UI References")]
     public Image itemIcon;
@@ -13,31 +13,39 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     [Header("Inventory References")]
     public PlayerInventory playerInventory;
     public int slotIndex;
+    private bool isHovering = false;
     private CanvasGroup canvasGroup;
 
     private static InventorySlotUI currentlyDraggedSlot;
     private static GameObject currentlyDraggedIcon;
     private static Canvas mainCanvas;
 
-    // --- GEGENSTAND BENUTZEN (TRÄNKE) ---
+    // --- GEGENSTAND BENUTZEN (TRÄNKE UND BÜCHER) ---
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (eventData.button == PointerEventData.InputButton.Left)
+        if (eventData.button != PointerEventData.InputButton.Left) return;
+        if (currentlyDraggedSlot != null) return;
+
+        InventorySlot currentSlot = playerInventory.inventory.slots[slotIndex];
+        if (currentSlot == null || currentSlot.item == null) return;
+
+        // Bücher öffnen
+        if (currentSlot.item is BookData book)
         {
-            if (currentlyDraggedSlot != null) return;
+            BookUIManager.Instance.OpenBook(book);
+            return;
+        }
 
-            InventorySlot currentSlot = playerInventory.inventory.slots[slotIndex];
-
-            if (currentSlot != null && currentSlot.item != null && currentSlot.item.itemType == ItemType.Consumable)
+        // Tränke benutzen
+        if (currentSlot.item.itemType == ItemType.Consumable)
+        {
+            PlayerStats stats = playerInventory.GetComponent<PlayerStats>();
+            if (stats != null)
             {
-                PlayerStats stats = playerInventory.GetComponent<PlayerStats>();
-                if (stats != null)
-                {
-                    stats.UsePotion(currentSlot.item);
-                    playerInventory.inventory.RemoveItem(currentSlot.item, 1);
-                    playerInventory.UpdateUISlots();
-                    Debug.Log($"Trank benutzt: {currentSlot.item.itemName}");
-                }
+                stats.UsePotion(currentSlot.item);
+                playerInventory.inventory.RemoveItem(currentSlot.item, 1);
+                playerInventory.UpdateUISlots();
+                Debug.Log($"Trank benutzt: {currentSlot.item.itemName}");
             }
         }
     }
@@ -171,4 +179,29 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         canvasGroup.blocksRaycasts = true;
         playerInventory.UpdateUISlots();
     }
-} // <--- Diese Klammer hat wahrscheinlich gefehlt!
+
+    // Wird aufgerufen, wenn die Maus über den Slot fährt
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        isHovering = true;
+    }
+
+    // Wird aufgerufen, wenn die Maus den Slot verlässt
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        isHovering = false;
+    }
+
+    void Update()
+    {
+        // Wenn die Maus drüber ist UND E gedrückt wird
+        if (isHovering && Input.GetKeyDown(KeyCode.E))
+        {
+            InventorySlot slot = playerInventory.inventory.slots[slotIndex];
+            if (slot != null && slot.item != null && slot.item is BookData book)
+            {
+                BookUIManager.Instance.OpenBook(book);
+            }
+        }
+    }
+}
