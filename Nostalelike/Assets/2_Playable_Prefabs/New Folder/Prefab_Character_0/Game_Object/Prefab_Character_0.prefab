@@ -17,8 +17,7 @@ GameObject:
   - component: {fileID: 6173184640512335883}
   - component: {fileID: 3640932323263258614}
   - component: {fileID: 4082221159162644116}
-  - component: {fileID: -7901912990246113954}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Prefab_Character_0
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -125,7 +124,6 @@ MonoBehaviour:
   sensorRadius: 0.15
   anim: {fileID: 3122313092554256911}
   visuals: {fileID: 0}
-  movementLocked: 0
 --- !u!114 &8885537461081641452
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -240,21 +238,6 @@ MonoBehaviour:
     m_Bits: 128
   attackDamage: 20
   attackRate: 2
---- !u!114 &-7901912990246113954
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 183428855668308988}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5175e2f243cd389d2b305a89f817274b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::JournalOverlay
-  journalCanvasPrefab: {fileID: 3840265824916444147, guid: 06229a07f1b8dac6ea0a0fa9e266d457, type: 3}
-  panelName: JournalRoot
-  movement: {fileID: 0}
 --- !u!1 &5731777635977914205
 GameObject:
   m_ObjectHideFlags: 0
@@ -267,7 +250,7 @@ GameObject:
   - component: {fileID: 3122313092554256911}
   - component: {fileID: 6627642520300383521}
   - component: {fileID: 7414132358241579968}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Visuals
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -357,7 +340,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 5
+  m_SortingOrder: 6
   m_Sprite: {fileID: 4723107735738678597, guid: 3ca246295ff03642e911be73b01b9cb3, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -393,7 +376,7 @@ GameObject:
   - component: {fileID: 2692004522090873365}
   - component: {fileID: 7597571648629211477}
   - component: {fileID: 1452860541604720631}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}

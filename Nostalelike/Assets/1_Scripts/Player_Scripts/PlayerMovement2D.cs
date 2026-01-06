@@ -23,10 +23,12 @@ public class PlayerMovement2D : MonoBehaviour
     public Animator anim;
     public Transform visuals;
 
+    // Movement Lock (deine Änderung)
+    public bool movementLocked = false;
+
     private Rigidbody2D rb;
     private float currentSpeed;
     private float initialScaleX;
-    public bool movementLocked;
 
     void Start() {
         rb = GetComponent<Rigidbody2D>();
@@ -40,6 +42,7 @@ public class PlayerMovement2D : MonoBehaviour
 
     void Update()
     {
+        // Deine movementLocked Logik
         if (movementLocked)
         {
             rb.linearVelocity = Vector2.zero;
@@ -55,19 +58,23 @@ public class PlayerMovement2D : MonoBehaviour
         bool isRunning = (Input.GetKey(KeyCode.LeftShift)) && isMoving;
 
         bool onMud = CheckFootSensor();
+
         float baseSpeed = isRunning ? runSpeed : walkSpeed;
         currentSpeed = onMud ? baseSpeed * mudSpeedMultiplier : baseSpeed;
 
         rb.linearVelocity = dir * currentSpeed;
 
-        // Audio abspielen
+        // Deine Audio Logik
         HandleFootsteps(isMoving, isRunning);
 
+        // Animationen (mit isRunning aus develop)
         if (anim != null) {
             anim.SetBool("isMoving", isMoving);
+            anim.SetBool("isRunning", isRunning);  // aus develop
             anim.SetFloat("horizontal", Mathf.Abs(x));
             anim.SetFloat("vertical", y);
         }
+
         if (x != 0) visuals.localScale = new Vector3(Mathf.Sign(x) * initialScaleX, visuals.localScale.y, visuals.localScale.z);
     }
 
@@ -95,17 +102,11 @@ public class PlayerMovement2D : MonoBehaviour
         }
     }
 
-    // ...existing code...
     private bool CheckFootSensor() {
         Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position + footOffset, sensorRadius);
         
-        Debug.Log($"Sensor findet {hits.Length} Collider");
-        
         foreach (Collider2D hit in hits) {
             if (hit.transform == transform || hit.transform.IsChildOf(transform)) continue;
-            
-            Debug.Log($"Gefunden: {hit.gameObject.name}, Hat Mud: {hit.GetComponent<Mud>() != null}");
-            
             if (hit.GetComponent<Mud>() != null) return true;
         }
         return false;
@@ -121,6 +122,7 @@ public class PlayerMovement2D : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position + footOffset, sensorRadius);
     }
 
+    // Deine ForceStop Methode
     public void ForceStop()
     {
         if (rb != null) rb.linearVelocity = Vector2.zero;
