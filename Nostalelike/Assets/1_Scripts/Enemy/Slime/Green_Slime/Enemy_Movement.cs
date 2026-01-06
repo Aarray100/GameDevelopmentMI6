@@ -8,8 +8,8 @@ public class Enemy_Movement : MonoBehaviour
     
     [Header("Detection")]
     public float detectionRange = 5f;   // Reichweite um Spieler zu entdecken
-    public float attackRange = 1.5f;    // Reichweite für Angriffs-ENTSCHEIDUNG (größer)
-    public float attackHitRange = 1.2f; // Reichweite für tatsächlichen TREFFER (kleiner)
+    public float attackRange = 2.0f;    // Reichweite für Angriffs-ENTSCHEIDUNG (MUSS größer sein!)
+    public float attackHitRange = 1.2f; // Reichweite für tatsächlichen TREFFER (kleiner, Spieler kann ausweichen)
     
     [Header("Combat")]
     public float attackCooldown = 1.5f;  // Zeit zwischen Angriffen
@@ -237,7 +237,7 @@ public class Enemy_Movement : MonoBehaviour
         else if (horizontalDirection < 0) 
             targetScaleX = Mathf.Abs(initialFacingDirection);  // Links = positive Scale (normal)
 
-        if (visualsTransform.localScale.x != targetScaleX)
+        if (!Mathf.Approximately(visualsTransform.localScale.x, targetScaleX))
         {
             visualsTransform.localScale = new Vector3(
                 targetScaleX, 
