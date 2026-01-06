@@ -123,10 +123,9 @@ MonoBehaviour:
   mudSpeedMultiplier: 0.5
   footOffset: {x: 0, y: -0.7, z: 0}
   sensorRadius: 0.15
-  walkSFX: {fileID: 0}
-  runSFX: {fileID: 0}
   walkStepInterval: 0.4
   runStepInterval: 0.25
+  currentGround: 0
   anim: {fileID: 3122313092554256911}
   visuals: {fileID: 0}
   movementLocked: 0
@@ -253,11 +252,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 183428855668308988}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0e1d161661fd356818d0875b6e5ff829, type: 3}
+  m_Script: {fileID: 11500000, guid: 5175e2f243cd389d2b305a89f817274b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerFootsteps
-  currentGround: 0
-  footstepInterval: 0.4
+  journalCanvasPrefab: {fileID: 3840265824916444147, guid: 06229a07f1b8dac6ea0a0fa9e266d457, type: 3}
+  panelName: JournalRoot
+  movement: {fileID: 0}
 --- !u!1 &5731777635977914205
 GameObject:
   m_ObjectHideFlags: 0

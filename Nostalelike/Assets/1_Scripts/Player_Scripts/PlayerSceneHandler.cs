@@ -42,6 +42,13 @@ public class PlayerSceneHandler : MonoBehaviour
     {
         Debug.Log($"PlayerSceneHandler: Scene loaded: {scene.name}");
         
+        // WICHTIG: Wenn SaveData geladen wird, Position nicht überschreiben!
+        if (SaveDataHolder.PendingLoadData != null)
+        {
+            Debug.Log("<color=yellow>PlayerSceneHandler: SaveData pending - skipping spawn point positioning</color>");
+            return;
+        }
+        
         // Stelle sicher dass SceneTransitionManager existiert
         SceneTransitionManager manager = SceneTransitionManager.EnsureInstance();
         

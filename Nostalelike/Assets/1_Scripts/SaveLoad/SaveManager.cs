@@ -2,6 +2,11 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class SaveManager : MonoBehaviour
 {
@@ -10,6 +15,10 @@ public class SaveManager : MonoBehaviour
     private const string SAVE_FOLDER = "Saves";
     private const string SAVE_EXTENSION = ".json";
     private const string DEFAULT_SAVE_NAME = "quicksave";
+    
+    [Header("Item Database")]
+    [Tooltip("Alle Items im Spiel - wird automatisch im Editor gefüllt")]
+    [SerializeField] private List<ItemData> allGameItems = new List<ItemData>();
     
     // Cache für geladene Items
     private Dictionary<string, ItemData> itemCache = new Dictionary<string, ItemData>();
@@ -24,11 +33,63 @@ public class SaveManager : MonoBehaviour
             DontDestroyOnLoad(gameObject);
             EnsureSaveFolderExists();
             CacheAllItems();
+            
+            // Scene Load Event registrieren
+            SceneManager.sceneLoaded += OnSceneLoaded;
+            
+            Debug.Log($"<color=green>SaveManager: Initialized! Save path: {SavePath}</color>");
         }
         else
         {
             Destroy(gameObject);
         }
+    }
+    
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+    
+    private void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene, LoadSceneMode mode)
+    {
+        Debug.Log($"<color=yellow>SaveManager: Scene '{scene.name}' loaded</color>");
+        
+        if (SaveDataHolder.PendingLoadData != null)
+        {
+            Debug.Log("<color=yellow>SaveManager: Pending data found, applying after player spawn...</color>");
+            StartCoroutine(ApplyDataDelayed());
+        }
+    }
+    
+    private System.Collections.IEnumerator ApplyDataDelayed()
+    {
+        // Warte damit Character gespawnt wird (GameCharacterSpawner braucht Zeit)
+        yield return new WaitForSeconds(1.0f);
+        
+        // Zusätzlich warten bis Player existiert
+        GameObject player = null;
+        float timeout = 5f;
+        float elapsed = 0f;
+        
+        while (player == null && elapsed < timeout)
+        {
+            player = GameObject.FindGameObjectWithTag("Player");
+            if (player == null)
+            {
+                yield return new WaitForSeconds(0.1f);
+                elapsed += 0.1f;
+            }
+        }
+        
+        if (player == null)
+        {
+            Debug.LogError("SaveManager: Player not found after waiting!");
+            SaveDataHolder.PendingLoadData = null;
+            yield break;
+        }
+        
+        ApplyLoadedData(SaveDataHolder.PendingLoadData);
+        SaveDataHolder.PendingLoadData = null;
     }
     
     private void EnsureSaveFolderExists()
@@ -41,16 +102,14 @@ public class SaveManager : MonoBehaviour
     }
     
     /// <summary>
-    /// Lädt alle ItemData ScriptableObjects aus Resources und cached sie
+    /// Cached alle Items für schnellen Zugriff per Name
     /// </summary>
     private void CacheAllItems()
     {
         itemCache.Clear();
         
-        // Lade alle ItemData aus allen Resources Ordnern
-        ItemData[] allItems = Resources.LoadAll<ItemData>("");
-        
-        foreach (var item in allItems)
+        // Zuerst aus der vordefinierten Liste (vom Editor gefüllt)
+        foreach (var item in allGameItems)
         {
             if (item != null && !string.IsNullOrEmpty(item.itemName))
             {
@@ -61,8 +120,85 @@ public class SaveManager : MonoBehaviour
             }
         }
         
-        Debug.Log($"SaveManager: {itemCache.Count} Items gecached");
+        // Zusätzlich aus Resources laden (falls Items dort liegen)
+        ItemData[] resourceItems = Resources.LoadAll<ItemData>("");
+        foreach (var item in resourceItems)
+        {
+            if (item != null && !string.IsNullOrEmpty(item.itemName))
+            {
+                if (!itemCache.ContainsKey(item.itemName))
+                {
+                    itemCache.Add(item.itemName, item);
+                }
+            }
+        }
+        
+        Debug.Log($"<color=cyan>SaveManager: {itemCache.Count} Items gecached</color>");
+        
+        // Debug: Zeige alle gecachten Items
+        if (itemCache.Count > 0)
+        {
+            Debug.Log($"<color=cyan>SaveManager: Gecachte Items: {string.Join(", ", itemCache.Keys)}</color>");
+        }
+        else
+        {
+            Debug.LogWarning("SaveManager: KEINE Items gecached! Bitte im Inspector 'Collect All Items' Button drücken oder Items manuell zuweisen.");
+        }
     }
+    
+#if UNITY_EDITOR
+    /// <summary>
+    /// Editor-Funktion: Findet alle ItemData im Projekt und fügt sie zur Liste hinzu
+    /// </summary>
+    [ContextMenu("Collect All Items From Project")]
+    public void CollectAllItemsFromProject()
+    {
+        allGameItems.Clear();
+        
+        // Finde alle ItemData Assets im Projekt
+        string[] guids = AssetDatabase.FindAssets("t:ItemData");
+        
+        foreach (string guid in guids)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            ItemData item = AssetDatabase.LoadAssetAtPath<ItemData>(path);
+            
+            if (item != null && !allGameItems.Contains(item))
+            {
+                allGameItems.Add(item);
+            }
+        }
+        
+        // Sortiere nach Name
+        allGameItems = allGameItems.OrderBy(x => x.itemName).ToList();
+        
+        EditorUtility.SetDirty(this);
+        
+        Debug.Log($"<color=green>SaveManager: {allGameItems.Count} Items aus dem Projekt gesammelt!</color>");
+        
+        // Zeige alle gefundenen Items
+        foreach (var item in allGameItems)
+        {
+            Debug.Log($"  - {item.itemName} ({item.itemType})");
+        }
+    }
+    
+    private void OnValidate()
+    {
+        // Automatisch Items sammeln wenn die Liste leer ist
+        if (allGameItems.Count == 0)
+        {
+            // Verzögert ausführen um Fehler zu vermeiden
+            EditorApplication.delayCall += () =>
+            {
+                if (this != null && allGameItems.Count == 0)
+                {
+                    CollectAllItemsFromProject();
+                }
+            };
+        }
+    }
+#endif
     
     /// <summary>
     /// Findet ein Item anhand seines Namens
@@ -211,45 +347,65 @@ public class SaveManager : MonoBehaviour
     
     public void ApplyLoadedData(SaveData data)
     {
-        if (data == null) return;
+        if (data == null)
+        {
+            Debug.LogError("SaveManager: ApplyLoadedData called with null data!");
+            return;
+        }
+        
+        Debug.Log($"<color=green>SaveManager: Applying loaded data...</color>");
         
         PlayerPrefs.SetInt("SelectedCharacterIndex", data.selectedCharacterIndex);
         
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)
         {
-            player.transform.position = data.playerPosition.ToVector3();
+            Vector3 newPos = data.playerPosition.ToVector3();
+            Debug.Log($"<color=green>SaveManager: Moving player from {player.transform.position} to {newPos}</color>");
+            
+            player.transform.position = newPos;
+            
+            Debug.Log($"<color=green>SaveManager: Player position after move: {player.transform.position}</color>");
             
             PlayerStats stats = player.GetComponent<PlayerStats>();
             if (stats != null)
             {
                 stats.LoadSaveData(data.currentHealth, data.maxHealth, 
                                    data.currentMana, data.maxMana);
+                Debug.Log($"<color=green>SaveManager: Stats loaded</color>");
             }
             
             PlayerInventory inventory = player.GetComponent<PlayerInventory>();
             if (inventory != null)
             {
                 inventory.LoadSaveData(data.inventoryItems);
+                Debug.Log($"<color=green>SaveManager: Inventory loaded ({data.inventoryItems.Count} items)</color>");
             }
             
             PlayerEquipment equipment = player.GetComponent<PlayerEquipment>();
             if (equipment != null)
             {
                 equipment.LoadSaveData(data.equippedItems);
+                Debug.Log($"<color=green>SaveManager: Equipment loaded ({data.equippedItems.Count} items)</color>");
             }
+        }
+        else
+        {
+            Debug.LogError("SaveManager: Player not found during ApplyLoadedData!");
         }
         
         LevelSystem levelSystem = FindFirstObjectByType<LevelSystem>();
         if (levelSystem != null)
         {
             levelSystem.LoadSaveData(data.playerLevel, data.currentXP, data.xpToNextLevel);
+            Debug.Log($"<color=green>SaveManager: Level loaded</color>");
         }
         
         Hotbar hotbar = FindFirstObjectByType<Hotbar>();
         if (hotbar != null)
         {
             hotbar.LoadSaveData(data.hotbarSlots);
+            Debug.Log($"<color=green>SaveManager: Hotbar loaded</color>");
         }
         
         if (AudioManager.Instance != null)
@@ -258,7 +414,7 @@ public class SaveManager : MonoBehaviour
             AudioManager.Instance.SetSFXVolume(data.sfxVolume);
         }
         
-        Debug.Log("Save data applied successfully!");
+        Debug.Log("<color=green>SaveManager: === SAVE DATA APPLIED SUCCESSFULLY ===</color>");
     }
     
     #endregion
