@@ -102,6 +102,16 @@ public class Enemy_Movement : MonoBehaviour
     
     void HandleChasingState(float distanceToPlayer)
     {
+        // Combat Music aktivieren
+        AudioManager.Instance?.EnterCombat();
+        
+        // Spieler außer Reichweite? Zurück zu Idle
+        if (distanceToPlayer > detectionRange)
+        {
+            ChangeState(EnemyState.Idle);
+            return;
+        }
+
         // Spieler außer Reichweite? Zurück zu Idle
         if (distanceToPlayer > detectionRange)
         {
@@ -140,6 +150,7 @@ public class Enemy_Movement : MonoBehaviour
     
     void HandleAttackingState(float distanceToPlayer)
     {
+        AudioManager.Instance?.EnterCombat();
         rb.linearVelocity = Vector2.zero;
         
         // IMMER Richtung zum Spieler aktualisieren (auch während Angriff für nächsten Angriff)
