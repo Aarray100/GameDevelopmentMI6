@@ -16,7 +16,6 @@ public class PlayerEquipment : MonoBehaviour
     
     private void Awake()
     {
-        // Auto-hole Referenzen falls nicht gesetzt
         if (playerStats == null)
         {
             playerStats = GetComponent<PlayerStats>();
@@ -26,7 +25,6 @@ public class PlayerEquipment : MonoBehaviour
             playerInventory = GetComponent<PlayerInventory>();
         }
         
-        // Initialisiere alle Equipment-Slots als leer
         InitializeEquipmentSlots();
     }
     
@@ -34,7 +32,6 @@ public class PlayerEquipment : MonoBehaviour
     {
         equippedItems.Clear();
         
-        // Erstelle leere Slots für alle Equipment-Positionen
         equippedItems[EquipmentSlot.Head] = null;
         equippedItems[EquipmentSlot.Chest] = null;
         equippedItems[EquipmentSlot.Hands] = null;
@@ -49,19 +46,18 @@ public class PlayerEquipment : MonoBehaviour
     {
         if (item == null) return false;
         
-        // Prüfe ob es ein Equipment-Item ist
         if (item.equipSlot == EquipmentSlot.None || item.equipSlot == EquipmentSlot.Weapon)
         {
-            Debug.Log($"{item.itemName} cannot be equipped here! Use Hotbar for weapons.");
+            Debug.Log($"{item.itemName} cannot be equipped here!");
             return false;
         }
         
         EquipmentSlot targetSlot = item.equipSlot;
         
-        // Falls schon ein Item im Slot ist, unequip es zuerst
+        // Falls schon ein Item im Slot ist, unequip es (ohne Sound abzuspielen)
         if (equippedItems[targetSlot] != null)
         {
-            UnequipItem(targetSlot);
+            UnequipItem(targetSlot, true, false); 
         }
         
         // Equipt das Item
@@ -69,46 +65,49 @@ public class PlayerEquipment : MonoBehaviour
         
         // Entferne aus Inventar
         playerInventory.inventory.RemoveItem(item, 1);
+
+        // Sound abspielen
+        AudioManager.Instance?.PlayEquipSFX();
         
         Debug.Log($"Equipped {item.itemName} in {targetSlot} slot");
         
-        // Update Stats
         RecalculateEquipmentStats();
         OnEquipmentChanged?.Invoke();
         
         return true;
     }
     
-    // Unequipt ein Item
-    public bool UnequipItem(EquipmentSlot slot, bool addToInventory = true)
+    // Unequipt ein Item (playAudio Parameter hinzugefügt)
+    public bool UnequipItem(EquipmentSlot slot, bool addToInventory = true, bool playAudio = true)
     {
         if (!equippedItems.ContainsKey(slot) || equippedItems[slot] == null)
         {
-            Debug.Log($"No item equipped in {slot} slot");
             return false;
         }
         
         ItemData item = equippedItems[slot];
         
-        // Füge zurück zum Inventar (nur wenn gewünscht)
         if (addToInventory)
         {
             playerInventory.inventory.AddItem(item, 1);
         }
         
-        // Entferne aus Equipment
         equippedItems[slot] = null;
+
+        // Nur Sound spielen, wenn nicht von EquipItem unterdrückt
+        if (playAudio)
+        {
+            AudioManager.Instance?.PlayUnequipSFX();
+        }
         
         Debug.Log($"Unequipped {item.itemName} from {slot} slot");
         
-        // Update Stats
         RecalculateEquipmentStats();
         OnEquipmentChanged?.Invoke();
         
         return true;
     }
     
-    // Hole equipped Item aus Slot
     public ItemData GetEquippedItem(EquipmentSlot slot)
     {
         if (equippedItems.ContainsKey(slot))
@@ -118,37 +117,33 @@ public class PlayerEquipment : MonoBehaviour
         return null;
     }
     
-    // Check ob ein Slot leer ist
     public bool IsSlotEmpty(EquipmentSlot slot)
     {
         return !equippedItems.ContainsKey(slot) || equippedItems[slot] == null;
     }
     
-    // Swap Equipment (wenn man ein neues Item auf ein belegtes dropped)
+    // Swap Equipment (mit Sound-Fix)
     public bool SwapEquipment(ItemData newItem, EquipmentSlot slot)
     {
         if (newItem == null) return false;
         
-        // Check ob Item in diesen Slot passt
         if (!CanEquipInSlot(newItem, slot))
         {
-            Debug.Log($"{newItem.itemName} cannot be equipped in {slot} slot!");
             return false;
         }
         
         ItemData oldItem = equippedItems[slot];
         
-        // Unequip altes Item (geht zurück ins Inventar)
         if (oldItem != null)
         {
             playerInventory.inventory.AddItem(oldItem, 1);
         }
         
-        // Entferne neues Item aus Inventar
         playerInventory.inventory.RemoveItem(newItem, 1);
-        
-        // Equipt neues Item
         equippedItems[slot] = newItem;
+        
+        // Sound hinzugefügt
+        AudioManager.Instance?.PlayEquipSFX();
         
         Debug.Log($"Swapped {oldItem?.itemName ?? "empty"} with {newItem.itemName} in {slot}");
         
@@ -158,24 +153,17 @@ public class PlayerEquipment : MonoBehaviour
         return true;
     }
     
-    // Prüft ob ein Item in einen bestimmten Slot passt
     public bool CanEquipInSlot(ItemData item, EquipmentSlot slot)
     {
         if (item == null) return false;
-        
-        // Waffen gehen nicht ins Equipment-Panel
         if (item.itemType == ItemType.Weapon) return false;
-        
-        // Equipment-Items müssen zum Slot passen
         return item.equipSlot == slot;
     }
     
-    // Berechnet alle Equipment-Stats und sendet an PlayerStats
     private void RecalculateEquipmentStats()
     {
         ItemStats totalEquipmentStats = new ItemStats();
         
-        // Addiere Stats von allen equipped Items
         foreach (var kvp in equippedItems)
         {
             if (kvp.Value != null && kvp.Value.stats != null)
@@ -184,16 +172,12 @@ public class PlayerEquipment : MonoBehaviour
             }
         }
         
-        // Sende an PlayerStats
         if (playerStats != null)
         {
             playerStats.UpdateEquipmentBonus(totalEquipmentStats);
         }
-        
-        Debug.Log($"Equipment stats updated! Total Defense: +{totalEquipmentStats.bonusDefense}, Total HP: +{totalEquipmentStats.bonusHealth}");
     }
     
-    // Helper: Hole alle equipped Items
     public List<ItemData> GetAllEquippedItems()
     {
         List<ItemData> items = new List<ItemData>();
@@ -207,7 +191,6 @@ public class PlayerEquipment : MonoBehaviour
         return items;
     }
     
-    // Öffentliche Methode um Equipment-Update zu triggern (für UI)
     public void TriggerEquipmentUpdate()
     {
         RecalculateEquipmentStats();
