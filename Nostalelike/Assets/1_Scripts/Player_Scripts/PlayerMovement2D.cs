@@ -20,15 +20,30 @@ public class PlayerMovement2D : MonoBehaviour
     private float currentSpeed;
     private float initialScaleX;
 
+    [Header("Währung")]
+    public static int gold = 500;
+
+    void Awake() 
+    {
+        // Lädt den Goldstand beim Starten des Spiels
+        gold = PlayerPrefs.GetInt("GespeichertesGold", 0);
+    }
+
     void Start() {
         rb = GetComponent<Rigidbody2D>();
-        // Top-Down Einstellungen erzwingen
         rb.gravityScale = 0; 
         rb.freezeRotation = true;
 
         if (anim == null) anim = GetComponentInChildren<Animator>();
         if (visuals == null) visuals = transform;
         initialScaleX = Mathf.Abs(visuals.localScale.x);
+    }
+
+    // Hilfsfunktion zum Speichern (kannst du von überall aufrufen)
+    public static void GoldSpeichern()
+    {
+        PlayerPrefs.SetInt("GespeichertesGold", gold);
+        PlayerPrefs.Save();
     }
 
     void Update() {
@@ -39,7 +54,6 @@ public class PlayerMovement2D : MonoBehaviour
         bool isMoving = dir.magnitude > 0.1f;
         bool isRunning = (Input.GetKey(KeyCode.LeftShift)) && isMoving;
 
-        // MATSCH-LOGIK: Prüfen, ob das Objekt unter den Füßen die "Mud"-Komponente hat
         bool onMud = CheckFootSensor();
 
         float baseSpeed = isRunning ? runSpeed : walkSpeed;
@@ -47,7 +61,6 @@ public class PlayerMovement2D : MonoBehaviour
 
         rb.linearVelocity = dir * currentSpeed;
 
-        // Animationen & Flip
         if (anim != null) {
             anim.SetBool("isMoving", isMoving);
             anim.SetFloat("horizontal", Mathf.Abs(x));
@@ -58,20 +71,13 @@ public class PlayerMovement2D : MonoBehaviour
 
     private bool CheckFootSensor() {
         Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position + footOffset, sensorRadius);
-        
-        Debug.Log($"Sensor findet {hits.Length} Collider"); // DEBUG
-        
         foreach (Collider2D hit in hits) {
             if (hit.transform == transform || hit.transform.IsChildOf(transform)) continue;
-            
-            Debug.Log($"Gefunden: {hit.gameObject.name}, Hat Mud: {hit.GetComponent<Mud>() != null}"); // DEBUG
-            
             if (hit.GetComponent<Mud>() != null) return true;
         }
         return false;
     }
 
-    // Damit dein Combat-Script nicht meckert
     public void FaceDirection(Vector2 direction) {
         if (Mathf.Abs(direction.x) > 0.1f) 
             visuals.localScale = new Vector3(Mathf.Sign(direction.x) * initialScaleX, visuals.localScale.y, visuals.localScale.z);

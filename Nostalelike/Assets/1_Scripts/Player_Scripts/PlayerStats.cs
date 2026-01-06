@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using System.Collections;
 
 public class PlayerStats : MonoBehaviour
 {
@@ -13,55 +14,37 @@ public class PlayerStats : MonoBehaviour
     public float currentMana;
     public float currentStamina;
     
-    [Header("Base Regeneration Rates (per second)")]
+    [Header("Base Regeneration Rates")]
     public float baseHealthRegenRate = 5f;
     public float baseManaRegenRate = 3f;
     public float baseStaminaRegenRate = 4f;
-    
-    [Header("Base Offensive Stats")]
-    public float baseDamage = 10f;
-    public float baseAttackSpeed = 1f;
-    public float baseCriticalChance = 0.1f;
-    public float baseCriticalDamage = 1.5f;
 
-    [Header("Base Defensive Stats")]
+    [Header("Base Combat Stats")] // Diese Variablen haben gefehlt!
+    public float baseDamage = 10f;
     public float baseDefense = 5f;
-    public float baseResistance = 3f;
-    public float baseEvasion = 0.05f;
     
-    [Header("Calculated Total Stats (Base + Level + Equipment)")]
+    [Header("Calculated Total Stats")]
     public float maxHealth;
     public float maxMana;
     public float maxStamina;
     public float totalDamage;
-    public float totalAttackSpeed;
-    public float totalCriticalChance;
-    public float totalCriticalDamage;
     public float totalDefense;
-    public float totalResistance;
-    public float totalEvasion;
     public float totalHealthRegen;
     public float totalManaRegen;
     public float totalStaminaRegen;
+
     [Header("Level System")]
     public int currentLevel = 1;
     public int experiencePoints = 0;
     public int experienceToNextLevel = 100;
-    public float experienceRequired; // Wird in Awake() berechnet
     
-    [Header("Stat Growth per Level")]
-    public float healthPerLevel = 10f;
-    public float manaPerLevel = 8f;
-    public float staminaPerLevel = 5f;
-    public float damagePerLevel = 2f;
-    public float defensePerLevel = 1f;
-    public float criticalChancePerLevel = 0.005f; // 0.5%
+    [Header("Temporäre Buffs")]
+    private float strengthBuffMultiplier = 1f;
+    private PlayerMovement2D movement;
+
+    private ItemStats equipmentBonus = new ItemStats();
+    private ItemStats activeWeaponBonus = new ItemStats();
     
-    // Equipment Bonuses
-    private ItemStats equipmentBonus = new ItemStats();  // Armor + Accessories
-    private ItemStats activeWeaponBonus = new ItemStats(); // Nur aktive Waffe
-    
-    // Events für UI Updates
     public event Action OnStatsChanged;
     public event Action OnHealthChanged;
     public event Action OnManaChanged;
@@ -69,13 +52,8 @@ public class PlayerStats : MonoBehaviour
     
     private void Awake()
     {
-        // Initialisiere Werte, die von anderen Feldern abhängen
-        experienceRequired = CalculateEXPForNextLevel();
-        
-        // Berechne initiale Stats
+        movement = GetComponent<PlayerMovement2D>();
         RecalculateStats();
-        
-        // Setze Current Values auf Max
         currentHealth = maxHealth;
         currentMana = maxMana;
         currentStamina = maxStamina;
@@ -83,211 +61,122 @@ public class PlayerStats : MonoBehaviour
     
     private void Update()
     {
-        // Regeneration
         RegenerateResources();
     }
-    
+
     private void RegenerateResources()
     {
-        // Health Regeneration
         if (currentHealth < maxHealth)
         {
             currentHealth = Mathf.Min(currentHealth + totalHealthRegen * Time.deltaTime, maxHealth);
             OnHealthChanged?.Invoke();
         }
-        
-        // Mana Regeneration
         if (currentMana < maxMana)
         {
             currentMana = Mathf.Min(currentMana + totalManaRegen * Time.deltaTime, maxMana);
             OnManaChanged?.Invoke();
         }
-        
-        // Stamina Regeneration
         if (currentStamina < maxStamina)
         {
             currentStamina = Mathf.Min(currentStamina + totalStaminaRegen * Time.deltaTime, maxStamina);
             OnStaminaChanged?.Invoke();
         }
     }
-    
-    // Wird von Hotbar aufgerufen wenn Waffe gewechselt wird
-    public void SetActiveWeapon(ItemData weapon)
-    {
-        if (weapon != null && weapon.itemType == ItemType.Weapon && weapon.stats != null)
-        {
-            activeWeaponBonus = weapon.stats;
-            Debug.Log($"Active weapon set: {weapon.itemName} (+{weapon.stats.bonusDamage} damage)");
-        }
-        else
-        {
-            activeWeaponBonus = new ItemStats(); // Reset
-            Debug.Log("No weapon active");
-        }
-        
-        RecalculateStats();
-    }
-    
-    // Wird von Equipment-System aufgerufen
-    public void UpdateEquipmentBonus(ItemStats newEquipmentBonus)
-    {
-        equipmentBonus = newEquipmentBonus;
-        RecalculateStats();
-    }
-    
-    // Berechnet alle Stats basierend auf Level + Equipment + aktive Waffe
-    public void RecalculateStats()
-    {
-        // Base Stats vom Level
-        float levelMaxHealth = baseMaxHealth + (currentLevel * healthPerLevel);
-        float levelMaxMana = baseMaxMana + (currentLevel * manaPerLevel);
-        float levelMaxStamina = baseMaxStamina + (currentLevel * staminaPerLevel);
-        float levelDamage = baseDamage + (currentLevel * damagePerLevel);
-        float levelDefense = baseDefense + (currentLevel * defensePerLevel);
-        float levelCritChance = baseCriticalChance + (currentLevel * criticalChancePerLevel);
-        
-        // + Equipment Bonus (Armor + Accessories, immer aktiv)
-        maxHealth = levelMaxHealth + equipmentBonus.bonusHealth;
-        maxMana = levelMaxMana + equipmentBonus.bonusMana;
-        maxStamina = levelMaxStamina + equipmentBonus.bonusStamina;
-        totalDefense = levelDefense + equipmentBonus.bonusDefense;
-        totalResistance = baseResistance + equipmentBonus.bonusResistance;
-        totalEvasion = baseEvasion + equipmentBonus.bonusEvasion;
-        
-        // + Aktive Waffe Bonus (nur wenn Waffe in Hotbar aktiv)
-        totalDamage = levelDamage + equipmentBonus.bonusDamage + activeWeaponBonus.bonusDamage;
-        totalAttackSpeed = baseAttackSpeed + equipmentBonus.bonusAttackSpeed + activeWeaponBonus.bonusAttackSpeed;
-        totalCriticalChance = levelCritChance + equipmentBonus.bonusCritChance + activeWeaponBonus.bonusCritChance;
-        totalCriticalDamage = baseCriticalDamage + equipmentBonus.bonusCritDamage + activeWeaponBonus.bonusCritDamage;
-        
-        // Regeneration
-        totalHealthRegen = baseHealthRegenRate + equipmentBonus.bonusHealthRegen + activeWeaponBonus.bonusHealthRegen;
-        totalManaRegen = baseManaRegenRate + equipmentBonus.bonusManaRegen + activeWeaponBonus.bonusManaRegen;
-        totalStaminaRegen = baseStaminaRegenRate + equipmentBonus.bonusStaminaRegen + activeWeaponBonus.bonusStaminaRegen;
-        
-        // Damage Multiplier anwenden (von Waffe)
-        if (activeWeaponBonus.damageMultiplier > 1f)
-        {
-            totalDamage *= activeWeaponBonus.damageMultiplier;
-        }
-        
-        // Clamp current values wenn max sich ändert
-        currentHealth = Mathf.Min(currentHealth, maxHealth);
-        currentMana = Mathf.Min(currentMana, maxMana);
-        currentStamina = Mathf.Min(currentStamina, maxStamina);
-        
-        OnStatsChanged?.Invoke();
-        
-        Debug.Log($"Stats recalculated! Total Damage: {totalDamage}, Total Defense: {totalDefense}");
-    }
-    
-    private float CalculateEXPForNextLevel()
-    {
-        // Exponentielle Kurve: wird mit jedem Level schwerer
-        return Mathf.Pow(experienceToNextLevel * currentLevel, 1.5f);
-    }
-    
-    public void GainExperience(int amount)
-    {
-        experiencePoints += amount;
-        Debug.Log($"Gained {amount} EXP. Total: {experiencePoints}/{experienceRequired}");
-        
-        // Check für Level Up
-        while (experiencePoints >= experienceRequired)
-        {
-            LevelUp();
-        }
-    }
-    
-    private void LevelUp()
-    {
-        currentLevel++;
-        experiencePoints -= (int)experienceRequired;
-        experienceRequired = CalculateEXPForNextLevel();
-        
-        // Stats neu berechnen (basierend auf neuem Level)
-        RecalculateStats();
-        
-        // Full Heal beim Level Up
-        currentHealth = maxHealth;
-        currentMana = maxMana;
-        currentStamina = maxStamina;
-        
-        Debug.Log($"LEVEL UP! Now Level {currentLevel}");
-        // Hier könntest du ein Event triggern für UI/Effekte
-    }
-    
-    // Helper Methods für Combat System
-    public float GetFinalDamage()
-    {
-        return totalDamage;
-    }
-    
-    public bool IsCriticalHit()
-    {
-        return UnityEngine.Random.value < totalCriticalChance;
-    }
-    
-    public float GetCriticalDamage()
-    {
-        return totalDamage * totalCriticalDamage;
-    }
-    
-    public void TakeDamage(float damage)
-    {
-        float finalDamage = Mathf.Max(damage - totalDefense, 0);
-        currentHealth = Mathf.Max(currentHealth - finalDamage, 0);
-        OnHealthChanged?.Invoke();
-        
-        if (currentHealth <= 0)
-        {
-            Die();
-        }
-    }
-    
+
+    // --- INTERFACES FÜR ANDERE SKRIPTE (Hotbar & Equipment) ---
+
     public void Heal(float amount)
     {
         currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
         OnHealthChanged?.Invoke();
     }
-    
+
     public void RestoreMana(float amount)
     {
         currentMana = Mathf.Min(currentMana + amount, maxMana);
         OnManaChanged?.Invoke();
     }
-    
+
     public void RestoreStamina(float amount)
     {
         currentStamina = Mathf.Min(currentStamina + amount, maxStamina);
         OnStaminaChanged?.Invoke();
     }
-    
-    public bool UseMana(float amount)
+
+    public void SetActiveWeapon(ItemData weapon)
     {
-        if (currentMana >= amount)
-        {
-            currentMana -= amount;
-            OnManaChanged?.Invoke();
-            return true;
-        }
-        return false;
+        activeWeaponBonus = (weapon != null && weapon.stats != null) ? weapon.stats : new ItemStats();
+        RecalculateStats();
     }
-    
-    public bool UseStamina(float amount)
+
+    public void UpdateEquipmentBonus(ItemStats newEquipmentBonus)
     {
-        if (currentStamina >= amount)
-        {
-            currentStamina -= amount;
-            OnStaminaChanged?.Invoke();
-            return true;
-        }
-        return false;
+        equipmentBonus = newEquipmentBonus;
+        RecalculateStats();
     }
-    
-    private void Die()
+
+    // --- TRANK LOGIK (3 MINUTEN BUFFS) ---
+
+    public void UsePotion(ItemData potion)
     {
-        Debug.Log("Player died!");
-        // Hier Death-Logik
+        if (potion.itemName.Contains("Healing")) Heal(potion.healAmount);
+        else if (potion.itemName.Contains("Mana")) RestoreMana(potion.manaAmount);
+        else if (potion.itemName.Contains("Strength")) StartCoroutine(StrengthBuffRoutine(180f));
+        else if (potion.itemName.Contains("Speed")) StartCoroutine(SpeedBuffRoutine(180f));
+        else if (potion.itemName.Contains("Omni")) ApplyOmniLevelUp();
+    }
+
+    private IEnumerator StrengthBuffRoutine(float duration)
+    {
+        strengthBuffMultiplier = 1.2f;
+        RecalculateStats();
+        yield return new WaitForSeconds(duration);
+        strengthBuffMultiplier = 1f;
+        RecalculateStats();
+    }
+
+    private IEnumerator SpeedBuffRoutine(float duration)
+    {
+        if (movement == null) movement = GetComponent<PlayerMovement2D>();
+        float boost = movement.walkSpeed * 0.2f;
+        movement.walkSpeed += boost;
+        movement.runSpeed += boost;
+        yield return new WaitForSeconds(duration);
+        movement.walkSpeed -= boost;
+        movement.runSpeed -= boost;
+    }
+
+    private void ApplyOmniLevelUp()
+    {
+        currentLevel++;
+        experiencePoints = 0;
+        experienceToNextLevel = (int)(experienceToNextLevel * 1.5f);
+        RecalculateStats();
+        currentHealth = maxHealth;
+        currentMana = maxMana;
+        currentStamina = maxStamina;
+        OnStatsChanged?.Invoke();
+        OnHealthChanged?.Invoke();
+        OnManaChanged?.Invoke();
+        OnStaminaChanged?.Invoke();
+    }
+
+    // --- BERECHNUNG ---
+
+    public void RecalculateStats()
+    {
+        // Hier werden baseDamage und baseDefense jetzt korrekt gefunden
+        maxHealth = (baseMaxHealth + (currentLevel * 10f)) + equipmentBonus.bonusHealth;
+        maxMana = (baseMaxMana + (currentLevel * 8f)) + equipmentBonus.bonusMana;
+        maxStamina = (baseMaxStamina + (currentLevel * 5f)) + equipmentBonus.bonusStamina;
+        
+        totalDamage = (baseDamage + (currentLevel * 2f) + equipmentBonus.bonusDamage + activeWeaponBonus.bonusDamage) * strengthBuffMultiplier;
+        totalDefense = (baseDefense + (currentLevel * 1f)) + equipmentBonus.bonusDefense;
+
+        totalHealthRegen = baseHealthRegenRate + equipmentBonus.bonusHealthRegen;
+        totalManaRegen = baseManaRegenRate + equipmentBonus.bonusManaRegen;
+        totalStaminaRegen = baseStaminaRegenRate + equipmentBonus.bonusStaminaRegen;
+
+        OnStatsChanged?.Invoke();
     }
 }
