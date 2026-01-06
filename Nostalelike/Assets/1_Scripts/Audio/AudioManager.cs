@@ -43,12 +43,59 @@ public class AudioManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
+            LoadVolumeSettings();
         }
         else
         {
             Destroy(gameObject);
         }
     }
+
+    private void LoadVolumeSettings()
+    {
+        float musicVolume = PlayerPrefs.GetFloat("MusicVolume", 0.5f);
+        float sfxVolume = PlayerPrefs.GetFloat("SFXVolume", 1f);
+        
+        if (musicSource != null)
+            musicSource.volume = musicVolume;
+        
+        if (sfxSource != null)
+            sfxSource.volume = sfxVolume;
+    }
+
+    #region Volume Control
+    
+    public float GetMusicVolume()
+    {
+        return musicSource != null ? musicSource.volume : PlayerPrefs.GetFloat("MusicVolume", 0.5f);
+    }
+    
+    public float GetSFXVolume()
+    {
+        return sfxSource != null ? sfxSource.volume : PlayerPrefs.GetFloat("SFXVolume", 1f);
+    }
+    
+    public void SetMusicVolume(float volume)
+    {
+        if (musicSource != null)
+            musicSource.volume = Mathf.Clamp01(volume);
+        
+        PlayerPrefs.SetFloat("MusicVolume", volume);
+        PlayerPrefs.Save();
+    }
+
+    public void SetSFXVolume(float volume)
+    {
+        if (sfxSource != null)
+            sfxSource.volume = Mathf.Clamp01(volume);
+        
+        PlayerPrefs.SetFloat("SFXVolume", volume);
+        PlayerPrefs.Save();
+    }
+    
+    #endregion
+
+    #region SFX Play Methods
 
     public void PlaySFX(AudioClip clip)
     {
@@ -94,6 +141,8 @@ public class AudioManager : MonoBehaviour
     public void PlayJumpSFX() => PlaySFX(jumpSFX);
     public void PlayLandingSFX() => PlaySFX(landingSFX);
     public void PlayTeleportSFX() => PlaySFX(teleportSFX);
+    
+    #endregion
 }
 
 public enum GroundType
