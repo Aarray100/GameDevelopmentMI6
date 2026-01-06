@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class AudioManager : MonoBehaviour
 {
@@ -7,6 +8,16 @@ public class AudioManager : MonoBehaviour
     [Header("Audio Sources")]
     public AudioSource musicSource;
     public AudioSource sfxSource;
+
+    [Header("Music Tracks")]
+    public AudioClip peacefulMusic;
+    public AudioClip combatMusic;
+    
+    [Header("Music Settings")]
+    [Range(0f, 1f)] public float musicVolume = 0.5f;
+    [Range(0f, 1f)] public float sfxVolume = 1f;
+    public float musicFadeDuration = 1f;
+    public float combatMusicDelay = 2f;  // Wartezeit bevor wieder peaceful
 
     [Header("Footstep SFX - Je nach Untergrund")]
     public AudioClip stepGrass;
@@ -37,13 +48,18 @@ public class AudioManager : MonoBehaviour
     public AudioClip landingSFX;
     public AudioClip teleportSFX;
 
+    // Combat Music State
+    private bool isInCombat = false;
+    private float lastCombatTime = 0f;
+    private Coroutine musicFadeCoroutine;
+    private Coroutine combatCheckCoroutine;
+
     private void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
-            LoadVolumeSettings();
         }
         else
         {
@@ -51,57 +67,165 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    private void LoadVolumeSettings()
+    private void Start()
     {
-        float musicVolume = PlayerPrefs.GetFloat("MusicVolume", 0.5f);
-        float sfxVolume = PlayerPrefs.GetFloat("SFXVolume", 1f);
+        // Initiale Lautstärke setzen
+        ApplyVolumes();
         
-        if (musicSource != null)
-            musicSource.volume = musicVolume;
-        
-        if (sfxSource != null)
-            sfxSource.volume = sfxVolume;
+        // Peaceful Music starten
+        PlayMusic(peacefulMusic);
     }
 
-    #region Volume Control
-    
-    public float GetMusicVolume()
-    {
-        return musicSource != null ? musicSource.volume : PlayerPrefs.GetFloat("MusicVolume", 0.5f);
-    }
-    
-    public float GetSFXVolume()
-    {
-        return sfxSource != null ? sfxSource.volume : PlayerPrefs.GetFloat("SFXVolume", 1f);
-    }
+    #region Volume Control (für Settings Menu)
     
     public void SetMusicVolume(float volume)
     {
+        musicVolume = Mathf.Clamp01(volume);
         if (musicSource != null)
-            musicSource.volume = Mathf.Clamp01(volume);
+            musicSource.volume = musicVolume;
         
-        PlayerPrefs.SetFloat("MusicVolume", volume);
-        PlayerPrefs.Save();
+        // Optional: In PlayerPrefs speichern
+        PlayerPrefs.SetFloat("MusicVolume", musicVolume);
     }
 
     public void SetSFXVolume(float volume)
     {
-        if (sfxSource != null)
-            sfxSource.volume = Mathf.Clamp01(volume);
-        
-        PlayerPrefs.SetFloat("SFXVolume", volume);
-        PlayerPrefs.Save();
+        sfxVolume = Mathf.Clamp01(volume);
+        PlayerPrefs.SetFloat("SFXVolume", sfxVolume);
+    }
+
+    public void LoadVolumeSettings()
+    {
+        musicVolume = PlayerPrefs.GetFloat("MusicVolume", 0.5f);
+        sfxVolume = PlayerPrefs.GetFloat("SFXVolume", 1f);
+        ApplyVolumes();
+    }
+
+    private void ApplyVolumes()
+    {
+        if (musicSource != null) musicSource.volume = musicVolume;
     }
     
     #endregion
 
-    #region SFX Play Methods
+    #region Music System
+    
+    public void PlayMusic(AudioClip clip, bool loop = true)
+    {
+        if (clip == null || musicSource == null) return;
+        
+        musicSource.clip = clip;
+        musicSource.loop = loop;
+        musicSource.volume = musicVolume;
+        musicSource.Play();
+    }
 
+    /// <summary>
+    /// Wird von Enemy aufgerufen wenn er den Spieler jagt
+    /// </summary>
+    public void EnterCombat()
+    {
+        lastCombatTime = Time.time;
+        
+        if (!isInCombat)
+        {
+            isInCombat = true;
+            SwitchToCombatMusic();
+        }
+    }
+
+    /// <summary>
+    /// Wechselt zur Kampfmusik mit Fade
+    /// </summary>
+    private void SwitchToCombatMusic()
+    {
+        if (combatMusic == null) return;
+        
+        if (musicFadeCoroutine != null)
+            StopCoroutine(musicFadeCoroutine);
+            
+        musicFadeCoroutine = StartCoroutine(CrossfadeMusic(combatMusic));
+        
+        // Starte den Check für "Combat vorbei"
+        if (combatCheckCoroutine != null)
+            StopCoroutine(combatCheckCoroutine);
+        combatCheckCoroutine = StartCoroutine(CheckCombatEnd());
+    }
+
+    /// <summary>
+    /// Prüft kontinuierlich ob Kampf vorbei ist
+    /// </summary>
+    private IEnumerator CheckCombatEnd()
+    {
+        while (isInCombat)
+        {
+            // Wenn seit combatMusicDelay Sekunden kein Combat mehr
+            if (Time.time - lastCombatTime > combatMusicDelay)
+            {
+                ExitCombat();
+            }
+            yield return new WaitForSeconds(0.5f);
+        }
+    }
+
+    /// <summary>
+    /// Wechselt zurück zur friedlichen Musik
+    /// </summary>
+    private void ExitCombat()
+    {
+        if (!isInCombat) return;
+        
+        isInCombat = false;
+        
+        if (peacefulMusic == null) return;
+        
+        if (musicFadeCoroutine != null)
+            StopCoroutine(musicFadeCoroutine);
+            
+        musicFadeCoroutine = StartCoroutine(CrossfadeMusic(peacefulMusic));
+    }
+
+    /// <summary>
+    /// Sanfter Übergang zwischen zwei Musikstücken
+    /// </summary>
+    private IEnumerator CrossfadeMusic(AudioClip newClip)
+    {
+        float startVolume = musicSource.volume;
+        
+        // Fade out
+        float timer = 0f;
+        while (timer < musicFadeDuration / 2f)
+        {
+            timer += Time.deltaTime;
+            musicSource.volume = Mathf.Lerp(startVolume, 0f, timer / (musicFadeDuration / 2f));
+            yield return null;
+        }
+        
+        // Switch clip
+        musicSource.clip = newClip;
+        musicSource.Play();
+        
+        // Fade in
+        timer = 0f;
+        while (timer < musicFadeDuration / 2f)
+        {
+            timer += Time.deltaTime;
+            musicSource.volume = Mathf.Lerp(0f, musicVolume, timer / (musicFadeDuration / 2f));
+            yield return null;
+        }
+        
+        musicSource.volume = musicVolume;
+    }
+    
+    #endregion
+
+    #region SFX
+    
     public void PlaySFX(AudioClip clip)
     {
         if (clip != null && sfxSource != null)
         {
-            sfxSource.PlayOneShot(clip);
+            sfxSource.PlayOneShot(clip, sfxVolume);
         }
     }
 
