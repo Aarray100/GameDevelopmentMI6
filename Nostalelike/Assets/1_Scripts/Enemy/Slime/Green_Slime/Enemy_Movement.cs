@@ -1,79 +1,255 @@
 using UnityEngine;
-using UnityEngine.XR;
+using System.Collections;
 
-
-
-public class NewEmptyCSharpScript : MonoBehaviour
+public class Enemy_Movement : MonoBehaviour
 {
-    public float speed;
-    private int facingDirection = 1;
+    [Header("Movement")]
+    public float speed = 2f;
+    
+    [Header("Detection")]
+    public float detectionRange = 5f;   // Reichweite um Spieler zu entdecken
+    public float attackRange = 2.0f;    // Reichweite für Angriffs-ENTSCHEIDUNG (MUSS größer sein!)
+    public float attackHitRange = 1.2f; // Reichweite für tatsächlichen TREFFER (kleiner, Spieler kann ausweichen)
+    
+    [Header("Combat")]
+    public float attackCooldown = 1.5f;  // Zeit zwischen Angriffen
+    public float attackDamage = 10f;
+    public float attackWindupTime = 0.4f; // Zeit bevor der Schlag trifft (Ausweichen möglich!)
+    
+    [Header("Visuals")]
+    public Transform visualsTransform;   // Das Sprite/Animator-Objekt zum Flippen
+    
     private EnemyState enemyState;
-
+    private float nextAttackTime = 0f;
+    private Vector2 lastDirection = Vector2.down;
+    private float initialFacingDirection = 1f;
+    private float lastStableHorizontal = 1f;
+    private bool isAttacking = false;    // Verhindert Spam während Attack-Animation
 
     private Rigidbody2D rb;
     private Transform player;
     private Animator anim;
-
+    private EnemyHealth enemyHealth;
 
     void Start()
     {
-
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+        enemyHealth = GetComponent<EnemyHealth>();
+        
+        // Visuals Transform automatisch finden falls nicht zugewiesen
+        if (visualsTransform == null)
+        {
+            // Versuche SpriteRenderer zu finden
+            SpriteRenderer sr = GetComponentInChildren<SpriteRenderer>();
+            if (sr != null)
+            {
+                visualsTransform = sr.transform;
+            }
+            else
+            {
+                visualsTransform = transform; // Fallback auf eigenes Transform
+            }
+        }
+        
+        // Initiale Blickrichtung speichern
+        initialFacingDirection = Mathf.Abs(visualsTransform.localScale.x);
+        lastStableHorizontal = initialFacingDirection;
+        
+        // Spieler-Referenz holen
+        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        if (playerObj != null)
+        {
+            player = playerObj.transform;
+        }
+        
         ChangeState(EnemyState.Idle);
     }
 
-
-
     void Update()
     {
-        if (enemyState == EnemyState.Chasing)
+        if (player == null) return;
+        
+        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
+        
+        // State Machine Logik
+        switch (enemyState)
         {
-            if(player.position.x < transform.position.x && facingDirection == -1||
-                player.position.x > transform.position.x && facingDirection == 1)
-            {
-                Flip();
-            }
-
-            Vector2 direction = (player.position - transform.position).normalized;
-            rb.linearVelocity = direction * speed;
-        }
-        else if (enemyState == EnemyState.Idle)
-        {
-            rb.linearVelocity = Vector2.zero;
+            case EnemyState.Idle:
+                HandleIdleState(distanceToPlayer);
+                break;
+                
+            case EnemyState.Chasing:
+                HandleChasingState(distanceToPlayer);
+                break;
+                
+            case EnemyState.Attacking:
+                HandleAttackingState(distanceToPlayer);
+                break;
         }
     }
-
-    void Flip()
+    
+    void HandleIdleState(float distanceToPlayer)
     {
-        facingDirection *= -1;
-        transform.localScale = new Vector3(transform.localScale.x * -1, transform.localScale.y, transform.localScale.z);
-    }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.gameObject.tag == "Player")
+        rb.linearVelocity = Vector2.zero;
+        
+        // Spieler entdeckt?
+        if (distanceToPlayer <= detectionRange)
         {
-            if (player == null)
-            {
-                player = collision.transform;
-            }
             ChangeState(EnemyState.Chasing);
+        }
     }
-    }
-
-
-    private void OnTriggerExit2D(Collider2D collision)
+    
+    void HandleChasingState(float distanceToPlayer)
     {
-        if (collision.gameObject.tag == "Player")
+        // Spieler außer Reichweite? Zurück zu Idle
+        if (distanceToPlayer > detectionRange)
         {
             ChangeState(EnemyState.Idle);
+            return;
+        }
+        
+        // Spieler in Angriffsreichweite? Angreifen!
+        if (distanceToPlayer <= attackRange)
+        {
+            ChangeState(EnemyState.Attacking);
+            return;
+        }
+        
+        // Zum Spieler bewegen
+        Vector2 direction = (player.position - transform.position).normalized;
+        rb.linearVelocity = direction * speed;
+        
+        // Richtung speichern und an EnemyHealth weitergeben
+        lastDirection = direction;
+        if (enemyHealth != null)
+        {
+            enemyHealth.SetFacingDirection(direction);
+        }
+        
+        // Sprite flippen basierend auf horizontaler Richtung
+        if (Mathf.Abs(direction.x) > 0.1f)
+        {
+            lastStableHorizontal = Mathf.Sign(direction.x);
+            Flip(lastStableHorizontal);
+        }
+        
+        // Animator Parameter setzen für Blend Tree
+        UpdateAnimatorDirection(direction);
+    }
+    
+    void HandleAttackingState(float distanceToPlayer)
+    {
+        rb.linearVelocity = Vector2.zero;
+        
+        // Während eines Angriffs nicht unterbrechen
+        if (isAttacking) return;
+        
+        // Spieler zu weit weg? Zurück zum Verfolgen
+        if (distanceToPlayer > attackRange * 2f)
+        {
+            ChangeState(EnemyState.Chasing);
+            return;
+        }
+        
+        // Angriff ausführen wenn Cooldown abgelaufen
+        if (Time.time >= nextAttackTime)
+        {
+            StartCoroutine(AttackWithWindup());
+            nextAttackTime = Time.time + attackCooldown;
+        }
+    }
+    
+    /// <summary>
+    /// Angriff mit Wind-up Zeit - Spieler kann ausweichen!
+    /// </summary>
+    IEnumerator AttackWithWindup()
+    {
+        isAttacking = true;
+        
+        // Animation starten
+        anim.SetTrigger("Attack");
+        
+        Debug.Log($"{gameObject.name} beginnt Angriff! (Wind-up: {attackWindupTime}s)");
+        
+        // Wind-up Zeit - Spieler kann noch ausweichen!
+        yield return new WaitForSeconds(attackWindupTime);
+        
+        // JETZT prüfen ob Spieler noch in Reichweite ist
+        if (player != null)
+        {
+            float currentDistance = Vector2.Distance(transform.position, player.position);
+        
+            if (currentDistance <= attackHitRange)
+            {
+                // TREFFER! Spieler ist noch in Range
+                PlayerStats playerStats = player.GetComponent<PlayerStats>();
+                if (playerStats != null)
+                {
+                    playerStats.TakeDamage(attackDamage);
+                    Debug.Log($"{gameObject.name} TRIFFT für {attackDamage} Schaden!");
+                }
+            }
+            else
+            {
+                // VERFEHLT! Spieler ist ausgewichen
+                Debug.Log($"{gameObject.name} hat VERFEHLT! Spieler ist ausgewichen.");
+            }
+        }
+        
+        // Kurz warten bis Animation fertig ist
+        yield return new WaitForSeconds(0.3f);
+        
+        isAttacking = false;
+        
+        // Nach Angriff: Prüfen ob wir weiter angreifen oder verfolgen sollen
+        if (player != null)
+        {
+            float dist = Vector2.Distance(transform.position, player.position);
+            if (dist > attackRange)
+            {
+                ChangeState(EnemyState.Chasing);
+            }
+        }
+    }
+    
+    void UpdateAnimatorDirection(Vector2 direction)
+    {
+        // Für Blend Tree mit 4 Animationen (Down, Up, Left, Right)
+        // Left-Animation wird für Right wiederverwendet (mit Sprite Flip)
+        anim.SetFloat("FaceX", direction.x);
+        anim.SetFloat("FaceY", direction.y);
+    }
+    
+    /// <summary>
+    /// Flippt das Sprite horizontal basierend auf der Bewegungsrichtung.
+    /// Gleiche Logik wie beim Player für Konsistenz.
+    /// </summary>
+    void Flip(float horizontalDirection)
+    {
+        if (visualsTransform == null) return;
+
+        float targetScaleX = visualsTransform.localScale.x;
+
+        // INVERTIERT: Slime-Sprite schaut standardmäßig nach links
+        if (horizontalDirection > 0) 
+            targetScaleX = -Mathf.Abs(initialFacingDirection); // Rechts = negative Scale (geflippt)
+        else if (horizontalDirection < 0) 
+            targetScaleX = Mathf.Abs(initialFacingDirection);  // Links = positive Scale (normal)
+
+        if (!Mathf.Approximately(visualsTransform.localScale.x, targetScaleX))
+        {
+            visualsTransform.localScale = new Vector3(
+                targetScaleX, 
+                visualsTransform.localScale.y, 
+                visualsTransform.localScale.z
+            );
         }
     }
     
     void ChangeState(EnemyState newState)
     {
-        //Exit the current animation state
+        // Exit current state
         if (enemyState == EnemyState.Idle)
         {
             anim.SetBool("isIdle", false);
@@ -82,26 +258,48 @@ public class NewEmptyCSharpScript : MonoBehaviour
         {
             anim.SetBool("isChasing", false);
         }
+        else if (enemyState == EnemyState.Attacking)
+        {
+            anim.SetBool("isAttacking", false);
+        }
 
-        //Update our current state
+        // Update state
         enemyState = newState;
 
-        //Enter the new animation state)
-         if (enemyState == EnemyState.Idle)
+        // Enter new state
+        if (enemyState == EnemyState.Idle)
         {
             anim.SetBool("isIdle", true);
+            rb.linearVelocity = Vector2.zero;
         }
         else if (enemyState == EnemyState.Chasing)
         {
             anim.SetBool("isChasing", true);
         }
-
+        else if (enemyState == EnemyState.Attacking)
+        {
+            anim.SetBool("isAttacking", true);
+        }
+        
+        Debug.Log($"{gameObject.name} changed state to: {newState}");
+    }
+    
+    // Visualisierung im Editor
+    void OnDrawGizmosSelected()
+    {
+        // Detection Range (gelb)
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, detectionRange);
+        
+        // Attack Range (rot)
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, attackRange);
     }
 }
-
 
 public enum EnemyState
 {
     Idle,
     Chasing,
+    Attacking
 }

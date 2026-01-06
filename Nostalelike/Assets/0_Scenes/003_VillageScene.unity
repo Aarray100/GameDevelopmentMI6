@@ -4905,7 +4905,7 @@ Tilemap:
       - {fileID: 6898035379108858973, guid: 0f3ed8e63d1dc708ead34def9e49958a, type: 3}
       - {fileID: -8868248462342347919, guid: 0f3ed8e63d1dc708ead34def9e49958a, type: 3}
       - {fileID: -1605707320451941170, guid: 0f3ed8e63d1dc708ead34def9e49958a, type: 3}
-      m_AnimationSpeed: 1.9976692
+      m_AnimationSpeed: 2.7986567
       m_AnimationTimeOffset: 0
       m_Flags: 0
   m_TileAssetArray:
@@ -83545,71 +83545,6 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
---- !u!1001 &693552877
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 1631028843457535564, guid: cd76cd362436ad7baae64ba0891a265c, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -28.04
-      objectReference: {fileID: 0}
-    - target: {fileID: 1631028843457535564, guid: cd76cd362436ad7baae64ba0891a265c, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 15.68
-      objectReference: {fileID: 0}
-    - target: {fileID: 1631028843457535564, guid: cd76cd362436ad7baae64ba0891a265c, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1631028843457535564, guid: cd76cd362436ad7baae64ba0891a265c, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1631028843457535564, guid: cd76cd362436ad7baae64ba0891a265c, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1631028843457535564, guid: cd76cd362436ad7baae64ba0891a265c, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1631028843457535564, guid: cd76cd362436ad7baae64ba0891a265c, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1631028843457535564, guid: cd76cd362436ad7baae64ba0891a265c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1631028843457535564, guid: cd76cd362436ad7baae64ba0891a265c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1631028843457535564, guid: cd76cd362436ad7baae64ba0891a265c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1955312307395595146, guid: cd76cd362436ad7baae64ba0891a265c, type: 3}
-      propertyPath: sceneToLoad
-      value: 007_IceScene
-      objectReference: {fileID: 0}
-    - target: {fileID: 1955312307395595146, guid: cd76cd362436ad7baae64ba0891a265c, type: 3}
-      propertyPath: targetSpawnPointID
-      value: FromVillageToIce
-      objectReference: {fileID: 0}
-    - target: {fileID: 2754417867590011674, guid: cd76cd362436ad7baae64ba0891a265c, type: 3}
-      propertyPath: m_Name
-      value: '[SceneTransitionTrigger] (2)'
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: cd76cd362436ad7baae64ba0891a265c, type: 3}
 --- !u!1001 &699139699
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -90544,7 +90479,8 @@ GameObject:
   - component: {fileID: 1082231312}
   - component: {fileID: 1082231311}
   - component: {fileID: 1082231310}
-  m_Layer: 0
+  - component: {fileID: 1082231318}
+  m_Layer: 7
   m_Name: Enemy_Big Slime_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -90562,8 +90498,15 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a1aa45931ebac58438cc248d439c1a5b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NewEmptyCSharpScript
+  m_EditorClassIdentifier: Assembly-CSharp::Enemy_Movement
   speed: 1.5
+  detectionRange: 5
+  attackRange: 2.0
+  attackHitRange: 1.2
+  attackCooldown: 1.5
+  attackDamage: 10
+  attackWindupTime: 0.4
+  visualsTransform: {fileID: 0}
 --- !u!114 &1082231311
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -90576,7 +90519,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7da03b452e3ecfb47839096922de7712, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy_Combat
-  damage: 1
+  contactDamage: 5
+  contactCooldown: 1
 --- !u!58 &1082231312
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -90623,7 +90567,7 @@ Animator:
   m_GameObject: {fileID: 1082231309}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 8742c2e95a07eca4ca9bd6c11785ebdf, type: 2}
+  m_Controller: {fileID: 22100000, guid: 039db4f9572e18d1094985fd669166b9, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -90766,12 +90710,27 @@ Transform:
   m_GameObject: {fileID: 1082231309}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -52.66, y: 52.2, z: 0}
+  m_LocalPosition: {x: -52.34, y: 52.12, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1082231318
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1082231309}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e6430eeba2d907658c9ef9c1d017b5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
+  maxHealth: 100
+  debugTakeDamage: 0
+  debugKill: 0
 --- !u!1 &1352036837
 GameObject:
   m_ObjectHideFlags: 0
@@ -90821,7 +90780,8 @@ GameObject:
   - component: {fileID: 1471964045}
   - component: {fileID: 1471964044}
   - component: {fileID: 1471964043}
-  m_Layer: 0
+  - component: {fileID: 1471964051}
+  m_Layer: 7
   m_Name: Enemy_Big Slime_0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -90839,8 +90799,15 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a1aa45931ebac58438cc248d439c1a5b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NewEmptyCSharpScript
+  m_EditorClassIdentifier: Assembly-CSharp::Enemy_Movement
   speed: 1.5
+  detectionRange: 5
+  attackRange: 2.0
+  attackHitRange: 1.2
+  attackCooldown: 1.5
+  attackDamage: 10
+  attackWindupTime: 0.4
+  visualsTransform: {fileID: 0}
 --- !u!114 &1471964044
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -90853,7 +90820,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7da03b452e3ecfb47839096922de7712, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy_Combat
-  damage: 1
+  contactDamage: 5
+  contactCooldown: 1
 --- !u!58 &1471964045
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -90900,7 +90868,7 @@ Animator:
   m_GameObject: {fileID: 1471964042}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 8742c2e95a07eca4ca9bd6c11785ebdf, type: 2}
+  m_Controller: {fileID: 22100000, guid: 039db4f9572e18d1094985fd669166b9, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -91049,6 +91017,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1471964051
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1471964042}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e6430eeba2d907658c9ef9c1d017b5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
+  maxHealth: 100
+  debugTakeDamage: 0
+  debugKill: 0
 --- !u!1 &1589352794
 GameObject:
   m_ObjectHideFlags: 0
@@ -112305,5 +112288,4 @@ SceneRoots:
   - {fileID: 1471964050}
   - {fileID: 1082231317}
   - {fileID: 699139699}
-  - {fileID: 693552877}
   - {fileID: 282759805}

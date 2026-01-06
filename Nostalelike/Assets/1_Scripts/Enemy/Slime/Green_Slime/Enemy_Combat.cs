@@ -2,22 +2,27 @@ using UnityEngine;
 
 public class Enemy_Combat : MonoBehaviour
 {
-    public int damage = 1;
+    [Header("Contact Damage")]
+    public float contactDamage = 5f;         // Schaden bei Berührung
+    public float contactCooldown = 1f;       // Cooldown zwischen Kontaktschaden
+    
+    private float nextContactDamageTime = 0f;
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnCollisionStay2D(Collision2D collision)
     {
-        if (collision.gameObject.tag == "Player")
+        // Kontaktschaden bei Berührung mit dem Player
+        if (collision.gameObject.CompareTag("Player"))
         {
-            //collision.gameObject.GetComponent<PlayerHealth>().ChangeHealth(-damage);
+            if (Time.time >= nextContactDamageTime)
+            {
+                PlayerStats playerStats = collision.gameObject.GetComponent<PlayerStats>();
+                if (playerStats != null)
+                {
+                    playerStats.TakeDamage(contactDamage);
+                    Debug.Log($"{gameObject.name} dealt {contactDamage} contact damage!");
+                }
+                nextContactDamageTime = Time.time + contactCooldown;
+            }
         }
-    }    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }
