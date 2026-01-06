@@ -290,4 +290,33 @@ public class PlayerStats : MonoBehaviour
         Debug.Log("Player died!");
         // Hier Death-Logik
     }
+
+
+
+#region Save/Load System
+
+/// <summary>
+/// Lädt die gespeicherten Stats
+/// </summary>
+public void LoadSaveData(float savedHealth, float savedMaxHealth, float savedMana, float savedMaxMana)
+{
+    // Max-Werte setzen
+    maxHealth = savedMaxHealth;
+    maxMana = savedMaxMana;
+    
+    // Current-Werte setzen mit Clamp
+    currentHealth = Mathf.Clamp(savedHealth, 0f, maxHealth);
+    currentMana = Mathf.Clamp(savedMana, 0f, maxMana);
+    
+    // Events triggern für UI Updates
+    OnHealthChanged?.Invoke();
+    OnManaChanged?.Invoke();
+    OnStatsChanged?.Invoke();
+    
+    Debug.Log($"PlayerStats loaded: HP {currentHealth}/{maxHealth}, Mana {currentMana}/{maxMana}");
+}
+
+#endregion
+
+
 }

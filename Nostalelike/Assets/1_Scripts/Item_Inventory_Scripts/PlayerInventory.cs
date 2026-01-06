@@ -200,4 +200,62 @@ public class PlayerInventory : MonoBehaviour
         }
     }
 
+    // ...existing code...
+
+#region Save/Load System
+
+public List<InventoryItemData> GetSaveData()
+{
+    List<InventoryItemData> data = new List<InventoryItemData>();
+    
+    for (int i = 0; i < inventory.slots.Count; i++)
+    {
+        var slot = inventory.slots[i];
+        if (slot != null && slot.item != null)
+        {
+            InventoryItemData itemData = new InventoryItemData
+            {
+                itemID = slot.item.itemName,
+                slotIndex = i,
+                stackCount = slot.quantity
+            };
+            data.Add(itemData);
+        }
+    }
+    
+    Debug.Log($"PlayerInventory: {data.Count} Items zum Speichern gesammelt");
+    return data;
+}
+
+public void LoadSaveData(List<InventoryItemData> data)
+{
+    if (data == null) return;
+    
+    inventory.Clear();
+    
+    foreach (var itemData in data)
+    {
+        // Item direkt vom SaveManager holen (kein ItemDatabase nötig!)
+        ItemData item = SaveManager.Instance?.GetItemByName(itemData.itemID);
+        
+        if (item != null)
+        {
+            if (itemData.slotIndex >= 0 && itemData.slotIndex < inventory.slots.Count)
+            {
+                inventory.slots[itemData.slotIndex].item = item;
+                inventory.slots[itemData.slotIndex].quantity = itemData.stackCount;
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"Item nicht gefunden: {itemData.itemID}");
+        }
+    }
+    
+    UpdateUISlots();
+    Debug.Log($"PlayerInventory: {data.Count} Items geladen");
+}
+
+#endregion
+
 }
