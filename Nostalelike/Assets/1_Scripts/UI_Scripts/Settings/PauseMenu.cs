@@ -22,7 +22,6 @@ public class PauseMenu : MonoBehaviour
     
     private void Awake()
     {
-        // Singleton Pattern (ohne DontDestroyOnLoad - Canvas macht das bereits)
         if (instance == null)
         {
             instance = this;
@@ -36,13 +35,11 @@ public class PauseMenu : MonoBehaviour
     
     private void Start()
     {
-        // Panel initial verstecken
         if (pauseMenuPanel != null)
         {
             pauseMenuPanel.SetActive(false);
         }
         
-        // Button Listeners
         if (playButton != null)
             playButton.onClick.AddListener(ResumeGame);
         
@@ -55,19 +52,16 @@ public class PauseMenu : MonoBehaviour
         if (quitButton != null)
             quitButton.onClick.AddListener(QuitGame);
         
-        // Audio Slider Setup - Warte kurz auf AudioManager
         InitializeAudioSliders();
     }
     
     private void InitializeAudioSliders()
     {
-        // Slider Range setzen (0 bis 1)
         if (musicSlider != null)
         {
             musicSlider.minValue = 0f;
             musicSlider.maxValue = 1f;
             
-            // Wert vom AudioManager holen (oder Default)
             float musicVol = AudioManager.Instance != null 
                 ? AudioManager.Instance.GetMusicVolume() 
                 : PlayerPrefs.GetFloat("MusicVolume", 0.5f);
@@ -83,7 +77,6 @@ public class PauseMenu : MonoBehaviour
             sfxSlider.minValue = 0f;
             sfxSlider.maxValue = 1f;
             
-            // Wert vom AudioManager holen (oder Default)
             float sfxVol = AudioManager.Instance != null 
                 ? AudioManager.Instance.GetSFXVolume() 
                 : PlayerPrefs.GetFloat("SFXVolume", 1f);
@@ -97,17 +90,12 @@ public class PauseMenu : MonoBehaviour
     
     private void Update()
     {
-        // ESC Taste zum Öffnen/Schließen des Menüs
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (isPaused)
-            {
                 ResumeGame();
-            }
             else
-            {
                 PauseGame();
-            }
         }
     }
     
@@ -115,12 +103,10 @@ public class PauseMenu : MonoBehaviour
     {
         isPaused = true;
         pauseMenuPanel.SetActive(true);
-        Time.timeScale = 0f; // Spiel anhalten
+        Time.timeScale = 0f;
         
-        // Aktualisiere Slider-Werte beim Öffnen
         RefreshSliderValues();
         
-        // Optional: Cursor sichtbar machen
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         
@@ -143,40 +129,52 @@ public class PauseMenu : MonoBehaviour
     {
         isPaused = false;
         pauseMenuPanel.SetActive(false);
-        Time.timeScale = 1f; // Spiel fortsetzen
+        Time.timeScale = 1f;
         
         Debug.Log("Spiel fortgesetzt");
     }
     
     private void SaveGame()
     {
-        Debug.Log("Save Game - wird später implementiert");
-        // TODO: Save-System implementieren
+        if (SaveManager.Instance != null)
+        {
+            SaveManager.Instance.SaveGame();
+            Debug.Log("Game Saved!");
+        }
+        else
+        {
+            Debug.LogWarning("SaveManager not found!");
+        }
         
-        // Feedback für User (funktioniert auch bei TimeScale 0)
         PlayUISound();
     }
     
     private void LoadGame()
     {
-        Debug.Log("Load Game - wird später implementiert");
-        // TODO: Load-System implementieren
+        if (SaveManager.Instance != null)
+        {
+            Time.timeScale = 1f;
+            isPaused = false;
+            
+            SaveManager.Instance.LoadGame();
+            Debug.Log("Loading Game...");
+        }
+        else
+        {
+            Debug.LogWarning("SaveManager not found!");
+        }
         
-        // Feedback für User
         PlayUISound();
     }
     
     private void PlayUISound()
     {
-        // PlayOneShot funktioniert auch bei TimeScale 0
         AudioManager.Instance?.PlayConfirmSFX();
     }
     
     private void QuitGame()
     {
         Debug.Log("Quit Game");
-        
-        // Wichtig: Time.timeScale wieder auf 1 setzen bevor wir beenden
         Time.timeScale = 1f;
         
         #if UNITY_EDITOR
@@ -204,7 +202,6 @@ public class PauseMenu : MonoBehaviour
     
     private void OnDestroy()
     {
-        // Stelle sicher dass Time.timeScale zurückgesetzt wird
         Time.timeScale = 1f;
         
         if (instance == this)
@@ -213,6 +210,5 @@ public class PauseMenu : MonoBehaviour
         }
     }
     
-    // Public Getter für isPaused (falls andere Scripts das brauchen)
     public static bool IsPaused => instance != null && instance.isPaused;
 }

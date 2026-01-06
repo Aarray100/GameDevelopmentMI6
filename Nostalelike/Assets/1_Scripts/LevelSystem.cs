@@ -79,4 +79,14 @@ public class LevelSystem : MonoBehaviour
             Debug.Log("Spielstand gelöscht! Starte das Spiel neu.");
         }
     }
+
+    // Neue Methode für SaveSystem
+    public void LoadSaveData(int savedLevel, float savedXP, float savedXPToNext)
+    {
+        level = savedLevel;
+        currentXP = savedXP;
+        xpToNextLevel = savedXPToNext;
+        UpdateUI();
+        Debug.Log($"LevelSystem loaded: Level {level}, XP {currentXP}/{xpToNextLevel}");
+    }
 }
