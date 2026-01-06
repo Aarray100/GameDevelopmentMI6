@@ -50,6 +50,7 @@ public class PlayerMovement2D : MonoBehaviour
         // Animationen & Flip
         if (anim != null) {
             anim.SetBool("isMoving", isMoving);
+            anim.SetBool("isRunning", isRunning);  // ← DAS HAT GEFEHLT!
             anim.SetFloat("horizontal", Mathf.Abs(x));
             anim.SetFloat("vertical", y);
         }

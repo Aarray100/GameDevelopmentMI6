@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2028336214400535338}
   - component: {fileID: 5330989074998959478}
   - component: {fileID: 616903729556572748}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Visuals
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -102,7 +102,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 5
+  m_SortingOrder: 6
   m_Sprite: {fileID: 4723107735738678597, guid: 61363a0f661d5e26187c9ea85d7040d4, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -143,7 +143,7 @@ GameObject:
   - component: {fileID: -5251270851385542731}
   - component: {fileID: 645518525903070816}
   - component: {fileID: 3670830023860453980}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Prefab_Character_3
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -246,10 +246,10 @@ MonoBehaviour:
   walkSpeed: 3.5
   runSpeed: 6
   mudSpeedMultiplier: 0.5
-  groundTilemap: {fileID: 0}
-  mudTileNamePart: Matsch
+  footOffset: {x: 0, y: -0.7, z: 0}
+  sensorRadius: 0.15
   anim: {fileID: 2028336214400535338}
-  visualsTransform: {fileID: 2211821025357909309}
+  visuals: {fileID: 0}
 --- !u!114 &8305257435922819359
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -358,6 +358,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCombat
   attackRange: 1
+  attackAngle: 90
   enemyLayers:
     serializedVersion: 2
     m_Bits: 128
@@ -375,7 +376,7 @@ GameObject:
   - component: {fileID: 4164603074541463195}
   - component: {fileID: 5120652899860379285}
   - component: {fileID: 9136776046421608411}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}

@@ -142,6 +142,27 @@ public class Enemy_Movement : MonoBehaviour
     {
         rb.linearVelocity = Vector2.zero;
         
+        // IMMER Richtung zum Spieler aktualisieren (auch während Angriff für nächsten Angriff)
+        if (player != null && !isAttacking)
+        {
+            Vector2 directionToPlayer = (player.position - transform.position).normalized;
+            lastDirection = directionToPlayer;
+            
+            // Sprite flippen und Animator aktualisieren
+            if (Mathf.Abs(directionToPlayer.x) > 0.1f)
+            {
+                lastStableHorizontal = Mathf.Sign(directionToPlayer.x);
+                Flip(lastStableHorizontal);
+            }
+            UpdateAnimatorDirection(directionToPlayer);
+            
+            // EnemyHealth auch aktualisieren
+            if (enemyHealth != null)
+            {
+                enemyHealth.SetFacingDirection(directionToPlayer);
+            }
+        }
+        
         // Während eines Angriffs nicht unterbrechen
         if (isAttacking) return;
         
@@ -167,10 +188,24 @@ public class Enemy_Movement : MonoBehaviour
     {
         isAttacking = true;
         
+        // WICHTIG: Richtung zum Spieler DIREKT VOR dem Angriff nochmal aktualisieren!
+        if (player != null)
+        {
+            Vector2 attackDirection = (player.position - transform.position).normalized;
+            lastDirection = attackDirection;
+            UpdateAnimatorDirection(attackDirection);
+            
+            if (Mathf.Abs(attackDirection.x) > 0.1f)
+            {
+                lastStableHorizontal = Mathf.Sign(attackDirection.x);
+                Flip(lastStableHorizontal);
+            }
+        }
+        
         // Animation starten
         anim.SetTrigger("Attack");
         
-        Debug.Log($"{gameObject.name} beginnt Angriff! (Wind-up: {attackWindupTime}s)");
+        Debug.Log($"{gameObject.name} beginnt Angriff in Richtung {lastDirection}! (Wind-up: {attackWindupTime}s)");
         
         // Wind-up Zeit - Spieler kann noch ausweichen!
         yield return new WaitForSeconds(attackWindupTime);
