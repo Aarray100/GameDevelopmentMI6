@@ -33,6 +33,9 @@ public class PlayerCombat : MonoBehaviour
 
         Debug.Log("PlayerCombat: MeleeAttack called");
 
+        // Slash Sound abspielen (immer bei Angriff)
+        AudioManager.Instance?.PlaySlashSFX();
+
         Camera cam = Camera.main;
         if (cam == null)
         {
@@ -126,8 +129,15 @@ public class PlayerCombat : MonoBehaviour
             }
         }
         
-        if (hitCount == 0 && potentialTargets.Length > 0)
+        // Hit Sound nur wenn mindestens ein Treffer
+        if (hitCount > 0)
         {
+            AudioManager.Instance?.PlayHitSFX();
+        }
+        else if (hitCount == 0 && potentialTargets.Length > 0)
+        {
+            // Verfehlt - optional: Miss Sound
+            AudioManager.Instance?.PlayMissEvadeSFX();
             Debug.Log($"PlayerCombat: {potentialTargets.Length} Gegner in Reichweite, aber keiner im Kegel!");
         }
         else if (potentialTargets.Length == 0)
@@ -136,6 +146,7 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
+    // ...existing code...
     // Visualisierung im Editor und während Play-Mode
     void OnDrawGizmos()
     {
