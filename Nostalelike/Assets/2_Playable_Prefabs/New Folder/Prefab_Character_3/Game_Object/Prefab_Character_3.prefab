@@ -245,6 +245,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement2D
   walkSpeed: 3.5
   runSpeed: 6
+  mudSpeedMultiplier: 0.5
+  groundTilemap: {fileID: 0}
+  mudTileNamePart: Matsch
   anim: {fileID: 2028336214400535338}
   visualsTransform: {fileID: 2211821025357909309}
 --- !u!114 &8305257435922819359
@@ -354,6 +357,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1135cd2c2871d6b75bfdcdd70946ea23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCombat
+  attackRange: 1
+  enemyLayers:
+    serializedVersion: 2
+    m_Bits: 128
+  attackDamage: 20
+  attackRate: 2
 --- !u!1 &7117355210593490008
 GameObject:
   m_ObjectHideFlags: 0
