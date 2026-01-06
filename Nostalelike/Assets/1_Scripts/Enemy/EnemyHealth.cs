@@ -51,6 +51,9 @@ public class EnemyHealth : MonoBehaviour
     {
         currentHealth -= damage;
 
+        // Hit Sound abspielen
+        AudioManager.Instance?.PlayHitSFX();
+
         if (anim != null)
         {
             SetAnimationDirection();
@@ -70,6 +73,9 @@ public class EnemyHealth : MonoBehaviour
     void Die()
     {
         Debug.Log($"{gameObject.name} died!");
+        
+        // Death Sound abspielen
+        AudioManager.Instance?.PlayEnemyDeathSFX();
         
         if (anim != null)
         {
