@@ -101455,6 +101455,83 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!1001 &1262007816
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4544856417567604867, guid: e0334bda1e97a28c0833520ec705182f, type: 3}
+      propertyPath: m_Name
+      value: EnemySpawnZonePrefab
+      objectReference: {fileID: 0}
+    - target: {fileID: 8499590474042792741, guid: e0334bda1e97a28c0833520ec705182f, type: 3}
+      propertyPath: zoneSize.x
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 8499590474042792741, guid: e0334bda1e97a28c0833520ec705182f, type: 3}
+      propertyPath: zoneSize.y
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 8499590474042792741, guid: e0334bda1e97a28c0833520ec705182f, type: 3}
+      propertyPath: spawnInterval
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8499590474042792741, guid: e0334bda1e97a28c0833520ec705182f, type: 3}
+      propertyPath: useWeightedSpawn
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8499590474042792741, guid: e0334bda1e97a28c0833520ec705182f, type: 3}
+      propertyPath: enemyPrefabs.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8710356437804202404, guid: e0334bda1e97a28c0833520ec705182f, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 3.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8710356437804202404, guid: e0334bda1e97a28c0833520ec705182f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 82.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8710356437804202404, guid: e0334bda1e97a28c0833520ec705182f, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8710356437804202404, guid: e0334bda1e97a28c0833520ec705182f, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8710356437804202404, guid: e0334bda1e97a28c0833520ec705182f, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8710356437804202404, guid: e0334bda1e97a28c0833520ec705182f, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8710356437804202404, guid: e0334bda1e97a28c0833520ec705182f, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8710356437804202404, guid: e0334bda1e97a28c0833520ec705182f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8710356437804202404, guid: e0334bda1e97a28c0833520ec705182f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8710356437804202404, guid: e0334bda1e97a28c0833520ec705182f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: e0334bda1e97a28c0833520ec705182f, type: 3}
 --- !u!1001 &1278216642
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -125701,3 +125778,4 @@ SceneRoots:
   - {fileID: 861926899}
   - {fileID: 1400465156}
   - {fileID: 1278216642}
+  - {fileID: 1262007816}
