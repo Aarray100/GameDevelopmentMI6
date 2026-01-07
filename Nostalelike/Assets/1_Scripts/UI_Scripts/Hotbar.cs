@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using System.Collections.Generic;
 
 public class Hotbar : MonoBehaviour
 {
@@ -465,4 +466,53 @@ public class Hotbar : MonoBehaviour
             }
         }
     }
+
+    // ...existing code...
+
+public List<HotbarSlotData> GetSaveData()
+{
+    List<HotbarSlotData> data = new List<HotbarSlotData>();
+    
+    for (int i = 0; i < slots.Length; i++)
+    {
+        HotbarSlotData slotData = new HotbarSlotData
+        {
+            slotIndex = i,
+            itemID = slots[i].item?.itemName ?? "",
+            quantity = slots[i].quantity,
+            isEmpty = slots[i].IsEmpty()
+        };
+        data.Add(slotData);
+    }
+    
+    Debug.Log($"Hotbar: {data.Count} Slots zum Speichern gesammelt");
+    return data;
+}
+
+public void LoadSaveData(List<HotbarSlotData> data)
+{
+    if (data == null) return;
+    
+    foreach (var slotData in data)
+    {
+        if (slotData.slotIndex >= 0 && slotData.slotIndex < slots.Length)
+        {
+            if (!slotData.isEmpty && !string.IsNullOrEmpty(slotData.itemID))
+            {
+                ItemData item = SaveManager.Instance?.GetItemByName(slotData.itemID);
+                if (item != null)
+                {
+                    slots[slotData.slotIndex].SetItem(item, slotData.quantity);
+                }
+            }
+            else
+            {
+                slots[slotData.slotIndex].ClearSlot();
+            }
+        }
+    }
+    
+    UpdateAllSlotsUI();
+    Debug.Log("Hotbar data loaded");
+}
 }

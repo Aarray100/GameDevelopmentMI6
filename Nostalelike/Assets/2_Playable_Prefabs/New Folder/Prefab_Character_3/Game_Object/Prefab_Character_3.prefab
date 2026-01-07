@@ -248,8 +248,12 @@ MonoBehaviour:
   mudSpeedMultiplier: 0.5
   footOffset: {x: 0, y: -0.7, z: 0}
   sensorRadius: 0.15
+  walkStepInterval: 0.4
+  runStepInterval: 0.25
+  currentGround: 0
   anim: {fileID: 2028336214400535338}
   visuals: {fileID: 0}
+  movementLocked: 0
 --- !u!114 &8305257435922819359
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -374,7 +378,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7618051585136207132}
   - component: {fileID: 4164603074541463195}
-  - component: {fileID: 5120652899860379285}
   - component: {fileID: 9136776046421608411}
   m_Layer: 6
   m_Name: Camera
@@ -449,14 +452,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!81 &5120652899860379285
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7117355210593490008}
-  m_Enabled: 1
 --- !u!114 &9136776046421608411
 MonoBehaviour:
   m_ObjectHideFlags: 0

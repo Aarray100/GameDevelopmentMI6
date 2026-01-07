@@ -69,6 +69,9 @@ public class AudioManager : MonoBehaviour
 
     private void Start()
     {
+        // Gespeicherte Lautstärke laden
+        LoadVolumeSettings();
+        
         // Initiale Lautstärke setzen
         ApplyVolumes();
         
@@ -78,20 +81,31 @@ public class AudioManager : MonoBehaviour
 
     #region Volume Control (für Settings Menu)
     
+    public float GetMusicVolume()
+    {
+        return musicVolume;
+    }
+    
+    public float GetSFXVolume()
+    {
+        return sfxVolume;
+    }
+    
     public void SetMusicVolume(float volume)
     {
         musicVolume = Mathf.Clamp01(volume);
         if (musicSource != null)
             musicSource.volume = musicVolume;
         
-        // Optional: In PlayerPrefs speichern
         PlayerPrefs.SetFloat("MusicVolume", musicVolume);
+        PlayerPrefs.Save();
     }
 
     public void SetSFXVolume(float volume)
     {
         sfxVolume = Mathf.Clamp01(volume);
         PlayerPrefs.SetFloat("SFXVolume", sfxVolume);
+        PlayerPrefs.Save();
     }
 
     public void LoadVolumeSettings()

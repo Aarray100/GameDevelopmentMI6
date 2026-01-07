@@ -196,4 +196,66 @@ public class PlayerEquipment : MonoBehaviour
         RecalculateEquipmentStats();
         OnEquipmentChanged?.Invoke();
     }
+
+// ...existing code...
+
+#region Save/Load System
+
+public List<EquipmentItemData> GetSaveData()
+{
+    List<EquipmentItemData> data = new List<EquipmentItemData>();
+    
+    foreach (var kvp in equippedItems)
+    {
+        if (kvp.Value != null)
+        {
+            EquipmentItemData itemData = new EquipmentItemData
+            {
+                itemID = kvp.Value.itemName,
+                equipSlotType = (int)kvp.Key
+            };
+            data.Add(itemData);
+        }
+    }
+    
+    Debug.Log($"PlayerEquipment: {data.Count} Items zum Speichern gesammelt");
+    return data;
+}
+
+public void LoadSaveData(List<EquipmentItemData> data)
+{
+    if (data == null) return;
+    
+    // Zuerst alles unequippen
+    foreach (EquipmentSlot slot in System.Enum.GetValues(typeof(EquipmentSlot)))
+    {
+        if (slot != EquipmentSlot.None && slot != EquipmentSlot.Weapon)
+        {
+            equippedItems[slot] = null;
+        }
+    }
+    
+    // Dann gespeicherte Items equippen
+    foreach (var itemData in data)
+    {
+        ItemData item = SaveManager.Instance?.GetItemByName(itemData.itemID);
+        
+        if (item != null)
+        {
+            EquipmentSlot slot = (EquipmentSlot)itemData.equipSlotType;
+            equippedItems[slot] = item;
+        }
+        else
+        {
+            Debug.LogWarning($"Equipment Item nicht gefunden: {itemData.itemID}");
+        }
+    }
+    
+    RecalculateEquipmentStats();
+    OnEquipmentChanged?.Invoke();
+    
+    Debug.Log($"PlayerEquipment: {data.Count} Items geladen");
+}
+
+#endregion
 }
