@@ -123,10 +123,9 @@ MonoBehaviour:
   mudSpeedMultiplier: 0.5
   footOffset: {x: 0, y: -0.7, z: 0}
   sensorRadius: 0.15
-  walkSFX: {fileID: 0}
-  runSFX: {fileID: 0}
   walkStepInterval: 0.4
   runStepInterval: 0.25
+  currentGround: 0
   anim: {fileID: 3122313092554256911}
   visuals: {fileID: 0}
   movementLocked: 0
@@ -253,11 +252,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 183428855668308988}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0e1d161661fd356818d0875b6e5ff829, type: 3}
+  m_Script: {fileID: 11500000, guid: 5175e2f243cd389d2b305a89f817274b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerFootsteps
-  currentGround: 0
-  footstepInterval: 0.4
+  journalCanvasPrefab: {fileID: 3840265824916444147, guid: 06229a07f1b8dac6ea0a0fa9e266d457, type: 3}
+  panelName: JournalRoot
+  movement: {fileID: 0}
 --- !u!1 &5731777635977914205
 GameObject:
   m_ObjectHideFlags: 0
@@ -394,8 +394,8 @@ GameObject:
   m_Component:
   - component: {fileID: 6477601692130073107}
   - component: {fileID: 2692004522090873365}
-  - component: {fileID: 7597571648629211477}
   - component: {fileID: 1452860541604720631}
+  - component: {fileID: 2370138069330149535}
   m_Layer: 6
   m_Name: Camera
   m_TagString: MainCamera
@@ -469,14 +469,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!81 &7597571648629211477
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9120519725837747140}
-  m_Enabled: 1
 --- !u!114 &1452860541604720631
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -521,3 +513,11 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
+--- !u!81 &2370138069330149535
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9120519725837747140}
+  m_Enabled: 1

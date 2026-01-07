@@ -158,6 +158,19 @@ public class Inventory
             return false;
         }
     }
+
+    /// <summary>
+    /// Leert das gesamte Inventar
+    /// </summary>
+    public void Clear()
+    {
+        foreach (var slot in slots)
+        {
+            slot.item = null;
+            slot.quantity = 0;
+        }
+        OnInventoryChanged?.Invoke();
+    }
 }
 
    
