@@ -299,6 +299,12 @@ public class SaveManager : MonoBehaviour
             data.hotbarSlots = hotbar.GetSaveData();
         }
         
+        // Chests
+        if (ChestManager.Instance != null)
+        {
+            data.openedChests = ChestManager.Instance.GetSaveData();
+        }
+        
         // Audio Settings
         if (AudioManager.Instance != null)
         {
@@ -406,6 +412,13 @@ public class SaveManager : MonoBehaviour
         {
             hotbar.LoadSaveData(data.hotbarSlots);
             Debug.Log($"<color=green>SaveManager: Hotbar loaded</color>");
+        }
+        
+        // Chests
+        if (ChestManager.Instance != null)
+        {
+            ChestManager.Instance.LoadSaveData(data.openedChests);
+            Debug.Log($"<color=green>SaveManager: Chests loaded ({data.openedChests?.Count ?? 0} opened)</color>");
         }
         
         if (AudioManager.Instance != null)
