@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using System.Collections;
 
 public class PlayerStats : MonoBehaviour
 {
@@ -66,6 +67,19 @@ public class PlayerStats : MonoBehaviour
     public event Action OnHealthChanged;
     public event Action OnManaChanged;
     public event Action OnStaminaChanged;
+    public event Action OnPlayerDeath;
+    public event Action OnPlayerRespawn;
+    public event Action<int, int> OnLevelUp; // (fromLevel, toLevel)
+    public event Action OnXPChanged; // NEU: Für XP Bar Updates
+    
+    [Header("Death Settings")]
+    public float deathAnimationDuration = 1.5f;
+    public float respawnDelay = 2f;
+    public bool isDead = false;
+    
+    // Referenzen
+    private Animator anim;
+    private PlayerMovement2D playerMovement;
     
     private void Awake()
     {
@@ -79,6 +93,10 @@ public class PlayerStats : MonoBehaviour
         currentHealth = maxHealth;
         currentMana = maxMana;
         currentStamina = maxStamina;
+        
+        // Hole Referenzen
+        anim = GetComponentInChildren<Animator>();
+        playerMovement = GetComponent<PlayerMovement2D>();
     }
     
     private void Update()
@@ -183,14 +201,18 @@ public class PlayerStats : MonoBehaviour
     
     private float CalculateEXPForNextLevel()
     {
-        // Exponentielle Kurve: wird mit jedem Level schwerer
-        return Mathf.Pow(experienceToNextLevel * currentLevel, 1.5f);
+        // Sanftere Kurve: Base * Level^1.2
+        // Level 1: 100, Level 2: 230, Level 3: 375, Level 4: 530, Level 5: 700
+        return Mathf.Round(experienceToNextLevel * Mathf.Pow(currentLevel, 1.2f));
     }
     
     public void GainExperience(int amount)
     {
         experiencePoints += amount;
         Debug.Log($"Gained {amount} EXP. Total: {experiencePoints}/{experienceRequired}");
+        
+        // Event für UI Update
+        OnXPChanged?.Invoke();
         
         // Check für Level Up
         while (experiencePoints >= experienceRequired)
@@ -201,6 +223,7 @@ public class PlayerStats : MonoBehaviour
     
     private void LevelUp()
     {
+        int previousLevel = currentLevel;
         currentLevel++;
         experiencePoints -= (int)experienceRequired;
         experienceRequired = CalculateEXPForNextLevel();
@@ -213,8 +236,15 @@ public class PlayerStats : MonoBehaviour
         currentMana = maxMana;
         currentStamina = maxStamina;
         
-        Debug.Log($"LEVEL UP! Now Level {currentLevel}");
-        // Hier könntest du ein Event triggern für UI/Effekte
+        // UI Events triggern für Full Heal
+        OnHealthChanged?.Invoke();
+        OnManaChanged?.Invoke();
+        OnStaminaChanged?.Invoke();
+        
+        Debug.Log($"LEVEL UP! Level {previousLevel} -> Level {currentLevel}. HP: {currentHealth}/{maxHealth}");
+        
+        // Event für UI/Effekte triggern
+        OnLevelUp?.Invoke(previousLevel, currentLevel);
     }
     
     // Helper Methods für Combat System
@@ -287,8 +317,88 @@ public class PlayerStats : MonoBehaviour
     
     private void Die()
     {
-        Debug.Log("Player died!");
-        // Hier Death-Logik
+        if (isDead) return; // Verhindere mehrfaches Sterben
+        
+        isDead = true;
+        Debug.Log("<color=red>Player died!</color>");
+        
+        // Bewegung stoppen und sperren
+        if (playerMovement != null)
+        {
+            playerMovement.ForceStop();
+            playerMovement.movementLocked = true;
+        }
+        
+        // Death Sound abspielen (optional: eigener Player Death Sound)
+        AudioManager.Instance?.PlayEnemyDeathSFX(); // TODO: Eigener PlayerDeathSFX
+        
+        // Death Animation abspielen
+        if (anim != null)
+        {
+            anim.SetTrigger("Death");
+        }
+        
+        // Event für UI/andere Systeme (z.B. Game Over Screen)
+        OnPlayerDeath?.Invoke();
+        
+        // Starte Respawn Coroutine
+        StartCoroutine(RespawnCoroutine());
+    }
+    
+    private IEnumerator RespawnCoroutine()
+    {
+        // Warte auf Death-Animation
+        yield return new WaitForSeconds(deathAnimationDuration);
+        
+        // Warte zusätzliche Zeit (für Game Over Screen etc.)
+        yield return new WaitForSeconds(respawnDelay);
+        
+        // Respawn durchführen
+        Respawn();
+    }
+    
+    /// <summary>
+    /// Respawnt den Spieler mit vollen HP/Mana.
+    /// Kann auch extern aufgerufen werden (z.B. von UI Button).
+    /// </summary>
+    public void Respawn()
+    {
+        isDead = false;
+        
+        // Volle Ressourcen wiederherstellen
+        currentHealth = maxHealth;
+        currentMana = maxMana;
+        currentStamina = maxStamina;
+        
+        // Respawn Animation abspielen (falls vorhanden)
+        if (anim != null)
+        {
+            anim.SetTrigger("Respawn"); // Optional: Respawn Animation
+            anim.ResetTrigger("Death");
+        }
+        
+        // Bewegung wieder freigeben
+        if (playerMovement != null)
+        {
+            playerMovement.movementLocked = false;
+        }
+        
+        // Events triggern
+        OnHealthChanged?.Invoke();
+        OnManaChanged?.Invoke();
+        OnStaminaChanged?.Invoke();
+        OnPlayerRespawn?.Invoke();
+        
+        Debug.Log("<color=green>Player respawned!</color>");
+    }
+    
+    /// <summary>
+    /// Stoppt automatischen Respawn und wartet auf manuellen Aufruf.
+    /// Nützlich für Game Over Screen mit "Restart" Button.
+    /// </summary>
+    public void CancelAutoRespawn()
+    {
+        StopAllCoroutines();
     }
 
 
