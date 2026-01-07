@@ -12,6 +12,7 @@ public class GameCharacterSpawner : MonoBehaviour
     public Transform slotParent;
     public GameObject inventoryPanelObject;
     public GameObject equipmentPanelObject;  // Equipment-Panel Referenz
+    public GameObject statSheetPanelObject;  // Stat Sheet Panel Referenz
     public GameObject slotPrefab;
     public static GameCharacterSpawner instance;
     private static bool hasSpawnedCharacter = false;  // Flag um mehrfaches Spawnen zu verhindern
@@ -19,6 +20,7 @@ public class GameCharacterSpawner : MonoBehaviour
     // Statische Referenzen zu den persistenten UI-Objekten
     private static GameObject persistentInventoryPanel;
     private static GameObject persistentEquipmentPanel;
+    private static GameObject persistentStatSheetPanel;
     private static Transform persistentSlotParent;
     private static GameObject persistentSlotPrefab;
 
@@ -44,6 +46,11 @@ public class GameCharacterSpawner : MonoBehaviour
             {
                 persistentEquipmentPanel = equipmentPanelObject;
                 Debug.Log("GameCharacterSpawner: Persistent Equipment Panel gespeichert");
+            }
+            if (persistentStatSheetPanel == null && statSheetPanelObject != null)
+            {
+                persistentStatSheetPanel = statSheetPanelObject;
+                Debug.Log("GameCharacterSpawner: Persistent Stat Sheet Panel gespeichert");
             }
             if (persistentSlotParent == null && slotParent != null)
             {
@@ -124,7 +131,13 @@ public class GameCharacterSpawner : MonoBehaviour
                 playerInventory.slotParent = persistentSlotParent;
                 playerInventory.inventoryPanelObject = persistentInventoryPanel;
                 playerInventory.equipmentPanelObject = persistentEquipmentPanel;
+                playerInventory.statSheetPanelObject = persistentStatSheetPanel;
                 playerInventory.slotPrefab = persistentSlotPrefab;
+                
+                // Stelle sicher, dass alle Panels beim Start deaktiviert sind
+                if (persistentInventoryPanel != null) persistentInventoryPanel.SetActive(false);
+                if (persistentEquipmentPanel != null) persistentEquipmentPanel.SetActive(false);
+                if (persistentStatSheetPanel != null) persistentStatSheetPanel.SetActive(false);
 
                 playerInventory.InitializeInventoryUI();
             }
