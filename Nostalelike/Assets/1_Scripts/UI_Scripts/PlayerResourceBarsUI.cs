@@ -173,6 +173,7 @@ public class PlayerResourceBarsUI : MonoBehaviour
         
         playerStats.OnHealthChanged += UpdateHealthBar;
         playerStats.OnManaChanged += UpdateManaBar;
+        playerStats.OnXPChanged += UpdateXPBar;
         playerStats.OnStatsChanged += InitializeBars;
         playerStats.OnPlayerDeath += OnPlayerDeath;
         playerStats.OnPlayerRespawn += OnPlayerRespawn;
@@ -187,6 +188,7 @@ public class PlayerResourceBarsUI : MonoBehaviour
         
         playerStats.OnHealthChanged -= UpdateHealthBar;
         playerStats.OnManaChanged -= UpdateManaBar;
+        playerStats.OnXPChanged -= UpdateXPBar;
         playerStats.OnStatsChanged -= InitializeBars;
         playerStats.OnPlayerDeath -= OnPlayerDeath;
         playerStats.OnPlayerRespawn -= OnPlayerRespawn;

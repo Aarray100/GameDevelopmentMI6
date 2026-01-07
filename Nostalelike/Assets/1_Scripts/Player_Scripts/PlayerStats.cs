@@ -70,6 +70,7 @@ public class PlayerStats : MonoBehaviour
     public event Action OnPlayerDeath;
     public event Action OnPlayerRespawn;
     public event Action<int, int> OnLevelUp; // (fromLevel, toLevel)
+    public event Action OnXPChanged; // NEU: Für XP Bar Updates
     
     [Header("Death Settings")]
     public float deathAnimationDuration = 1.5f;
@@ -200,14 +201,18 @@ public class PlayerStats : MonoBehaviour
     
     private float CalculateEXPForNextLevel()
     {
-        // Exponentielle Kurve: wird mit jedem Level schwerer
-        return Mathf.Pow(experienceToNextLevel * currentLevel, 1.5f);
+        // Sanftere Kurve: Base * Level^1.2
+        // Level 1: 100, Level 2: 230, Level 3: 375, Level 4: 530, Level 5: 700
+        return Mathf.Round(experienceToNextLevel * Mathf.Pow(currentLevel, 1.2f));
     }
     
     public void GainExperience(int amount)
     {
         experiencePoints += amount;
         Debug.Log($"Gained {amount} EXP. Total: {experiencePoints}/{experienceRequired}");
+        
+        // Event für UI Update
+        OnXPChanged?.Invoke();
         
         // Check für Level Up
         while (experiencePoints >= experienceRequired)
@@ -231,7 +236,12 @@ public class PlayerStats : MonoBehaviour
         currentMana = maxMana;
         currentStamina = maxStamina;
         
-        Debug.Log($"LEVEL UP! Level {previousLevel} -> Level {currentLevel}");
+        // UI Events triggern für Full Heal
+        OnHealthChanged?.Invoke();
+        OnManaChanged?.Invoke();
+        OnStaminaChanged?.Invoke();
+        
+        Debug.Log($"LEVEL UP! Level {previousLevel} -> Level {currentLevel}. HP: {currentHealth}/{maxHealth}");
         
         // Event für UI/Effekte triggern
         OnLevelUp?.Invoke(previousLevel, currentLevel);

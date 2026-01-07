@@ -17,6 +17,7 @@ public class PlayerInventory : MonoBehaviour
     [Header("UI Toggle Key")]
     public GameObject inventoryPanelObject;
     public GameObject equipmentPanelObject;  // Equipment-Panel Referenz
+    public GameObject statSheetPanelObject;  // Stat Sheet Panel Referenz
 
     private bool isInventoryOpen = false;
 
@@ -32,6 +33,10 @@ public class PlayerInventory : MonoBehaviour
         if (equipmentPanelObject != null)
         {
             equipmentPanelObject.SetActive(false);
+        }
+        if (statSheetPanelObject != null)
+        {
+            statSheetPanelObject.SetActive(false);
         }
     }
     private void Start()
@@ -72,6 +77,17 @@ public class PlayerInventory : MonoBehaviour
         
         // Toggle Equipment (zusammen mit Inventar)
         equipmentPanelObject.SetActive(isInventoryOpen);
+        
+        // Toggle Stat Sheet (zusammen mit Inventar)
+        if (statSheetPanelObject != null)
+        {
+            statSheetPanelObject.SetActive(isInventoryOpen);
+            Debug.Log($"StatSheet '{statSheetPanelObject.name}' toggled to: {isInventoryOpen}, activeInHierarchy: {statSheetPanelObject.activeInHierarchy}");
+        }
+        else
+        {
+            Debug.LogWarning("StatSheet Panel Object is NULL! Wurde es im GameCharacterSpawner zugewiesen?");
+        }
     }
 
     public void InitializeInventoryUI()
