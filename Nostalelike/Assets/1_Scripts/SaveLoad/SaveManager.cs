@@ -338,6 +338,14 @@ public class SaveManager : MonoBehaviour
             
             Debug.Log($"Loading save: {data.saveName} from {data.saveDate}");
             
+            // WICHTIG: Chest-Daten VOR dem Szenenwechsel laden!
+            // So haben die Truhen beim Spawnen bereits die korrekten Daten
+            if (ChestManager.Instance != null)
+            {
+                ChestManager.Instance.LoadSaveData(data.openedChests);
+                Debug.Log("<color=yellow>SaveManager: Chest data loaded BEFORE scene change</color>");
+            }
+            
             SaveDataHolder.PendingLoadData = data;
             
             if (!string.IsNullOrEmpty(data.currentSceneName))

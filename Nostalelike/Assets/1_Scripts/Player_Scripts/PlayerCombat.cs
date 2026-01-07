@@ -27,6 +27,10 @@ public class PlayerCombat : MonoBehaviour
 
     public void MeleeAttack()
     {
+        // Nicht angreifen wenn Spiel pausiert oder UI offen ist
+        if (PauseMenu.IsPaused) return;
+        if (JournalOverlay.IsOpen) return;
+        
         // 0. Cooldown Check (Rate Limiting)
         if (Time.time < nextAttackTime) return;
         nextAttackTime = Time.time + 1f / attackRate;
