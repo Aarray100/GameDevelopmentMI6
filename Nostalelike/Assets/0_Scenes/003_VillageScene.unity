@@ -5193,7 +5193,7 @@ Tilemap:
       - {fileID: 6898035379108858973, guid: 0f3ed8e63d1dc708ead34def9e49958a, type: 3}
       - {fileID: -8868248462342347919, guid: 0f3ed8e63d1dc708ead34def9e49958a, type: 3}
       - {fileID: -1605707320451941170, guid: 0f3ed8e63d1dc708ead34def9e49958a, type: 3}
-      m_AnimationSpeed: 3.9927142
+      m_AnimationSpeed: 1.0629847
       m_AnimationTimeOffset: 0
       m_Flags: 0
   m_TileAssetArray:
@@ -5738,7 +5738,7 @@ Transform:
   m_GameObject: {fileID: 203122758}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -9.45, y: -6.58, z: 0}
+  m_LocalPosition: {x: 15.79, y: -17.24, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -63594,7 +63594,7 @@ Transform:
   m_GameObject: {fileID: 515132251}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -7.29, y: -5.88, z: 0}
+  m_LocalPosition: {x: -6.22, y: 25.2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -63613,12 +63613,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88aa7cce185625d45b44179032535098, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NPC_Wander
-  wanderWidth: 20
-  wanderHeight: 2
-  startingPosition: {x: -40.29, y: 5.88}
-  pauseDuration: 1
+  wanderWidth: 15
+  wanderHeight: 4
+  startingPosition: {x: -35, y: 36}
+  pauseDuration: 4
   speed: 2
-  target: {x: -42, y: 0}
+  target: {x: -35, y: 36}
 --- !u!70 &515132254
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
