@@ -39,8 +39,13 @@ public class NPC_Wander : MonoBehaviour
             rb.linearVelocity = Vector2.zero;
             return;
         }
+
         if (Vector2.Distance(transform.position, target) < .1f)
+        {
             StartCoroutine(PauseAndPickNewDestination());
+            return;
+        }
+            
 
         Move();
 
@@ -58,6 +63,8 @@ public class NPC_Wander : MonoBehaviour
 
     IEnumerator PauseAndPickNewDestination()
     {
+        if (isPaused) yield break;
+
         isPaused = true;
         anim.Play("Idle_Down");
         yield return new WaitForSeconds(pauseDuration);
