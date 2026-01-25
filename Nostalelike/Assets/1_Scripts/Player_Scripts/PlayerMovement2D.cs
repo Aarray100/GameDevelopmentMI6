@@ -30,6 +30,15 @@ public class PlayerMovement2D : MonoBehaviour
     private float currentSpeed;
     private float initialScaleX;
 
+    [Header("Währung")]
+    public static int gold = 500;
+
+    void Awake() 
+    {
+        // Lädt den Goldstand beim Starten des Spiels
+        gold = PlayerPrefs.GetInt("GespeichertesGold", 0);
+    }
+
     void Start() {
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = 0; 
@@ -38,6 +47,13 @@ public class PlayerMovement2D : MonoBehaviour
         if (anim == null) anim = GetComponentInChildren<Animator>();
         if (visuals == null) visuals = transform;
         initialScaleX = Mathf.Abs(visuals.localScale.x);
+    }
+
+    // Hilfsfunktion zum Speichern (kannst du von überall aufrufen)
+    public static void GoldSpeichern()
+    {
+        PlayerPrefs.SetInt("GespeichertesGold", gold);
+        PlayerPrefs.Save();
     }
 
     void Update()
