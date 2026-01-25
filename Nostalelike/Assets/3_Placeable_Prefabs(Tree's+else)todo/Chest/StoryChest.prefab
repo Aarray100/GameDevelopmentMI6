@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 12075357097814565}
   - component: {fileID: 3421715335253963910}
   - component: {fileID: 4584557612786406351}
+  - component: {fileID: -5615808015382657413}
   m_Layer: 0
   m_Name: StoryChest
   m_TagString: Untagged
@@ -150,6 +151,56 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dce26883f9662c922815463f324c743d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LootChest
+  chestID: 
   itemInside: {fileID: 0}
   quantity: 1
+  unlockJournalEntry: 0
+  journalEntryId: 
+  journalDb: {fileID: 0}
   openChestSprite: {fileID: 8249898411453744507, guid: 9fe9c0a18180e8898ad375aa98f13f18, type: 3}
+--- !u!61 &-5615808015382657413
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8365622928531072412}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0.3}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 2, y: 1}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 2, y: 0.2}
+  m_EdgeRadius: 0

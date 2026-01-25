@@ -299,6 +299,12 @@ public class SaveManager : MonoBehaviour
             data.hotbarSlots = hotbar.GetSaveData();
         }
         
+        // Chests
+        if (ChestManager.Instance != null)
+        {
+            data.openedChests = ChestManager.Instance.GetSaveData();
+        }
+        
         // Audio Settings
         if (AudioManager.Instance != null)
         {
@@ -331,6 +337,14 @@ public class SaveManager : MonoBehaviour
             SaveData data = JsonUtility.FromJson<SaveData>(json);
             
             Debug.Log($"Loading save: {data.saveName} from {data.saveDate}");
+            
+            // WICHTIG: Chest-Daten VOR dem Szenenwechsel laden!
+            // So haben die Truhen beim Spawnen bereits die korrekten Daten
+            if (ChestManager.Instance != null)
+            {
+                ChestManager.Instance.LoadSaveData(data.openedChests);
+                Debug.Log("<color=yellow>SaveManager: Chest data loaded BEFORE scene change</color>");
+            }
             
             SaveDataHolder.PendingLoadData = data;
             
@@ -406,6 +420,13 @@ public class SaveManager : MonoBehaviour
         {
             hotbar.LoadSaveData(data.hotbarSlots);
             Debug.Log($"<color=green>SaveManager: Hotbar loaded</color>");
+        }
+        
+        // Chests
+        if (ChestManager.Instance != null)
+        {
+            ChestManager.Instance.LoadSaveData(data.openedChests);
+            Debug.Log($"<color=green>SaveManager: Chests loaded ({data.openedChests?.Count ?? 0} opened)</color>");
         }
         
         if (AudioManager.Instance != null)
