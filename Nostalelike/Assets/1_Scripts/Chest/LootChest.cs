@@ -74,7 +74,7 @@ public class LootChest : MonoBehaviour
         {
             playerInv.inventory.AddItem(itemInside, quantity);
             // NEU: Benachrichtigung für Item
-            NotificationManager.Instance?.ShowNotification($"{itemInside.itemName} x{quantity} erhalten!");
+                JournalToast.Enqueue($"+{quantity} {itemInside.itemName}");
         }
 
         if (unlockJournalEntry && !string.IsNullOrEmpty(journalEntryId))
@@ -85,6 +85,7 @@ public class LootChest : MonoBehaviour
             if (entry != null)
             {
                 JournalProgress.Unlock(journalEntryId);
+                    JournalToast.Enqueue($"Journal aktualisiert: {journalEntryId}");
                 // NEU: Benachrichtigung für Journal
                 NotificationManager.Instance?.ShowNotification($"Neuer Eintrag: {entry.title}");
             }
