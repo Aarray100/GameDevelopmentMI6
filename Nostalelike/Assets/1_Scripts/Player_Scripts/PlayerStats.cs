@@ -19,7 +19,7 @@ public class PlayerStats : MonoBehaviour
     public float baseManaRegenRate = 3f;
     public float baseStaminaRegenRate = 4f;
 
-    [Header("Base Combat Stats")] // Diese Variablen haben gefehlt!
+    [Header("Base Combat Stats")]
     public float baseDamage = 10f;
     public float baseDefense = 5f;
     
@@ -32,6 +32,8 @@ public class PlayerStats : MonoBehaviour
     public float totalHealthRegen;
     public float totalManaRegen;
     public float totalStaminaRegen;
+    public float totalCriticalChance;
+    public float totalCriticalDamage = 1.5f;
 
     [Header("Level System")]
     public int currentLevel = 1;
@@ -49,10 +51,26 @@ public class PlayerStats : MonoBehaviour
     public event Action OnHealthChanged;
     public event Action OnManaChanged;
     public event Action OnStaminaChanged;
+    public event Action OnPlayerDeath;
+    public event Action OnPlayerRespawn;
+    public event Action<int, int> OnLevelUp;
+    public event Action OnXPChanged;
+    
+    [Header("Death Settings")]
+    public float deathAnimationDuration = 1.5f;
+    public float respawnDelay = 2f;
+    public bool isDead = false;
+    
+    // Referenzen
+    private Animator anim;
+    private PlayerMovement2D playerMovement;
     
     private void Awake()
     {
         movement = GetComponent<PlayerMovement2D>();
+        playerMovement = movement;
+        anim = GetComponentInChildren<Animator>();
+        
         RecalculateStats();
         currentHealth = maxHealth;
         currentMana = maxMana;
@@ -148,6 +166,7 @@ public class PlayerStats : MonoBehaviour
 
     private void ApplyOmniLevelUp()
     {
+        int previousLevel = currentLevel;
         currentLevel++;
         experiencePoints = 0;
         experienceToNextLevel = (int)(experienceToNextLevel * 1.5f);
@@ -155,17 +174,185 @@ public class PlayerStats : MonoBehaviour
         currentHealth = maxHealth;
         currentMana = maxMana;
         currentStamina = maxStamina;
+        
         OnStatsChanged?.Invoke();
         OnHealthChanged?.Invoke();
         OnManaChanged?.Invoke();
         OnStaminaChanged?.Invoke();
+        
+        OnLevelUp?.Invoke(previousLevel, currentLevel);
+    }
+    
+    // --- XP SYSTEM ---
+    
+    /// <summary>
+    /// Berechnet benötigte XP für nächstes Level (sanfte Kurve)
+    /// </summary>
+    private int CalculateExperienceRequired()
+    {
+        return Mathf.RoundToInt(experienceToNextLevel * Mathf.Pow(currentLevel, 1.2f));
+    }
+    
+    /// <summary>
+    /// Fügt Experience Points hinzu und prüft auf Level Up
+    /// </summary>
+    public void GainExperience(int amount)
+    {
+        experiencePoints += amount;
+        int experienceRequired = CalculateExperienceRequired();
+        Debug.Log($"Gained {amount} EXP. Total: {experiencePoints}/{experienceRequired}");
+        
+        OnXPChanged?.Invoke();
+        
+        while (experiencePoints >= experienceRequired)
+        {
+            LevelUp();
+        }
+    }
+    
+    private void LevelUp()
+    {
+        int previousLevel = currentLevel;
+        currentLevel++;
+        experiencePoints = 0;
+        experienceToNextLevel = CalculateExperienceRequired();
+        RecalculateStats();
+        currentHealth = maxHealth;
+        currentMana = maxMana;
+        currentStamina = maxStamina;
+        
+        OnHealthChanged?.Invoke();
+        OnManaChanged?.Invoke();
+        OnStaminaChanged?.Invoke();
+        
+        Debug.Log($"LEVEL UP! Level {previousLevel} -> Level {currentLevel}. HP: {currentHealth}/{maxHealth}");
+        
+        OnLevelUp?.Invoke(previousLevel, currentLevel);
+    }
+    
+    // --- COMBAT SYSTEM ---
+    
+    public float GetFinalDamage()
+    {
+        return totalDamage;
+    }
+    
+    public bool IsCriticalHit()
+    {
+        return UnityEngine.Random.value < totalCriticalChance;
+    }
+    
+    public float GetCriticalDamage()
+    {
+        return totalDamage * totalCriticalDamage;
+    }
+    
+    public void TakeDamage(float damage)
+    {
+        if (isDead) return;
+        
+        float finalDamage = Mathf.Max(damage - totalDefense, 0);
+        currentHealth = Mathf.Max(currentHealth - finalDamage, 0);
+        OnHealthChanged?.Invoke();
+        
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+    }
+    
+    public bool UseMana(float amount)
+    {
+        if (currentMana >= amount)
+        {
+            currentMana -= amount;
+            OnManaChanged?.Invoke();
+            return true;
+        }
+        return false;
+    }
+    
+    public bool UseStamina(float amount)
+    {
+        if (currentStamina >= amount)
+        {
+            currentStamina -= amount;
+            OnStaminaChanged?.Invoke();
+            return true;
+        }
+        return false;
+    }
+    
+    // --- DEATH & RESPAWN SYSTEM ---
+    
+    private void Die()
+    {
+        if (isDead) return;
+        
+        isDead = true;
+        Debug.Log("<color=red>Player died!</color>");
+        
+        if (playerMovement != null)
+        {
+            playerMovement.ForceStop();
+            playerMovement.movementLocked = true;
+        }
+        
+        AudioManager.Instance?.PlayEnemyDeathSFX();
+        
+        if (anim != null)
+        {
+            anim.SetTrigger("Death");
+        }
+        
+        OnPlayerDeath?.Invoke();
+        
+        StartCoroutine(RespawnCoroutine());
+    }
+    
+    private IEnumerator RespawnCoroutine()
+    {
+        yield return new WaitForSeconds(deathAnimationDuration);
+        yield return new WaitForSeconds(respawnDelay);
+        Respawn();
+    }
+    
+    public void Respawn()
+    {
+        isDead = false;
+        
+        currentHealth = maxHealth;
+        currentMana = maxMana;
+        currentStamina = maxStamina;
+        
+        if (anim != null)
+        {
+            anim.SetTrigger("Respawn");
+            anim.ResetTrigger("Death");
+        }
+        
+        if (playerMovement != null)
+        {
+            playerMovement.movementLocked = false;
+        }
+        
+        OnHealthChanged?.Invoke();
+        OnManaChanged?.Invoke();
+        OnStaminaChanged?.Invoke();
+        OnPlayerRespawn?.Invoke();
+        
+        Debug.Log("<color=green>Player respawned!</color>");
+    }
+    
+    public void CancelAutoRespawn()
+    {
+        StopAllCoroutines();
     }
 
-    // --- BERECHNUNG ---
+    // --- STAT CALCULATION ---
 
     public void RecalculateStats()
     {
-        // Hier werden baseDamage und baseDefense jetzt korrekt gefunden
         maxHealth = (baseMaxHealth + (currentLevel * 10f)) + equipmentBonus.bonusHealth;
         maxMana = (baseMaxMana + (currentLevel * 8f)) + equipmentBonus.bonusMana;
         maxStamina = (baseMaxStamina + (currentLevel * 5f)) + equipmentBonus.bonusStamina;
@@ -182,20 +369,14 @@ public class PlayerStats : MonoBehaviour
 
     #region Save/Load System
 
-    /// <summary>
-    /// Lädt die gespeicherten Stats
-    /// </summary>
     public void LoadSaveData(float savedHealth, float savedMaxHealth, float savedMana, float savedMaxMana)
     {
-        // Max-Werte setzen
         maxHealth = savedMaxHealth;
         maxMana = savedMaxMana;
         
-        // Current-Werte setzen mit Clamp
         currentHealth = Mathf.Clamp(savedHealth, 0f, maxHealth);
         currentMana = Mathf.Clamp(savedMana, 0f, maxMana);
         
-        // Events triggern für UI Updates
         OnHealthChanged?.Invoke();
         OnManaChanged?.Invoke();
         OnStatsChanged?.Invoke();

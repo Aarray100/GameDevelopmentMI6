@@ -5,6 +5,10 @@ public class EnemyHealth : MonoBehaviour
     [Header("Stats")]
     public float maxHealth = 100f;
     private float currentHealth;
+    
+    [Header("XP Reward")]
+    [Tooltip("Erfahrungspunkte die der Spieler beim Töten dieses Gegners erhält")]
+    public int xpReward = 25;
 
     [Header("Debug - Zum Testen!")]
     public bool debugTakeDamage = false;  // Im Inspector anklicken = 20 Schaden
@@ -74,6 +78,9 @@ public class EnemyHealth : MonoBehaviour
     {
         Debug.Log($"{gameObject.name} died!");
         
+        // XP an Spieler vergeben
+        GiveXPToPlayer();
+        
         // Death Sound abspielen
         AudioManager.Instance?.PlayEnemyDeathSFX();
         
@@ -88,6 +95,42 @@ public class EnemyHealth : MonoBehaviour
         
         // Warte auf Death-Animation, dann zerstöre das Objekt
         Destroy(gameObject, 1f);
+    }
+    
+    /// <summary>
+    /// Vergibt XP an den Spieler beim Tod des Gegners.
+    /// </summary>
+    private void GiveXPToPlayer()
+    {
+        if (xpReward <= 0) return;
+        
+        // Finde den Spieler
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player == null)
+        {
+            Debug.LogWarning($"{gameObject.name}: Konnte keinen Spieler finden für XP-Vergabe!");
+            return;
+        }
+        
+        // Versuche PlayerStats zu nutzen
+        PlayerStats playerStats = player.GetComponent<PlayerStats>();
+        if (playerStats != null)
+        {
+            playerStats.GainExperience(xpReward);
+            Debug.Log($"<color=yellow>{gameObject.name} dropped {xpReward} XP!</color>");
+            return;
+        }
+        
+        // Fallback: Versuche LevelSystem zu nutzen (falls PlayerStats nicht vorhanden)
+        LevelSystem levelSystem = player.GetComponent<LevelSystem>();
+        if (levelSystem != null)
+        {
+            levelSystem.AddXP(xpReward);
+            Debug.Log($"<color=yellow>{gameObject.name} dropped {xpReward} XP! (LevelSystem)</color>");
+            return;
+        }
+        
+        Debug.LogWarning($"{gameObject.name}: Spieler hat weder PlayerStats noch LevelSystem!");
     }
     
     /// <summary>
