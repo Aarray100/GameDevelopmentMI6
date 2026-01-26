@@ -21,7 +21,9 @@ public class JournalViewer : MonoBehaviour
     // Sicherheitsnetz: Wenn keine ID da ist, nimm die erste aus der Datenbank
     if (string.IsNullOrEmpty(currentEntryId) && database != null && database.entries.Count > 0)
     {
-        currentEntryId = database.entries[0].id;
+        var ordered = database.GetOrderedEntries();
+        if (ordered.Count > 0)
+            currentEntryId = ordered[0].id;
         Debug.Log($"JournalViewer: Keine ID gesetzt, verwende Fallback: {currentEntryId}");
     }
 
@@ -44,23 +46,22 @@ public class JournalViewer : MonoBehaviour
 {
     var entry = CurrentEntry;
     if (entry == null || database == null) return;
-
-    // 1. Gibt es noch mehr Seiten im AKTUELLEN Eintrag?
-    if (leftPageIndex + 2 < entry.pages.Count)
-    {
-        leftPageIndex += 2;
-    }
-    else 
-    {
-        // 2. Wenn nicht: Gibt es einen NÄCHSTEN Eintrag in der Database?
-        int currentIndex = database.entries.IndexOf(entry);
-        if (currentIndex < database.entries.Count - 1)
+        // 1. Gibt es noch mehr Seiten im AKTUELLEN Eintrag?
+        if (leftPageIndex + 2 < entry.pages.Count)
         {
-            // Springe zum nächsten Eintrag, starte bei Seite 0
-            currentEntryId = database.entries[currentIndex + 1].id;
-            leftPageIndex = 0;
+            leftPageIndex += 2;
         }
-    }
+        else
+        {
+            // 2. Wenn nicht: Gibt es einen NÄCHSTEN Eintrag in der geordneten Liste?
+            var ordered = database.GetOrderedEntries();
+            int currentIndex = ordered.IndexOf(entry);
+            if (currentIndex < ordered.Count - 1)
+            {
+                currentEntryId = ordered[currentIndex + 1].id;
+                leftPageIndex = 0;
+            }
+        }
     Refresh();
 }
 
@@ -68,25 +69,23 @@ public void Prev()
 {
     var entry = CurrentEntry;
     if (entry == null || database == null) return;
-
     // 1. Können wir im AKTUELLEN Eintrag zurückblättern?
     if (leftPageIndex > 0)
     {
         leftPageIndex -= 2;
     }
-    else 
+    else
     {
-        // 2. Wenn nicht: Gibt es einen VORHERIGEN Eintrag?
-        int currentIndex = database.entries.IndexOf(entry);
+        // 2. Wenn nicht: Gibt es einen VORHERIGEN Eintrag in der geordneten Liste?
+        var ordered = database.GetOrderedEntries();
+        int currentIndex = ordered.IndexOf(entry);
         if (currentIndex > 0)
         {
-            var prevEntry = database.entries[currentIndex - 1];
+            var prevEntry = ordered[currentIndex - 1];
             currentEntryId = prevEntry.id;
-            
-            // Wichtig: Wir müssen am Ende des vorherigen Eintrags landen
-            // Wenn der z.B. 4 Seiten hat, müssen wir auf Seite 2 starten (für Doppelseite 2&3)
+
             int lastPage = prevEntry.pages.Count - 1;
-            leftPageIndex = (lastPage / 2) * 2; 
+            leftPageIndex = (lastPage / 2) * 2;
         }
     }
     Refresh();
@@ -96,9 +95,9 @@ public void Refresh()
 {
     var entry = CurrentEntry;
     if (database == null || entry == null) return;
-
     int total = entry.pages.Count;
-    int currentIndex = database.entries.IndexOf(entry);
+    var ordered = database.GetOrderedEntries();
+    int currentIndex = ordered.IndexOf(entry);
 
     leftText.text  = GetPageText(entry, leftPageIndex);
     rightText.text = GetPageText(entry, leftPageIndex + 1);
@@ -106,14 +105,12 @@ public void Refresh()
     // Button-Logik: Wann darf man klicken?
     if (prevButton != null)
     {
-        // Aktiv, wenn wir nicht auf Seite 0 des ALLERERSTEN Eintrags sind
         prevButton.interactable = (leftPageIndex > 0) || (currentIndex > 0);
     }
 
     if (nextButton != null)
     {
-        // Aktiv, wenn der aktuelle Eintrag noch Seiten hat ODER ein weiterer Eintrag folgt
-        nextButton.interactable = (leftPageIndex + 2 < total) || (currentIndex < database.entries.Count - 1);
+        nextButton.interactable = (leftPageIndex + 2 < total) || (currentIndex < ordered.Count - 1);
     }
 }
     string GetPageText(JournalEntry entry, int index)
