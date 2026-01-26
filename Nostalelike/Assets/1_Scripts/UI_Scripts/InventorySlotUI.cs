@@ -23,29 +23,39 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     // --- GEGENSTAND BENUTZEN (TRÄNKE UND BÜCHER) ---
     public void OnPointerClick(PointerEventData eventData)
     {
+        // Nur Linksklick erlauben und Dragging-Check
         if (eventData.button != PointerEventData.InputButton.Left) return;
         if (currentlyDraggedSlot != null) return;
 
+        // Slot-Daten validieren
         InventorySlot currentSlot = playerInventory.inventory.slots[slotIndex];
         if (currentSlot == null || currentSlot.item == null) return;
 
-        // Bücher öffnen
+        // 1. Logik für Bücher
         if (currentSlot.item is BookData book)
         {
             BookUIManager.Instance.OpenBook(book);
             return;
         }
 
-        // Tränke benutzen
+        // 2. Logik für Verbrauchsgüter (Tränke)
         if (currentSlot.item.itemType == ItemType.Consumable)
         {
             PlayerStats stats = playerInventory.GetComponent<PlayerStats>();
             if (stats != null)
             {
-                stats.UsePotion(currentSlot.item);
+                // RUFT DIE FUNKTION IN PLAYERSTATS AUF (Muss ItemData akzeptieren!)
+                stats.UsePotion(currentSlot.item); 
+                
+                // Item nach Benutzung entfernen
                 playerInventory.inventory.RemoveItem(currentSlot.item, 1);
                 playerInventory.UpdateUISlots();
-                Debug.Log($"Trank benutzt: {currentSlot.item.itemName}");
+                
+                Debug.Log($"<color=blue>Inventory:</color> Trank benutzt: {currentSlot.item.itemName}");
+            }
+            else
+            {
+                Debug.LogWarning("PlayerStats Komponente auf dem Spieler nicht gefunden!");
             }
         }
     }
@@ -180,13 +190,11 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         playerInventory.UpdateUISlots();
     }
 
-    // Wird aufgerufen, wenn die Maus über den Slot fährt
     public void OnPointerEnter(PointerEventData eventData)
     {
         isHovering = true;
     }
 
-    // Wird aufgerufen, wenn die Maus den Slot verlässt
     public void OnPointerExit(PointerEventData eventData)
     {
         isHovering = false;
@@ -194,7 +202,6 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     void Update()
     {
-        // Wenn die Maus drüber ist UND E gedrückt wird
         if (isHovering && Input.GetKeyDown(KeyCode.E))
         {
             InventorySlot slot = playerInventory.inventory.slots[slotIndex];
