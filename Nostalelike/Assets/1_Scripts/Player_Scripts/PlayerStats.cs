@@ -14,63 +14,47 @@ public class PlayerStats : MonoBehaviour
     public float currentMana;
     public float currentStamina;
     
-    [Header("Base Regeneration Rates (per second)")]
+    [Header("Base Regeneration Rates")]
     public float baseHealthRegenRate = 5f;
     public float baseManaRegenRate = 3f;
     public float baseStaminaRegenRate = 4f;
-    
-    [Header("Base Offensive Stats")]
-    public float baseDamage = 10f;
-    public float baseAttackSpeed = 1f;
-    public float baseCriticalChance = 0.1f;
-    public float baseCriticalDamage = 1.5f;
 
-    [Header("Base Defensive Stats")]
+    [Header("Base Combat Stats")]
+    public float baseDamage = 10f;
     public float baseDefense = 5f;
-    public float baseResistance = 3f;
-    public float baseEvasion = 0.05f;
     
-    [Header("Calculated Total Stats (Base + Level + Equipment)")]
+    [Header("Calculated Total Stats")]
     public float maxHealth;
     public float maxMana;
     public float maxStamina;
     public float totalDamage;
-    public float totalAttackSpeed;
-    public float totalCriticalChance;
-    public float totalCriticalDamage;
     public float totalDefense;
-    public float totalResistance;
-    public float totalEvasion;
     public float totalHealthRegen;
     public float totalManaRegen;
     public float totalStaminaRegen;
+    public float totalCriticalChance;
+    public float totalCriticalDamage = 1.5f;
+
     [Header("Level System")]
     public int currentLevel = 1;
     public int experiencePoints = 0;
     public int experienceToNextLevel = 100;
-    public float experienceRequired; // Wird in Awake() berechnet
     
-    [Header("Stat Growth per Level")]
-    public float healthPerLevel = 10f;
-    public float manaPerLevel = 8f;
-    public float staminaPerLevel = 5f;
-    public float damagePerLevel = 2f;
-    public float defensePerLevel = 1f;
-    public float criticalChancePerLevel = 0.005f; // 0.5%
+    [Header("Temporäre Buffs")]
+    private float strengthBuffMultiplier = 1f;
+    private PlayerMovement2D movement;
+
+    private ItemStats equipmentBonus = new ItemStats();
+    private ItemStats activeWeaponBonus = new ItemStats();
     
-    // Equipment Bonuses
-    private ItemStats equipmentBonus = new ItemStats();  // Armor + Accessories
-    private ItemStats activeWeaponBonus = new ItemStats(); // Nur aktive Waffe
-    
-    // Events für UI Updates
     public event Action OnStatsChanged;
     public event Action OnHealthChanged;
     public event Action OnManaChanged;
     public event Action OnStaminaChanged;
     public event Action OnPlayerDeath;
     public event Action OnPlayerRespawn;
-    public event Action<int, int> OnLevelUp; // (fromLevel, toLevel)
-    public event Action OnXPChanged; // NEU: Für XP Bar Updates
+    public event Action<int, int> OnLevelUp;
+    public event Action OnXPChanged;
     
     [Header("Death Settings")]
     public float deathAnimationDuration = 1.5f;
@@ -83,138 +67,143 @@ public class PlayerStats : MonoBehaviour
     
     private void Awake()
     {
-        // Initialisiere Werte, die von anderen Feldern abhängen
-        experienceRequired = CalculateEXPForNextLevel();
+        movement = GetComponent<PlayerMovement2D>();
+        playerMovement = movement;
+        anim = GetComponentInChildren<Animator>();
         
-        // Berechne initiale Stats
         RecalculateStats();
-        
-        // Setze Current Values auf Max
         currentHealth = maxHealth;
         currentMana = maxMana;
         currentStamina = maxStamina;
-        
-        // Hole Referenzen
-        anim = GetComponentInChildren<Animator>();
-        playerMovement = GetComponent<PlayerMovement2D>();
     }
     
     private void Update()
     {
-        // Regeneration
         RegenerateResources();
     }
-    
+
     private void RegenerateResources()
     {
-        // Health Regeneration
         if (currentHealth < maxHealth)
         {
             currentHealth = Mathf.Min(currentHealth + totalHealthRegen * Time.deltaTime, maxHealth);
             OnHealthChanged?.Invoke();
         }
-        
-        // Mana Regeneration
         if (currentMana < maxMana)
         {
             currentMana = Mathf.Min(currentMana + totalManaRegen * Time.deltaTime, maxMana);
             OnManaChanged?.Invoke();
         }
-        
-        // Stamina Regeneration
         if (currentStamina < maxStamina)
         {
             currentStamina = Mathf.Min(currentStamina + totalStaminaRegen * Time.deltaTime, maxStamina);
             OnStaminaChanged?.Invoke();
         }
     }
-    
-    // Wird von Hotbar aufgerufen wenn Waffe gewechselt wird
+
+    // --- INTERFACES FÜR ANDERE SKRIPTE (Hotbar & Equipment) ---
+
+    public void Heal(float amount)
+    {
+        currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
+        OnHealthChanged?.Invoke();
+    }
+
+    public void RestoreMana(float amount)
+    {
+        currentMana = Mathf.Min(currentMana + amount, maxMana);
+        OnManaChanged?.Invoke();
+    }
+
+    public void RestoreStamina(float amount)
+    {
+        currentStamina = Mathf.Min(currentStamina + amount, maxStamina);
+        OnStaminaChanged?.Invoke();
+    }
+
     public void SetActiveWeapon(ItemData weapon)
     {
-        if (weapon != null && weapon.itemType == ItemType.Weapon && weapon.stats != null)
-        {
-            activeWeaponBonus = weapon.stats;
-            Debug.Log($"Active weapon set: {weapon.itemName} (+{weapon.stats.bonusDamage} damage)");
-        }
-        else
-        {
-            activeWeaponBonus = new ItemStats(); // Reset
-            Debug.Log("No weapon active");
-        }
-        
+        activeWeaponBonus = (weapon != null && weapon.stats != null) ? weapon.stats : new ItemStats();
         RecalculateStats();
     }
-    
-    // Wird von Equipment-System aufgerufen
+
     public void UpdateEquipmentBonus(ItemStats newEquipmentBonus)
     {
         equipmentBonus = newEquipmentBonus;
         RecalculateStats();
     }
-    
-    // Berechnet alle Stats basierend auf Level + Equipment + aktive Waffe
-    public void RecalculateStats()
+
+    // --- TRANK LOGIK (3 MINUTEN BUFFS) ---
+
+    public void UsePotion(ItemData potion)
     {
-        // Base Stats vom Level
-        float levelMaxHealth = baseMaxHealth + (currentLevel * healthPerLevel);
-        float levelMaxMana = baseMaxMana + (currentLevel * manaPerLevel);
-        float levelMaxStamina = baseMaxStamina + (currentLevel * staminaPerLevel);
-        float levelDamage = baseDamage + (currentLevel * damagePerLevel);
-        float levelDefense = baseDefense + (currentLevel * defensePerLevel);
-        float levelCritChance = baseCriticalChance + (currentLevel * criticalChancePerLevel);
-        
-        // + Equipment Bonus (Armor + Accessories, immer aktiv)
-        maxHealth = levelMaxHealth + equipmentBonus.bonusHealth;
-        maxMana = levelMaxMana + equipmentBonus.bonusMana;
-        maxStamina = levelMaxStamina + equipmentBonus.bonusStamina;
-        totalDefense = levelDefense + equipmentBonus.bonusDefense;
-        totalResistance = baseResistance + equipmentBonus.bonusResistance;
-        totalEvasion = baseEvasion + equipmentBonus.bonusEvasion;
-        
-        // + Aktive Waffe Bonus (nur wenn Waffe in Hotbar aktiv)
-        totalDamage = levelDamage + equipmentBonus.bonusDamage + activeWeaponBonus.bonusDamage;
-        totalAttackSpeed = baseAttackSpeed + equipmentBonus.bonusAttackSpeed + activeWeaponBonus.bonusAttackSpeed;
-        totalCriticalChance = levelCritChance + equipmentBonus.bonusCritChance + activeWeaponBonus.bonusCritChance;
-        totalCriticalDamage = baseCriticalDamage + equipmentBonus.bonusCritDamage + activeWeaponBonus.bonusCritDamage;
-        
-        // Regeneration
-        totalHealthRegen = baseHealthRegenRate + equipmentBonus.bonusHealthRegen + activeWeaponBonus.bonusHealthRegen;
-        totalManaRegen = baseManaRegenRate + equipmentBonus.bonusManaRegen + activeWeaponBonus.bonusManaRegen;
-        totalStaminaRegen = baseStaminaRegenRate + equipmentBonus.bonusStaminaRegen + activeWeaponBonus.bonusStaminaRegen;
-        
-        // Damage Multiplier anwenden (von Waffe)
-        if (activeWeaponBonus.damageMultiplier > 1f)
-        {
-            totalDamage *= activeWeaponBonus.damageMultiplier;
-        }
-        
-        // Clamp current values wenn max sich ändert
-        currentHealth = Mathf.Min(currentHealth, maxHealth);
-        currentMana = Mathf.Min(currentMana, maxMana);
-        currentStamina = Mathf.Min(currentStamina, maxStamina);
+        if (potion.itemName.Contains("Healing")) Heal(potion.healAmount);
+        else if (potion.itemName.Contains("Mana")) RestoreMana(potion.manaAmount);
+        else if (potion.itemName.Contains("Strength")) StartCoroutine(StrengthBuffRoutine(180f));
+        else if (potion.itemName.Contains("Speed")) StartCoroutine(SpeedBuffRoutine(180f));
+        else if (potion.itemName.Contains("Omni")) ApplyOmniLevelUp();
+    }
+
+    private IEnumerator StrengthBuffRoutine(float duration)
+    {
+        strengthBuffMultiplier = 1.2f;
+        RecalculateStats();
+        yield return new WaitForSeconds(duration);
+        strengthBuffMultiplier = 1f;
+        RecalculateStats();
+    }
+
+    private IEnumerator SpeedBuffRoutine(float duration)
+    {
+        if (movement == null) movement = GetComponent<PlayerMovement2D>();
+        float boost = movement.walkSpeed * 0.2f;
+        movement.walkSpeed += boost;
+        movement.runSpeed += boost;
+        yield return new WaitForSeconds(duration);
+        movement.walkSpeed -= boost;
+        movement.runSpeed -= boost;
+    }
+
+    private void ApplyOmniLevelUp()
+    {
+        int previousLevel = currentLevel;
+        currentLevel++;
+        experiencePoints = 0;
+        experienceToNextLevel = (int)(experienceToNextLevel * 1.5f);
+        RecalculateStats();
+        currentHealth = maxHealth;
+        currentMana = maxMana;
+        currentStamina = maxStamina;
         
         OnStatsChanged?.Invoke();
+        OnHealthChanged?.Invoke();
+        OnManaChanged?.Invoke();
+        OnStaminaChanged?.Invoke();
         
-        Debug.Log($"Stats recalculated! Total Damage: {totalDamage}, Total Defense: {totalDefense}");
+        OnLevelUp?.Invoke(previousLevel, currentLevel);
     }
     
-    private float CalculateEXPForNextLevel()
+    // --- XP SYSTEM ---
+    
+    /// <summary>
+    /// Berechnet benötigte XP für nächstes Level (sanfte Kurve)
+    /// </summary>
+    private int CalculateExperienceRequired()
     {
-        // Sanftere Kurve: Base * Level^1.2
-        // Level 1: 100, Level 2: 230, Level 3: 375, Level 4: 530, Level 5: 700
-        return Mathf.Round(experienceToNextLevel * Mathf.Pow(currentLevel, 1.2f));
+        return Mathf.RoundToInt(experienceToNextLevel * Mathf.Pow(currentLevel, 1.2f));
     }
     
+    /// <summary>
+    /// Fügt Experience Points hinzu und prüft auf Level Up
+    /// </summary>
     public void GainExperience(int amount)
     {
         experiencePoints += amount;
+        int experienceRequired = CalculateExperienceRequired();
         Debug.Log($"Gained {amount} EXP. Total: {experiencePoints}/{experienceRequired}");
         
-        // Event für UI Update
         OnXPChanged?.Invoke();
         
-        // Check für Level Up
         while (experiencePoints >= experienceRequired)
         {
             LevelUp();
@@ -225,29 +214,24 @@ public class PlayerStats : MonoBehaviour
     {
         int previousLevel = currentLevel;
         currentLevel++;
-        experiencePoints -= (int)experienceRequired;
-        experienceRequired = CalculateEXPForNextLevel();
-        
-        // Stats neu berechnen (basierend auf neuem Level)
+        experiencePoints = 0;
+        experienceToNextLevel = CalculateExperienceRequired();
         RecalculateStats();
-        
-        // Full Heal beim Level Up
         currentHealth = maxHealth;
         currentMana = maxMana;
         currentStamina = maxStamina;
         
-        // UI Events triggern für Full Heal
         OnHealthChanged?.Invoke();
         OnManaChanged?.Invoke();
         OnStaminaChanged?.Invoke();
         
         Debug.Log($"LEVEL UP! Level {previousLevel} -> Level {currentLevel}. HP: {currentHealth}/{maxHealth}");
         
-        // Event für UI/Effekte triggern
         OnLevelUp?.Invoke(previousLevel, currentLevel);
     }
     
-    // Helper Methods für Combat System
+    // --- COMBAT SYSTEM ---
+    
     public float GetFinalDamage()
     {
         return totalDamage;
@@ -265,6 +249,8 @@ public class PlayerStats : MonoBehaviour
     
     public void TakeDamage(float damage)
     {
+        if (isDead) return;
+        
         float finalDamage = Mathf.Max(damage - totalDefense, 0);
         currentHealth = Mathf.Max(currentHealth - finalDamage, 0);
         OnHealthChanged?.Invoke();
@@ -273,24 +259,6 @@ public class PlayerStats : MonoBehaviour
         {
             Die();
         }
-    }
-    
-    public void Heal(float amount)
-    {
-        currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
-        OnHealthChanged?.Invoke();
-    }
-    
-    public void RestoreMana(float amount)
-    {
-        currentMana = Mathf.Min(currentMana + amount, maxMana);
-        OnManaChanged?.Invoke();
-    }
-    
-    public void RestoreStamina(float amount)
-    {
-        currentStamina = Mathf.Min(currentStamina + amount, maxStamina);
-        OnStaminaChanged?.Invoke();
     }
     
     public bool UseMana(float amount)
@@ -315,75 +283,59 @@ public class PlayerStats : MonoBehaviour
         return false;
     }
     
+    // --- DEATH & RESPAWN SYSTEM ---
+    
     private void Die()
     {
-        if (isDead) return; // Verhindere mehrfaches Sterben
+        if (isDead) return;
         
         isDead = true;
         Debug.Log("<color=red>Player died!</color>");
         
-        // Bewegung stoppen und sperren
         if (playerMovement != null)
         {
             playerMovement.ForceStop();
             playerMovement.movementLocked = true;
         }
         
-        // Death Sound abspielen (optional: eigener Player Death Sound)
-        AudioManager.Instance?.PlayEnemyDeathSFX(); // TODO: Eigener PlayerDeathSFX
+        AudioManager.Instance?.PlayEnemyDeathSFX();
         
-        // Death Animation abspielen
         if (anim != null)
         {
             anim.SetTrigger("Death");
         }
         
-        // Event für UI/andere Systeme (z.B. Game Over Screen)
         OnPlayerDeath?.Invoke();
         
-        // Starte Respawn Coroutine
         StartCoroutine(RespawnCoroutine());
     }
     
     private IEnumerator RespawnCoroutine()
     {
-        // Warte auf Death-Animation
         yield return new WaitForSeconds(deathAnimationDuration);
-        
-        // Warte zusätzliche Zeit (für Game Over Screen etc.)
         yield return new WaitForSeconds(respawnDelay);
-        
-        // Respawn durchführen
         Respawn();
     }
     
-    /// <summary>
-    /// Respawnt den Spieler mit vollen HP/Mana.
-    /// Kann auch extern aufgerufen werden (z.B. von UI Button).
-    /// </summary>
     public void Respawn()
     {
         isDead = false;
         
-        // Volle Ressourcen wiederherstellen
         currentHealth = maxHealth;
         currentMana = maxMana;
         currentStamina = maxStamina;
         
-        // Respawn Animation abspielen (falls vorhanden)
         if (anim != null)
         {
-            anim.SetTrigger("Respawn"); // Optional: Respawn Animation
+            anim.SetTrigger("Respawn");
             anim.ResetTrigger("Death");
         }
         
-        // Bewegung wieder freigeben
         if (playerMovement != null)
         {
             playerMovement.movementLocked = false;
         }
         
-        // Events triggern
         OnHealthChanged?.Invoke();
         OnManaChanged?.Invoke();
         OnStaminaChanged?.Invoke();
@@ -392,41 +344,45 @@ public class PlayerStats : MonoBehaviour
         Debug.Log("<color=green>Player respawned!</color>");
     }
     
-    /// <summary>
-    /// Stoppt automatischen Respawn und wartet auf manuellen Aufruf.
-    /// Nützlich für Game Over Screen mit "Restart" Button.
-    /// </summary>
     public void CancelAutoRespawn()
     {
         StopAllCoroutines();
     }
 
+    // --- STAT CALCULATION ---
 
+    public void RecalculateStats()
+    {
+        maxHealth = (baseMaxHealth + (currentLevel * 10f)) + equipmentBonus.bonusHealth;
+        maxMana = (baseMaxMana + (currentLevel * 8f)) + equipmentBonus.bonusMana;
+        maxStamina = (baseMaxStamina + (currentLevel * 5f)) + equipmentBonus.bonusStamina;
+        
+        totalDamage = (baseDamage + (currentLevel * 2f) + equipmentBonus.bonusDamage + activeWeaponBonus.bonusDamage) * strengthBuffMultiplier;
+        totalDefense = (baseDefense + (currentLevel * 1f)) + equipmentBonus.bonusDefense;
 
-#region Save/Load System
+        totalHealthRegen = baseHealthRegenRate + equipmentBonus.bonusHealthRegen;
+        totalManaRegen = baseManaRegenRate + equipmentBonus.bonusManaRegen;
+        totalStaminaRegen = baseStaminaRegenRate + equipmentBonus.bonusStaminaRegen;
 
-/// <summary>
-/// Lädt die gespeicherten Stats
-/// </summary>
-public void LoadSaveData(float savedHealth, float savedMaxHealth, float savedMana, float savedMaxMana)
-{
-    // Max-Werte setzen
-    maxHealth = savedMaxHealth;
-    maxMana = savedMaxMana;
-    
-    // Current-Werte setzen mit Clamp
-    currentHealth = Mathf.Clamp(savedHealth, 0f, maxHealth);
-    currentMana = Mathf.Clamp(savedMana, 0f, maxMana);
-    
-    // Events triggern für UI Updates
-    OnHealthChanged?.Invoke();
-    OnManaChanged?.Invoke();
-    OnStatsChanged?.Invoke();
-    
-    Debug.Log($"PlayerStats loaded: HP {currentHealth}/{maxHealth}, Mana {currentMana}/{maxMana}");
-}
+        OnStatsChanged?.Invoke();
+    }
 
-#endregion
+    #region Save/Load System
 
+    public void LoadSaveData(float savedHealth, float savedMaxHealth, float savedMana, float savedMaxMana)
+    {
+        maxHealth = savedMaxHealth;
+        maxMana = savedMaxMana;
+        
+        currentHealth = Mathf.Clamp(savedHealth, 0f, maxHealth);
+        currentMana = Mathf.Clamp(savedMana, 0f, maxMana);
+        
+        OnHealthChanged?.Invoke();
+        OnManaChanged?.Invoke();
+        OnStatsChanged?.Invoke();
+        
+        Debug.Log($"PlayerStats loaded: HP {currentHealth}/{maxHealth}, Mana {currentMana}/{maxMana}");
+    }
 
+    #endregion
 }
