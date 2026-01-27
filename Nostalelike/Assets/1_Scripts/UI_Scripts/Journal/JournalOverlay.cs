@@ -11,6 +11,9 @@ public class JournalOverlay : MonoBehaviour
 
     static GameObject uiInstance;  // verhindert doppelte Instanz
     GameObject panel;
+    
+    // Static property um zu prüfen ob Journal offen ist
+    public static bool IsOpen { get; private set; }
 
     void Awake()
     {
@@ -41,11 +44,13 @@ public class JournalOverlay : MonoBehaviour
 
         bool open = !panel.activeSelf;
         panel.SetActive(open);
+        IsOpen = open;
 
-        if (movement != null)
-        {
-            movement.movementLocked = open;
-            movement.ForceStop();
-        }
+        // Movement bleibt erlaubt, nur Angriffe werden blockiert (via PlayerCombat)
+        // if (movement != null)
+        // {
+        //     movement.movementLocked = open;
+        //     movement.ForceStop();
+        // }
     }
 }
