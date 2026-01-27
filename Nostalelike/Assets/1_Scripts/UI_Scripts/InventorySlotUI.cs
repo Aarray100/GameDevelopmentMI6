@@ -44,18 +44,19 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             PlayerStats stats = playerInventory.GetComponent<PlayerStats>();
             if (stats != null)
             {
-                // RUFT DIE FUNKTION IN PLAYERSTATS AUF (Muss ItemData akzeptieren!)
+                // WICHTIG: Ruft UsePotion mit dem Item als Parameter auf
+                // Dies behebt den Fehler CS1061, wenn PlayerStats die Methode bereitstellt
                 stats.UsePotion(currentSlot.item); 
                 
-                // Item nach Benutzung entfernen
+                // Item nach Benutzung um 1 verringern
                 playerInventory.inventory.RemoveItem(currentSlot.item, 1);
                 playerInventory.UpdateUISlots();
                 
-                Debug.Log($"<color=blue>Inventory:</color> Trank benutzt: {currentSlot.item.itemName}");
+                Debug.Log($"<color=green>UI Log:</color> Benutze {currentSlot.item.itemName}");
             }
             else
             {
-                Debug.LogWarning("PlayerStats Komponente auf dem Spieler nicht gefunden!");
+                Debug.LogError("PlayerStats-Skript wurde auf dem Spieler-Objekt nicht gefunden!");
             }
         }
     }
