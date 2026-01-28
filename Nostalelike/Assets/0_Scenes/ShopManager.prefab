@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7687531981836274581
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 663313899347164175}
+  - component: {fileID: 3990078151359196525}
+  m_Layer: 0
+  m_Name: ShopManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &663313899347164175
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7687531981836274581}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 903.9681, y: 135.3337, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3990078151359196525
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7687531981836274581}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f36a64f6dc97f145b9eb8f7c2cbbc74, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ShopSystem
+  playerInventory: {fileID: 0}
+  goldText: {fileID: 0}
+  vorschauText: {fileID: 0}
+  shopPanel: {fileID: 0}
+  healPotion: {fileID: 11400000, guid: a0da5576159006242a65ceed3f82a1b4, type: 2}
+  strengthPotion: {fileID: 11400000, guid: cb3630c97b0c50a42b70fdf068b125b2, type: 2}
+  speedPotion: {fileID: 11400000, guid: b0d01828166b1574da9a182eb6671299, type: 2}
+  omniPotion: {fileID: 11400000, guid: f6090b3a254b13a469fe2fee21f5d903, type: 2}
+  helm1: {fileID: 11400000, guid: 9ac2a6c99f64ebb4d98fb9de157242a4, type: 2}
+  helm2: {fileID: 11400000, guid: 0762baf75008704488aea5a90cd9a52c, type: 2}
+  schwert: {fileID: 11400000, guid: 7ac430a1d02ad0cb8b6d905c3863a8d0, type: 2}
+  kette: {fileID: 11400000, guid: e0ea4fa0580131644ba6e8f5af093c4f, type: 2}
