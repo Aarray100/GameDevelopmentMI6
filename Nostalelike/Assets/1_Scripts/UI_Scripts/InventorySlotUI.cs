@@ -69,6 +69,11 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             canvasGroup = gameObject.AddComponent<CanvasGroup>();
         }
         
+        if (mainCanvas == null)
+        {
+            mainCanvas = GetComponentInParent<Canvas>();
+        }
+        
         if (currentlyDraggedIcon == null)
         {
             currentlyDraggedIcon = GameObject.Find("DraggedItemIcon");
@@ -78,8 +83,45 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             }
             else
             {
+                // WICHTIG: Auch ein gefundenes Icon muss korrekt konfiguriert werden!
+                ConfigureDraggedIcon(currentlyDraggedIcon);
                 currentlyDraggedIcon.SetActive(false);
             }
+        }
+    }
+    
+    void ConfigureDraggedIcon(GameObject icon)
+    {
+        // Scale explizit auf (1,1,1) setzen
+        icon.transform.localScale = Vector3.one;
+        
+        RectTransform rectTransform = icon.GetComponent<RectTransform>();
+        if (rectTransform != null)
+        {
+            // WICHTIG: Größe vom itemIcon übernehmen (wie im Original)
+            if (itemIcon != null)
+            {
+                RectTransform itemIconRect = itemIcon.GetComponent<RectTransform>();
+                rectTransform.sizeDelta = itemIconRect.sizeDelta;
+            }
+            else
+            {
+                rectTransform.sizeDelta = new Vector2(40, 40); // Fallback
+            }
+            
+            rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+            rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+            rectTransform.pivot = new Vector2(0.5f, 0.5f);
+        }
+        
+        Image dragImage = icon.GetComponent<Image>();
+        if (dragImage != null)
+        {
+            dragImage.raycastTarget = false;
+            dragImage.preserveAspect = true;
+            Color color = dragImage.color;
+            color.a = 0.8f;
+            dragImage.color = color;
         }
     }
     
@@ -94,16 +136,11 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         currentlyDraggedIcon = new GameObject("DraggedItemIcon");
         currentlyDraggedIcon.transform.SetParent(mainCanvas.transform, false);
         
-        Image dragImage = currentlyDraggedIcon.AddComponent<Image>();
-        dragImage.raycastTarget = false; 
-        dragImage.preserveAspect = true; 
+        // Image-Komponente hinzufügen
+        currentlyDraggedIcon.AddComponent<Image>();
         
-        RectTransform rectTransform = currentlyDraggedIcon.GetComponent<RectTransform>();
-        rectTransform.sizeDelta = new Vector2(40, 40);
-        
-        Color color = dragImage.color;
-        color.a = 0.8f;
-        dragImage.color = color;
+        // Konfiguration über gemeinsame Methode
+        ConfigureDraggedIcon(currentlyDraggedIcon);
         
         currentlyDraggedIcon.SetActive(false);
     }
@@ -154,6 +191,14 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         if (playerInventory == null || playerInventory.inventory.slots[slotIndex].item == null) return;
         
         currentlyDraggedSlot = this;
+        
+        // Sicherstellen, dass das Icon korrekt konfiguriert ist
+        ConfigureDraggedIcon(currentlyDraggedIcon);
+        
+        // Debug: Zeige die Größe an
+        RectTransform dragRect = currentlyDraggedIcon.GetComponent<RectTransform>();
+        Debug.Log($"<color=yellow>Drag Icon Size:</color> sizeDelta={dragRect.sizeDelta}, localScale={currentlyDraggedIcon.transform.localScale}");
+        
         currentlyDraggedIcon.SetActive(true);
         
         Image dragImage = currentlyDraggedIcon.GetComponent<Image>();
@@ -163,7 +208,8 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             dragImage.enabled = true;
         }
         
-        currentlyDraggedIcon.transform.position = Input.mousePosition;
+        // Position setzen mit Canvas-Konvertierung
+        SetDragIconPosition(eventData);
         canvasGroup.blocksRaycasts = false;
         itemIcon.enabled = false;
         itemCountText.enabled = false;
@@ -172,7 +218,25 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     public void OnDrag(PointerEventData eventData)
     {
         if (currentlyDraggedSlot == null) return;
-        currentlyDraggedIcon.transform.position = Input.mousePosition;
+        SetDragIconPosition(eventData);
+    }
+    
+    private void SetDragIconPosition(PointerEventData eventData)
+    {
+        if (currentlyDraggedIcon == null || mainCanvas == null) return;
+        
+        RectTransform canvasRect = mainCanvas.GetComponent<RectTransform>();
+        Vector2 localPoint;
+        
+        // Korrekte Positionsberechnung für alle Canvas-Modi
+        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            canvasRect, 
+            eventData.position, 
+            mainCanvas.worldCamera, 
+            out localPoint))
+        {
+            currentlyDraggedIcon.GetComponent<RectTransform>().anchoredPosition = localPoint;
+        }
     }
 
     public void OnDrop(PointerEventData eventData)
