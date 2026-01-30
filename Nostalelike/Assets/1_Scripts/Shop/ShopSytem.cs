@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class ShopSystem : MonoBehaviour
 {
@@ -9,6 +10,11 @@ public class ShopSystem : MonoBehaviour
     public TextMeshProUGUI goldText;
     public TextMeshProUGUI vorschauText;
     public GameObject shopPanel;
+
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip kaufSound;   // Das "Katsching"
+    public AudioClip fehlerSound; // Der tiefe Ton bei zu wenig Gold
 
     [Header("Item Daten (Assets hier reinziehen)")]
     public ItemData healPotion;
@@ -22,23 +28,18 @@ public class ShopSystem : MonoBehaviour
 
     void Start()
     {
-        // Sucht den Spieler in der aktuellen Szene
         FindeAktivenSpieler();
-
-        // Shop beim Start immer unsichtbar machen
         if (shopPanel != null) shopPanel.SetActive(false);
         if (vorschauText != null) vorschauText.text = "Wähle ein Item...";
     }
 
     void Update()
     {
-        // Gold Anzeige aktualisieren (Dein Stand: 500 Gold) [cite: 2026-01-04]
-        if (goldText != null) 
+        if (goldText != null && GoldManager.Instance != null) 
         {
-            goldText.text = "Gold: " + PlayerMovement2D.gold;
+            goldText.text = "Gold: " + GoldManager.Instance.aktuellesGold;
         }
 
-        // Shop mit G öffnen/schließen
         if (Input.GetKeyDown(KeyCode.G))
         {
             ToggleShop();
@@ -47,11 +48,9 @@ public class ShopSystem : MonoBehaviour
 
     private void FindeAktivenSpieler()
     {
-        // Sucht nach dem Inventar-Skript in der aktuellen Map
         playerInventory = GameObject.FindFirstObjectByType<PlayerInventory>();
     }
 
-    // --- AUSWAHL-FUNKTIONEN FÜR DIE BUTTONS ---
     public void WaehleHeiltrank() { SetzeVorschau(healPotion, 20); }
     public void WaehleStaerke() { SetzeVorschau(strengthPotion, 30); }
     public void WaehleSpeed() { SetzeVorschau(speedPotion, 25); }
@@ -66,21 +65,24 @@ public class ShopSystem : MonoBehaviour
         if (data == null) return;
         ausgewähltesItem = data;
         aktuellerPreis = preis;
-        UpdateAnzeige();
+        UpdateAnzeige(); 
     }
 
     public void UpdateAnzeige()
     {
         if (vorschauText == null || ausgewähltesItem == null) return;
-
-        // Sicherstellen, dass wir den Spieler der aktuellen Szene haben
         if (playerInventory == null) FindeAktivenSpieler();
 
         int besitz = 0;
         if (playerInventory != null && playerInventory.inventory != null)
         {
-            var slot = playerInventory.inventory.slots.Find(s => s.item == ausgewähltesItem);
-            if (slot != null) besitz = slot.quantity;
+            foreach (var slot in playerInventory.inventory.slots)
+            {
+                if (slot.item != null && slot.item.itemName == ausgewähltesItem.itemName)
+                {
+                    besitz += slot.quantity;
+                }
+            }
         }
 
         vorschauText.text = "<b>" + ausgewähltesItem.itemName + "</b>\n" +
@@ -88,35 +90,29 @@ public class ShopSystem : MonoBehaviour
                           "Im Besitz: " + besitz;
     }
 
-    // --- KAUF-LOGIK (Muss am Kauf-Button hängen!) ---
     public void KaufBestaetigen()
     {
-        Debug.Log("Kauf-Versuch gestartet...");
+        if (ausgewähltesItem == null) return;
+        if (playerInventory == null) FindeAktivenSpieler();
 
-        if (ausgewähltesItem == null)
+        if (playerInventory != null && GoldManager.Instance.GoldAbziehen(aktuellerPreis))
         {
-            Debug.LogWarning("Kauf abgebrochen: Kein Item ausgewählt!");
-            return;
-        }
-
-        FindeAktivenSpieler();
-
-        if (playerInventory != null && PlayerMovement2D.gold >= aktuellerPreis)
-        {
-            // 1. Gold abziehen & Speichern [cite: 2026-01-04]
-            PlayerMovement2D.gold -= aktuellerPreis;
-            PlayerMovement2D.GoldSpeichern();
-            
-            // 2. Item ins Inventar legen
             playerInventory.inventory.AddItem(ausgewähltesItem, 1);
+            UpdateAnzeige(); 
             
-            // 3. UI aktualisieren
-            UpdateAnzeige();
-            Debug.Log("Kauf erfolgreich! Neues Gold: " + PlayerMovement2D.gold);
+            // Erfolg: Katsching!
+            if (audioSource != null && kaufSound != null) 
+                audioSource.PlayOneShot(kaufSound);
+
+            Debug.Log("Kauf erfolgreich! " + ausgewähltesItem.itemName + " wurde hinzugefügt.");
         }
         else
         {
-            Debug.LogError("Kauf fehlgeschlagen! Zu wenig Gold oder Spieler nicht gefunden.");
+            // Fehler: Tiefer Ton
+            if (audioSource != null && fehlerSound != null) 
+                audioSource.PlayOneShot(fehlerSound);
+
+            Debug.LogWarning("Kauf fehlgeschlagen: Zu wenig Gold oder Inventar fehlt.");
         }
     }
 
@@ -126,7 +122,21 @@ public class ShopSystem : MonoBehaviour
         {
             bool status = !shopPanel.activeSelf;
             shopPanel.SetActive(status);
-            if (status) FindeAktivenSpieler();
+            if (status) 
+            {
+                FindeAktivenSpieler();
+                UpdateAnzeige();
+            }
+        }
+    }
+
+    public void OpenShop()
+    {
+        if (shopPanel != null)
+        {
+            shopPanel.SetActive(true);
+            FindeAktivenSpieler();
+            UpdateAnzeige();
         }
     }
 }
