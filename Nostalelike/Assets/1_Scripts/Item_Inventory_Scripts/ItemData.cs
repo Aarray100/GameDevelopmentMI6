@@ -1,101 +1,26 @@
 using UnityEngine;
-using System.Collections.Generic;
 
-public enum ItemRarity
-{
-    Common,
-    Uncommon,
-    Rare,
-    Epic,
-    Legendary
-}
-public enum ItemType
-{
-    Consumable,
-    Equipment,
-    Quest,
-    Miscellaneous,
-    Currency,
-    Tool,
-    Weapon,
-    Accessory,
-    Book
-}
-public enum EquipmentSlot
-{
-    None,        // Für nicht-Equipment Items
-    Weapon,      // Waffe (in Hotbar)
-    Head,        // Helm
-    Chest,       // Rüstung
-    Hands,       // Handschuhe
-    Legs,        // Hose
-    Feet,        // Schuhe
-    Amulet,      // Halskette
-    Ring         // Ring-Slot
-}
-public enum ConsumableType
-{
-    HealthPotion,
-    ManaPotion,
-    StaminaPotion,
-    Food,
-    Drink,
-    None
-}
-public enum WeaponType
-{
-    Sword,
-    Bow,
-    Staff,
-    None
-}
-public enum ToolType
-{
-    Pickaxe,
-    Axe,
-    Shovel,
-    FishingRod,
+// --- 1. ENUMS ---
+public enum ItemRarity { Common, Uncommon, Rare, Epic, Legendary }
+public enum ItemType { Consumable, Equipment, Quest, Miscellaneous, Currency, Tool, Weapon, Accessory, Book }
+public enum EquipmentSlot { None, Weapon, Head, Chest, Hands, Legs, Feet, Amulet, Ring }
+public enum ConsumableType { HealthPotion, ManaPotion, StaminaPotion, StrengthPotion, SpeedPotion, OmniPotion, Food, Drink, None }
+public enum WeaponType { Sword, Bow, Staff, None }
+public enum ToolType { Pickaxe, Axe, Shovel, FishingRod, None }
+public enum CurrencyType { Gold, Silver, Bronze, None }
+public enum QuestItemType { Mainquest, Sidequest, Collectible, None }
+public enum MiscellaneousType { CraftingMaterial, Junk, None }
+public enum AccessoryType { Ring, Amulet, Bracelet, None }
 
-    None
-}
-public enum CurrencyType
-{
-    Gold,
-    Silver,
-    Bronze,
-    None
-}
-public enum QuestItemType
-{
-    Mainquest,
-    Sidequest,
-    Collectible,
-    None
-}
-
-public enum MiscellaneousType
-{
-    CraftingMaterial,
-    Junk,
-    None
-}
-public enum AccessoryType
-{
-    Ring,
-    Amulet,
-    Bracelet,
-    None
-}
-
-// Stats-System für Equipment und Waffen
+// --- 2. ITEM STATS KLASSE ---
 [System.Serializable]
 public class ItemStats
 {
     [Header("Offensive Stats")]
     public float bonusDamage = 0f;
-    public float damageMultiplier = 1f;        // z.B. 1.5 = 150% Damage
-    public float bonusCritChance = 0f;         // z.B. 0.05 = +5%
-    public float bonusCritDamage = 0f;         // z.B. 0.2 = +20%
+    public float damageMultiplier = 1f;
+    public float bonusCritChance = 0f;
+    public float bonusCritDamage = 0f;
     public float bonusAttackSpeed = 0f;
     
     [Header("Defensive Stats")]
@@ -114,13 +39,11 @@ public class ItemStats
     [Header("Magic Stats")]
     public float bonusMagicDamage = 0f;
     public float bonusMagicPower = 0f;
-    
-    // Helper um Stats zu addieren
+
     public static ItemStats operator +(ItemStats a, ItemStats b)
     {
         if (a == null) return b;
         if (b == null) return a;
-        
         ItemStats result = new ItemStats();
         result.bonusDamage = a.bonusDamage + b.bonusDamage;
         result.damageMultiplier = a.damageMultiplier * b.damageMultiplier;
@@ -142,6 +65,7 @@ public class ItemStats
     }
 }
 
+// --- 3. ITEM DATA SCRIPTABLE OBJECT ---
 [CreateAssetMenu(fileName = "NewItem", menuName = "Inventory/Item")]
 public class ItemData : ScriptableObject
 {
@@ -151,36 +75,110 @@ public class ItemData : ScriptableObject
     [TextArea(3, 10)]
     public string itemDescription;
     public bool isStackable;
-    public int itemValue;
+    public int itemValue; 
     public ItemRarity itemRarity;
 
     [Header("Item Type Classification")]
     public ItemType itemType;
     
-    [Header("Equipment & Weapon Info")]
-    public EquipmentSlot equipSlot = EquipmentSlot.None;  // Wo wird es equipped?
-    public WeaponType weaponType = WeaponType.None;       // Nur für Waffen
-    public AccessoryType accessoryType = AccessoryType.None;
-    
-    [Header("Item Stats (Equipment & Weapons)")]
-    public ItemStats stats = new ItemStats();  // Alle Bonus-Stats hier!
-
-    [Header("Consumable Specific Stats (IF ItemType is Consumable)")]
+    [Header("Consumable Stats")]
     public ConsumableType consumableType;
-    public int healAmount;
-    public int manaAmount;
-    public int staminaAmount;
-    public int duration;
+    public int healAmount;     
+    public int manaAmount;     
+    public int staminaAmount;  
+    public int duration;       
     public int cooldown;
 
-    [Header("Tool Specific Stats (IF ItemType is Tool)")]
+    [Header("Equipment & Weapon Info")]
+    public EquipmentSlot equipSlot = EquipmentSlot.None;
+    public WeaponType weaponType = WeaponType.None;
+    public AccessoryType accessoryType = AccessoryType.None;
+    public ItemStats stats = new ItemStats();
+    
+    [Header("Other Types")]
     public ToolType toolType;
-    public int toolPower;
-    public float toolSpeed;
-    public int toolDamage;
-
-    [Header("Other Item Types (IF ItemType is Currency, Quest, or Miscellaneous)")]
     public CurrencyType currencyType;
     public QuestItemType questItemType;
-    public MiscellaneousType miscellaneousType;    
+    public MiscellaneousType miscellaneousType;
+
+    // --- LOGIK ---
+    public void UseItem()
+    {
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player == null) 
+        {
+            Debug.LogWarning("ItemData: Kein Spieler mit Tag 'Player' gefunden!");
+            return;
+        }
+
+        switch (itemType)
+        {
+            case ItemType.Consumable:
+                HandleConsumable(player);
+                break;
+            case ItemType.Equipment:
+            case ItemType.Weapon:
+            case ItemType.Accessory:
+                Debug.Log($"{itemName} ausgerüstet!");
+                break;
+            default:
+                Debug.Log("Item kann nicht direkt benutzt werden.");
+                break;
+        }
+    }
+
+    private void HandleConsumable(GameObject player)
+    {
+        // FIX: Audio Code entfernt, da 'drinkSound' in deinem AudioManager fehlt.
+        // Falls du Sound willst, füge im AudioManager 'public AudioClip drinkSound;' hinzu und entferne hier die Kommentare.
+        /*
+        if (AudioManager.Instance != null) 
+        {
+            // AudioManager.Instance.PlaySFX("Drink"); 
+        }
+        */
+
+        PlayerStats playerStats = player.GetComponent<PlayerStats>();
+        if (playerStats == null) return;
+
+        switch (consumableType)
+        {
+            case ConsumableType.HealthPotion:
+                playerStats.Heal((float)healAmount);
+                Debug.Log($"<color=green>HP geheilt: +{healAmount}</color>");
+                break;
+
+            case ConsumableType.ManaPotion:
+                playerStats.RestoreMana((float)manaAmount);
+                Debug.Log($"<color=blue>Mana wiederhergestellt: +{manaAmount}</color>");
+                break;
+
+            case ConsumableType.StaminaPotion:
+                playerStats.RestoreStamina((float)staminaAmount);
+                Debug.Log($"<color=orange>Stamina wiederhergestellt: +{staminaAmount}</color>");
+                break;
+
+            case ConsumableType.StrengthPotion:
+                playerStats.ApplyStrengthBuff(1.3f, (float)duration);
+                Debug.Log("<color=red>Stärke Buff (+30%) aktiviert!</color>");
+                if (BuffManager.Instance != null) BuffManager.Instance.AddBuff(itemIcon, duration);
+                break;
+
+            case ConsumableType.SpeedPotion:
+                playerStats.ApplySpeedBuff(1.3f, (float)duration);
+                Debug.Log("<color=cyan>Speed Buff (+30%) aktiviert!</color>");
+                if (BuffManager.Instance != null) BuffManager.Instance.AddBuff(itemIcon, duration);
+                break;
+            
+            case ConsumableType.OmniPotion:
+                playerStats.ForceLevelUp(); 
+                Debug.Log("<color=yellow>OMNI POTION: LEVEL UP!</color>");
+                break;
+
+            case ConsumableType.Food:
+            case ConsumableType.Drink:
+                playerStats.Heal((float)healAmount);
+                break;
+        }
+    }
 }

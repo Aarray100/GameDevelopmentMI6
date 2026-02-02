@@ -1,167 +1,83 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems; // WICHTIG: Das hat gefehlt!
 using TMPro;
-using UnityEngine.EventSystems;
 
-public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
+// WICHTIG: Jetzt erben wir von den Drag-Interfaces!
+public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler
 {
-    [Header("UI References")]
-    public Image itemIcon;
-    public Image slotImage;
-    public TextMeshProUGUI itemCountText;
+    [Header("UI Components")]
+    public Image icon;          
+    public TextMeshProUGUI amountText; 
+    public Button slotButton;   
 
-    [Header("Inventory References")]
-    public PlayerInventory playerInventory;
-    public int slotIndex;
-    private bool isHovering = false;
-    private CanvasGroup canvasGroup;
+    [HideInInspector] public int slotIndex; 
+    [HideInInspector] public PlayerInventory playerInventory; 
 
-    private static InventorySlotUI currentlyDraggedSlot;
+    private ItemData currentItem;
+    private CanvasGroup canvasGroup; // Brauchen wir für Transparenz beim Ziehen
+    
+    // Static Variablen für das Drag-Icon (geteilt mit EquipmentSlotUI)
     private static GameObject currentlyDraggedIcon;
     private static Canvas mainCanvas;
 
-    // --- GEGENSTAND BENUTZEN (TRÄNKE UND BÜCHER) ---
-    public void OnPointerClick(PointerEventData eventData)
+    private void Awake()
     {
-        // Nur Linksklick erlauben und Dragging-Check
-        if (eventData.button != PointerEventData.InputButton.Left) return;
-        if (currentlyDraggedSlot != null) return;
-
-        // Slot-Daten validieren
-        InventorySlot currentSlot = playerInventory.inventory.slots[slotIndex];
-        if (currentSlot == null || currentSlot.item == null) return;
-
-        // 1. Logik für Bücher
-        if (currentSlot.item is BookData book)
-        {
-            BookUIManager.Instance.OpenBook(book);
-            return;
-        }
-
-        // 2. Logik für Verbrauchsgüter (Tränke)
-        if (currentSlot.item.itemType == ItemType.Consumable)
-        {
-            PlayerStats stats = playerInventory.GetComponent<PlayerStats>();
-            if (stats != null)
-            {
-                // WICHTIG: Ruft UsePotion mit dem Item als Parameter auf
-                // Dies behebt den Fehler CS1061, wenn PlayerStats die Methode bereitstellt
-                stats.UsePotion(currentSlot.item); 
-                
-                // Item nach Benutzung um 1 verringern
-                playerInventory.inventory.RemoveItem(currentSlot.item, 1);
-                playerInventory.UpdateUISlots();
-                
-                Debug.Log($"<color=green>UI Log:</color> Benutze {currentSlot.item.itemName}");
-            }
-            else
-            {
-                Debug.LogError("PlayerStats-Skript wurde auf dem Spieler-Objekt nicht gefunden!");
-            }
-        }
-    }
-
-    void Awake()
-    {
+        // CanvasGroup holen oder erstellen (wichtig damit der Mauszeiger durch das Icon durchklicken kann beim Droppen)
         canvasGroup = GetComponent<CanvasGroup>();
         if (canvasGroup == null)
         {
             canvasGroup = gameObject.AddComponent<CanvasGroup>();
         }
         
-        if (mainCanvas == null)
-        {
-            mainCanvas = GetComponentInParent<Canvas>();
-        }
-        
+        // Setup für das Ghost-Icon (genau wie im Equipment Script)
+        SetupDragIcon();
+    }
+
+    private void SetupDragIcon()
+    {
         if (currentlyDraggedIcon == null)
         {
             currentlyDraggedIcon = GameObject.Find("DraggedItemIcon");
             if (currentlyDraggedIcon == null)
             {
-                CreateDraggedItemIcon();
-            }
-            else
-            {
-                // WICHTIG: Auch ein gefundenes Icon muss korrekt konfiguriert werden!
-                ConfigureDraggedIcon(currentlyDraggedIcon);
+                if (mainCanvas == null) mainCanvas = FindFirstObjectByType<Canvas>();
+                
+                currentlyDraggedIcon = new GameObject("DraggedItemIcon");
+                Image img = currentlyDraggedIcon.AddComponent<Image>();
+                img.raycastTarget = false; // Ganz wichtig!
+                img.preserveAspect = true;
+                
+                RectTransform rectTransform = currentlyDraggedIcon.GetComponent<RectTransform>();
+                rectTransform.sizeDelta = new Vector2(40, 40); // Größe anpassen
+                
+                CanvasGroup cg = currentlyDraggedIcon.AddComponent<CanvasGroup>();
+                cg.alpha = 0.7f; // Leicht transparent
+                
+                currentlyDraggedIcon.transform.SetParent(mainCanvas.transform, false);
                 currentlyDraggedIcon.SetActive(false);
             }
         }
     }
-    
-    void ConfigureDraggedIcon(GameObject icon)
+
+    public void UpdateSlot(InventorySlot slot)
     {
-        // Scale explizit auf (1,1,1) setzen
-        icon.transform.localScale = Vector3.one;
-        
-        RectTransform rectTransform = icon.GetComponent<RectTransform>();
-        if (rectTransform != null)
+        if (slot != null && slot.item != null && slot.quantity > 0)
         {
-            // WICHTIG: Größe vom itemIcon übernehmen (wie im Original)
-            if (itemIcon != null)
-            {
-                RectTransform itemIconRect = itemIcon.GetComponent<RectTransform>();
-                rectTransform.sizeDelta = itemIconRect.sizeDelta;
-            }
-            else
-            {
-                rectTransform.sizeDelta = new Vector2(40, 40); // Fallback
-            }
+            currentItem = slot.item;
             
-            rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
-            rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
-            rectTransform.pivot = new Vector2(0.5f, 0.5f);
-        }
-        
-        Image dragImage = icon.GetComponent<Image>();
-        if (dragImage != null)
-        {
-            dragImage.raycastTarget = false;
-            dragImage.preserveAspect = true;
-            Color color = dragImage.color;
-            color.a = 0.8f;
-            dragImage.color = color;
-        }
-    }
-    
-    void CreateDraggedItemIcon()
-    {
-        if (mainCanvas == null)
-        {
-            mainCanvas = GetComponentInParent<Canvas>();
-            if (mainCanvas == null) return;
-        }
-        
-        currentlyDraggedIcon = new GameObject("DraggedItemIcon");
-        currentlyDraggedIcon.transform.SetParent(mainCanvas.transform, false);
-        
-        // Image-Komponente hinzufügen
-        currentlyDraggedIcon.AddComponent<Image>();
-        
-        // Konfiguration über gemeinsame Methode
-        ConfigureDraggedIcon(currentlyDraggedIcon);
-        
-        currentlyDraggedIcon.SetActive(false);
-    }
+            icon.sprite = currentItem.itemIcon;
+            icon.enabled = true;
+            icon.preserveAspect = true; 
 
-    public void UpdateSlot(InventorySlot slotData)
-    {
-        if (itemIcon == null || itemCountText == null) return;
-        
-        if (slotData != null && slotData.item != null)
-        {
-            itemIcon.sprite = slotData.item.itemIcon;
-            itemIcon.enabled = true;
-
-            if (slotData.item.isStackable && slotData.quantity > 1)
+            if (slot.quantity > 1)
             {
-                itemCountText.text = slotData.quantity.ToString();
-                itemCountText.enabled = true;
+                amountText.text = slot.quantity.ToString();
+                amountText.enabled = true;
             }
             else
             {
-                itemCountText.enabled = false;
+                amountText.enabled = false;
             }
         }
         else
@@ -172,108 +88,70 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     public void ClearSlot()
     {
-        if (itemIcon != null)
+        currentItem = null;
+        icon.sprite = null;
+        icon.enabled = false;
+        if(amountText != null) amountText.enabled = false;
+    }
+
+    public void OnItemClicked()
+    {
+        if (playerInventory != null)
         {
-            itemIcon.sprite = null;
-            itemIcon.enabled = false;
-        }
-        if (itemCountText != null)
-        {
-            itemCountText.text = "";
-            itemCountText.enabled = false;
+            playerInventory.UseItem(slotIndex);
         }
     }
 
-    // --- DRAG AND DROP LOGIK ---
+    // --- DRAG & DROP LOGIK (NEU!) ---
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        if (playerInventory == null || playerInventory.inventory.slots[slotIndex].item == null) return;
-        
-        currentlyDraggedSlot = this;
-        
-        // Sicherstellen, dass das Icon korrekt konfiguriert ist
-        ConfigureDraggedIcon(currentlyDraggedIcon);
-        
-        // Debug: Zeige die Größe an
-        RectTransform dragRect = currentlyDraggedIcon.GetComponent<RectTransform>();
-        Debug.Log($"<color=yellow>Drag Icon Size:</color> sizeDelta={dragRect.sizeDelta}, localScale={currentlyDraggedIcon.transform.localScale}");
-        
-        currentlyDraggedIcon.SetActive(true);
-        
-        Image dragImage = currentlyDraggedIcon.GetComponent<Image>();
-        if (dragImage != null)
+        if (currentItem == null) return; // Leere Slots kann man nicht ziehen
+
+        // Icon vorbereiten
+        if (currentlyDraggedIcon != null)
         {
-            dragImage.sprite = itemIcon.sprite;
-            dragImage.enabled = true;
+            currentlyDraggedIcon.SetActive(true);
+            Image dragImage = currentlyDraggedIcon.GetComponent<Image>();
+            dragImage.sprite = currentItem.itemIcon;
+            
+            // Icon an Mausposition setzen
+            currentlyDraggedIcon.transform.position = Input.mousePosition;
         }
-        
-        // Position setzen mit Canvas-Konvertierung
-        SetDragIconPosition(eventData);
-        canvasGroup.blocksRaycasts = false;
-        itemIcon.enabled = false;
-        itemCountText.enabled = false;
+
+        // Den originalen Slot unsichtbar/transparent machen
+        canvasGroup.alpha = 0.6f;
+        canvasGroup.blocksRaycasts = false; // WICHTIG: Damit der Raycast durchgeht zum Ziel!
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (currentlyDraggedSlot == null) return;
-        SetDragIconPosition(eventData);
-    }
-    
-    private void SetDragIconPosition(PointerEventData eventData)
-    {
-        if (currentlyDraggedIcon == null || mainCanvas == null) return;
-        
-        RectTransform canvasRect = mainCanvas.GetComponent<RectTransform>();
-        Vector2 localPoint;
-        
-        // Korrekte Positionsberechnung für alle Canvas-Modi
-        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            canvasRect, 
-            eventData.position, 
-            mainCanvas.worldCamera, 
-            out localPoint))
-        {
-            currentlyDraggedIcon.GetComponent<RectTransform>().anchoredPosition = localPoint;
-        }
-    }
+        if (currentItem == null) return;
 
-    public void OnDrop(PointerEventData eventData)
-    {
-        if (currentlyDraggedSlot == null || currentlyDraggedSlot == this) return;
-        
-        playerInventory.SwapItems(currentlyDraggedSlot.slotIndex, this.slotIndex);
+        // Icon bewegt sich mit der Maus
+        if (currentlyDraggedIcon != null)
+        {
+            currentlyDraggedIcon.transform.position = Input.mousePosition;
+        }
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        if (currentlyDraggedSlot == null) return;
-        currentlyDraggedIcon.SetActive(false);
-        currentlyDraggedSlot = null;
-        canvasGroup.blocksRaycasts = true;
-        playerInventory.UpdateUISlots();
-    }
-
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        isHovering = true;
-    }
-
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        isHovering = false;
-    }
-
-    void Update()
-    {
-        if (isHovering && Input.GetKeyDown(KeyCode.E))
+        // Aufräumen
+        if (currentlyDraggedIcon != null)
         {
-            InventorySlot slot = playerInventory.inventory.slots[slotIndex];
-            if (slot != null && slot.item != null && slot.item is BookData book)
-            {
-                BookUIManager.Instance.OpenBook(book);
-            }
+            currentlyDraggedIcon.SetActive(false);
         }
+
+        canvasGroup.alpha = 1f;
+        canvasGroup.blocksRaycasts = true; // Wieder klickbar machen
+    }
+
+    // Erlaubt das Empfangen von Items (z.B. wenn man Ausrüstung zurück ins Inventar legt)
+    public void OnDrop(PointerEventData eventData)
+    {
+        // Hier könnte man Logik einbauen, um Items innerhalb des Inventars zu tauschen.
+        // Fürs Erste reicht es, wenn der EquipmentSlotUI das handled.
+        // Wenn du Equipment ZURÜCK ins Inventar ziehst, kümmert sich EquipmentSlotUI darum.
     }
 }

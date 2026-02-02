@@ -4,7 +4,6 @@ using System;
 
 public class Inventory
 {
-
     public event Action OnInventoryChanged;
     public List<InventorySlot> slots = new List<InventorySlot>();
     private int _maxSlots = 49;
@@ -36,7 +35,6 @@ public class Inventory
     {
         if (item.isStackable)
         {
-            // Suche nach einem Slot mit dem gleichen Item
             InventorySlot existingSlot = slots.Find(s => s.item == item);
             if (existingSlot != null)
             {
@@ -46,7 +44,6 @@ public class Inventory
             }
         }
 
-        // Finde den ersten leeren Slot
         if (item.isStackable)
         {
             InventorySlot emptySlot = slots.Find(s => s.item == null);
@@ -56,14 +53,10 @@ public class Inventory
                 emptySlot.quantity = quantity;
                 OnInventoryChanged?.Invoke();
             }
-            else
-            {
-                Debug.Log("Inventory is full!");
-            }
+            else { Debug.Log("Inventory is full!"); }
         }
         else
         {
-            // Für nicht-stapelbare Items, füge jedes einzeln hinzu
             for (int i = 0; i < quantity; i++)
             {
                 InventorySlot emptySlot = slots.Find(s => s.item == null);
@@ -91,7 +84,6 @@ public class Inventory
             slot.quantity -= quantity;
             if (slot.quantity <= 0)
             {
-                // Leere den Slot statt ihn zu entfernen
                 slot.item = null;
                 slot.quantity = 0;
             }
@@ -99,69 +91,17 @@ public class Inventory
         }
     }
 
-    // Füge Item an spezifischem Index hinzu
-    public void AddItemAt(ItemData item, int index)
-    {
-        if (index < 0 || index >= slots.Count)
-        {
-            Debug.LogWarning($"Invalid slot index: {index}");
-            return;
-        }
-
-        InventorySlot targetSlot = slots[index];
-        
-        if (targetSlot.item == null)
-        {
-            // Slot ist leer - einfach hinzufügen
-            targetSlot.item = item;
-            targetSlot.quantity = 1;
-        }
-        else if (targetSlot.item == item && item.isStackable)
-        {
-            // Gleicher stackbarer Item - erhöhe quantity
-            targetSlot.quantity++;
-        }
-        else
-        {
-            Debug.LogWarning($"Slot {index} is already occupied!");
-            return;
-        }
-        
-        OnInventoryChanged?.Invoke();
-    }
-
-    // Entferne Item an spezifischem Index
+    // --- HIER IST DIE FUNKTION, DIE DEINE HOTBAR VERMISST HAT ---
     public void RemoveItemAt(int index)
     {
-        if (index < 0 || index >= slots.Count)
-        {
-            Debug.LogWarning($"Invalid slot index: {index}");
-            return;
-        }
-
+        if (index < 0 || index >= slots.Count) return;
         InventorySlot slot = slots[index];
         slot.item = null;
         slot.quantity = 0;
-        
         OnInventoryChanged?.Invoke();
     }
-    
-    public bool HasItem(ItemData item, int quantity)
-    {
-        InventorySlot slot = slots.Find(s => s.item == item);
-        if (slot != null)
-        {
-            return slot.quantity >= quantity;
-        }
-        else
-        {
-            return false;
-        }
-    }
+    // -------------------------------------------------------------
 
-    /// <summary>
-    /// Leert das gesamte Inventar
-    /// </summary>
     public void Clear()
     {
         foreach (var slot in slots)
@@ -172,10 +112,6 @@ public class Inventory
         OnInventoryChanged?.Invoke();
     }
 }
-
-   
-
-
 
 [System.Serializable]
 public class InventorySlot

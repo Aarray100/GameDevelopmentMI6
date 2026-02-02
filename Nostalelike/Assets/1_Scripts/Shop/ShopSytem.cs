@@ -11,12 +11,25 @@ public class ShopSystem : MonoBehaviour
     public TextMeshProUGUI vorschauText;
     public GameObject shopPanel;
 
-    [Header("Item Daten (Assets hier reinziehen)")]
+    [Header("Audio Clips")]
+    public AudioClip clickSound;
+    public AudioClip buySound;
+    public AudioClip errorSound;
+    public AudioClip openShopSound;
+
+    [Header("Verbrauchs-Items")]
     public ItemData healPotion;
     public ItemData strengthPotion;
     public ItemData speedPotion;
     public ItemData omniPotion;
-    public ItemData helm1, helm2, schwert, kette;
+
+    [Header("Ausrüstung (Iron Set)")]
+    // Wir haben die Namen angepasst, damit sie Sinn ergeben!
+    public ItemData ironSword;      // Vorher schwert
+    public ItemData ironHelm;       // Vorher helm1
+    public ItemData ironChestplate; // Vorher helm2
+    public ItemData ironAmulet;     // Vorher kette
+    public ItemData ironRing;       // Neu dazu (falls du den Ring auch verkaufen willst)
 
     private ItemData ausgewähltesItem;
     private int aktuellerPreis;
@@ -34,11 +47,6 @@ public class ShopSystem : MonoBehaviour
         {
             goldText.text = "Gold: " + GoldManager.Instance.aktuellesGold;
         }
-
-        if (Input.GetKeyDown(KeyCode.G))
-        {
-            ToggleShop();
-        }
     }
 
     private void FindeAktivenSpieler()
@@ -46,14 +54,21 @@ public class ShopSystem : MonoBehaviour
         playerInventory = GameObject.FindFirstObjectByType<PlayerInventory>();
     }
 
+    // --- BUTTON FUNKTIONEN ---
+    // Diese Funktionen musst du im Button "On Click" neu zuweisen!
+
     public void WaehleHeiltrank() { SetzeVorschau(healPotion, 20); }
     public void WaehleStaerke() { SetzeVorschau(strengthPotion, 20); }
     public void WaehleSpeed() { SetzeVorschau(speedPotion, 20); }
     public void WaehleOmni() { SetzeVorschau(omniPotion, 50); }
-    public void WaehleSchwert() { SetzeVorschau(schwert, 50); }
-    public void WaehleHelm1() { SetzeVorschau(helm1, 100); }
-    public void WaehleHelm2() { SetzeVorschau(helm2, 100); }
-    public void WaehleKette() { SetzeVorschau(kette, 80); }
+
+    public void WaehleIronSword() { SetzeVorschau(ironSword, 50); }
+    public void WaehleIronHelm() { SetzeVorschau(ironHelm, 100); }
+    public void WaehleIronChestplate() { SetzeVorschau(ironChestplate, 100); } // Teurer, da Rüstung
+    public void WaehleIronAmulet() { SetzeVorschau(ironAmulet, 60); }
+    public void WaehleIronRing() { SetzeVorschau(ironRing, 60); }
+
+    // -------------------------
 
     private void SetzeVorschau(ItemData data, int preis)
     {
@@ -62,8 +77,8 @@ public class ShopSystem : MonoBehaviour
         aktuellerPreis = preis;
         UpdateAnzeige(); 
         
-        // Optional: Kleiner Klick-Sound beim Auswählen
-        if (AudioManager.Instance != null) AudioManager.Instance.PlayHoverSFX();
+        if (AudioManager.Instance != null && clickSound != null) 
+            AudioManager.Instance.PlaySFX(clickSound); 
     }
 
     public void UpdateAnzeige()
@@ -90,35 +105,23 @@ public class ShopSystem : MonoBehaviour
 
     public void KaufBestaetigen()
     {
-        if (ausgewähltesItem == null) return;
-        if (playerInventory == null) FindeAktivenSpieler();
-
-        // Erst prüfen ob Inventar da ist
-        if (playerInventory == null)
-        {
-            Debug.LogError("Kauf abgebrochen: Kein PlayerInventory in der Szene gefunden!");
-            return;
-        }
-
-        // Gold prüfen und abziehen
+        if (ausgewähltesItem == null || GoldManager.Instance == null || playerInventory == null) return;
+        
         if (GoldManager.Instance.GoldAbziehen(aktuellerPreis))
         {
-            playerInventory.inventory.AddItem(ausgewähltesItem, 1);
+            if (playerInventory.inventory != null)
+            {
+                playerInventory.inventory.AddItem(ausgewähltesItem, 1);
+                
+                if (AudioManager.Instance != null && buySound != null) 
+                    AudioManager.Instance.PlaySFX(buySound); 
+            }
             UpdateAnzeige(); 
-            
-            // Erfolg: Nutzt jetzt den zentralen AudioManager
-            if (AudioManager.Instance != null) 
-                AudioManager.Instance.PlayItemSoldSFX();
-
-            Debug.Log("Kauf erfolgreich! " + ausgewähltesItem.itemName + " wurde hinzugefügt.");
         }
         else
         {
-            // Fehler: Nutzt jetzt den zentralen AudioManager
-            if (AudioManager.Instance != null) 
-                AudioManager.Instance.PlayInsufficientGoldSFX();
-
-            Debug.LogWarning("Kauf fehlgeschlagen: Zu wenig Gold!");
+            if (AudioManager.Instance != null && errorSound != null) 
+                AudioManager.Instance.PlaySFX(errorSound);
         }
     }
 
@@ -126,26 +129,29 @@ public class ShopSystem : MonoBehaviour
     {
         if (shopPanel != null)
         {
-            bool status = !shopPanel.activeSelf;
-            shopPanel.SetActive(status);
+            bool istAktiv = !shopPanel.activeSelf;
+            shopPanel.SetActive(istAktiv);
             
-            if (status) 
+            if (istAktiv)
             {
-                FindeAktivenSpieler();
                 UpdateAnzeige();
-                if (AudioManager.Instance != null) AudioManager.Instance.PlayShopOpenSFX();
+                if (AudioManager.Instance != null && openShopSound != null) 
+                    AudioManager.Instance.PlaySFX(openShopSound);
             }
         }
     }
 
-    public void OpenShop()
+    public void OpenShop() 
     {
         if (shopPanel != null)
         {
             shopPanel.SetActive(true);
-            FindeAktivenSpieler();
             UpdateAnzeige();
-            if (AudioManager.Instance != null) AudioManager.Instance.PlayShopOpenSFX();
         }
+    }
+
+    public void CloseShop() 
+    {
+        if (shopPanel != null) shopPanel.SetActive(false);
     }
 }

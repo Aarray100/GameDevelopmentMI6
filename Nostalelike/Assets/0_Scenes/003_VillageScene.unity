@@ -5095,7 +5095,7 @@ Tilemap:
       - {fileID: 6898035379108858973, guid: 0f3ed8e63d1dc708ead34def9e49958a, type: 3}
       - {fileID: -8868248462342347919, guid: 0f3ed8e63d1dc708ead34def9e49958a, type: 3}
       - {fileID: -1605707320451941170, guid: 0f3ed8e63d1dc708ead34def9e49958a, type: 3}
-      m_AnimationSpeed: 2.0319827
+      m_AnimationSpeed: 1.8940613
       m_AnimationTimeOffset: 0
       m_Flags: 0
   m_TileAssetArray:
@@ -90817,8 +90817,32 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6464566052298857178, guid: e64be6f9d179acd3bbfffa6a83063a3e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1284952763}
   m_SourcePrefab: {fileID: 100100000, guid: e64be6f9d179acd3bbfffa6a83063a3e, type: 3}
+--- !u!1 &1284952762 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6464566052298857178, guid: e64be6f9d179acd3bbfffa6a83063a3e, type: 3}
+  m_PrefabInstance: {fileID: 1194655655}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1284952763
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1284952762}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 997b3d6b1c4e3614f87bdcef44003df9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyLoot
+  minGoldDroprate: 5
+  maxGoldDroprate: 10
+  popupTextPrefab: {fileID: 744716453379763200, guid: 8a319b07937a0644eb955655869911db, type: 3}
+  goldItemAsset: {fileID: 0}
 --- !u!1 &1352036837
 GameObject:
   m_ObjectHideFlags: 0
@@ -90930,6 +90954,7 @@ GameObject:
   - component: {fileID: 1471964044}
   - component: {fileID: 1471964043}
   - component: {fileID: 1471964051}
+  - component: {fileID: 1471964052}
   m_Layer: 7
   m_Name: Enemy_Big Slime_0
   m_TagString: Untagged
@@ -91182,6 +91207,22 @@ MonoBehaviour:
   xpReward: 150
   debugTakeDamage: 0
   debugKill: 0
+--- !u!114 &1471964052
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1471964042}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 997b3d6b1c4e3614f87bdcef44003df9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyLoot
+  minGoldDroprate: 5
+  maxGoldDroprate: 20
+  popupTextPrefab: {fileID: 744716453379763200, guid: 8a319b07937a0644eb955655869911db, type: 3}
+  goldItemAsset: {fileID: 0}
 --- !u!1 &1589352794
 GameObject:
   m_ObjectHideFlags: 0
