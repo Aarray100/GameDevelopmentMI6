@@ -8,7 +8,7 @@ public class GoldManager : MonoBehaviour
 
     [Header("Einstellungen")]
     public ItemData goldItemAsset;
-    public int startGold = 0; 
+    public int startGold = 11000; 
     public int aktuellesGold;
 
     [Header("Testing")]
@@ -105,5 +105,27 @@ public class GoldManager : MonoBehaviour
         aktuellesGold = startGold;
         UpdateGoldAnzeige();
         Debug.Log("Gold manuell zurückgesetzt!");
+    }
+
+    // Debug-Methoden zum Erhöhen von Gold im Inspector
+    [ContextMenu("DEBUG: +100 Gold")]
+    public void AddGold100()
+    {
+        GoldHinzufuegen(100);
+        Debug.Log("<color=green>+100 Gold hinzugefügt! Aktuell: " + aktuellesGold + "</color>");
+    }
+
+    [ContextMenu("DEBUG: +1000 Gold")]
+    public void AddGold1000()
+    {
+        GoldHinzufuegen(1000);
+        Debug.Log("<color=green>+1000 Gold hinzugefügt! Aktuell: " + aktuellesGold + "</color>");
+    }
+
+    [ContextMenu("DEBUG: +10000 Gold")]
+    public void AddGold10000()
+    {
+        GoldHinzufuegen(10000);
+        Debug.Log("<color=green>+10000 Gold hinzugefügt! Aktuell: " + aktuellesGold + "</color>");
     }
 }
