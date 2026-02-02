@@ -1,25 +1,59 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class GoldManager : MonoBehaviour
 {
-    public static GoldManager Instance; // Erlaubt Zugriff von überall
+    public static GoldManager Instance;
 
     [Header("Einstellungen")]
-    public int startGold = 500;
+    public ItemData goldItemAsset;
+    public int startGold = 0; 
     public int aktuellesGold;
+
+    [Header("Testing")]
+    // HAKEN REIN = Startet immer bei 0 (gut zum Testen)
+    // HAKEN RAUS = Merkt sich das Gold für immer (gut für das fertige Spiel)
+    public bool resetOnStart = true; 
+    
+    [Header("UI Verknüpfung")]
     public TextMeshProUGUI goldAnzeigeUI;
 
     void Awake()
     {
-        // Singleton-Muster: Es darf nur einen GoldManager geben
-        if (Instance == null) { Instance = this; DontDestroyOnLoad(gameObject); }
-        else { Destroy(gameObject); }
+        // Wenn der Haken im Inspector an ist, löschen wir den Speicherstand sofort
+        if (resetOnStart)
+        {
+            PlayerPrefs.DeleteKey("GespeichertesGold");
+            Debug.Log("<color=yellow>TEST-MODUS: Gold wurde automatisch auf 0 gesetzt!</color>");
+        }
+
+        if (Instance == null) 
+        { 
+            Instance = this; 
+            DontDestroyOnLoad(gameObject); 
+            
+            // Gold laden (oder 0 nehmen, falls gerade gelöscht wurde)
+            LadeGold();
+        }
+        else 
+        { 
+            Destroy(gameObject); 
+        }
     }
 
-    void Start()
+    void OnEnable() { SceneManager.sceneLoaded += OnSceneLoaded; }
+    void OnDisable() { SceneManager.sceneLoaded -= OnSceneLoaded; }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        aktuellesGold = startGold;
+        // Sucht das Textfeld in der neuen Szene
+        if (goldAnzeigeUI == null)
+        {
+            GameObject textObj = GameObject.Find("GoldAnzeige"); 
+            if (textObj != null)
+                goldAnzeigeUI = textObj.GetComponent<TextMeshProUGUI>();
+        }
         UpdateGoldAnzeige();
     }
 
@@ -27,18 +61,20 @@ public class GoldManager : MonoBehaviour
     {
         aktuellesGold += menge;
         UpdateGoldAnzeige();
-        Debug.Log(menge + " Gold erhalten! Kontostand: " + aktuellesGold);
+        SpeichereGold(); 
     }
 
+    // Gibt 'true' zurück, wenn genug Gold da war (wichtig für Shop!)
     public bool GoldAbziehen(int menge)
     {
         if (aktuellesGold >= menge)
         {
             aktuellesGold -= menge;
             UpdateGoldAnzeige();
-            return true; // Kauf erfolgreich
+            SpeichereGold(); 
+            return true; 
         }
-        return false; // Zu wenig Gold
+        return false; 
     }
 
     public void UpdateGoldAnzeige()
@@ -47,5 +83,27 @@ public class GoldManager : MonoBehaviour
         {
             goldAnzeigeUI.text = "Gold: " + aktuellesGold;
         }
+    }
+
+    private void SpeichereGold()
+    {
+        PlayerPrefs.SetInt("GespeichertesGold", aktuellesGold);
+        PlayerPrefs.Save();
+    }
+
+    private void LadeGold()
+    {
+        aktuellesGold = PlayerPrefs.GetInt("GespeichertesGold", startGold);
+        UpdateGoldAnzeige();
+    }
+
+    // Kleiner Zusatz: Du kannst auch während des Spiels im Inspector "Reset Gold" klicken
+    [ContextMenu("Reset Gold")]
+    public void ResetGold()
+    {
+        PlayerPrefs.DeleteKey("GespeichertesGold");
+        aktuellesGold = startGold;
+        UpdateGoldAnzeige();
+        Debug.Log("Gold manuell zurückgesetzt!");
     }
 }

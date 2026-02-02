@@ -10,15 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 27e2402cf9c99c4c9b410030018ed075, type: 3}
-  m_Name: HealingPotion
+  m_Name: StrengthPotion
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  itemName: Healing Potion
-  itemIcon: {fileID: -5867177917300053870, guid: 7b0148d56cb2e3642ab53fa30c8dbfff, type: 3}
-  itemDescription: 'This Item Heals you to 100 % '
+  itemName: Strength Potion
+  itemIcon: {fileID: -1048966226178529497, guid: 3701c5e5f122b914f9bb818960de08a9, type: 3}
+  itemDescription: This Item gives you 20% more Strength for 3 min
   isStackable: 1
   itemValue: 0
   itemRarity: 0
   itemType: 0
+  consumableType: 3
+  healAmount: 0
+  manaAmount: 0
+  staminaAmount: 0
+  duration: 180
+  cooldown: 0
   equipSlot: 0
   weaponType: 3
   accessoryType: 3
@@ -39,16 +45,7 @@ MonoBehaviour:
     bonusStaminaRegen: 0
     bonusMagicDamage: 0
     bonusMagicPower: 0
-  consumableType: 0
-  healAmount: 100
-  manaAmount: 0
-  staminaAmount: 0
-  duration: 0
-  cooldown: 0
   toolType: 0
-  toolPower: 0
-  toolSpeed: 0
-  toolDamage: 0
   currencyType: 0
   questItemType: 0
   miscellaneousType: 0

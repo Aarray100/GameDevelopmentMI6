@@ -4,341 +4,203 @@ using System.Collections;
 
 public class PlayerStats : MonoBehaviour
 {
-    [Header("Base Resource Stats")]
-    public float baseMaxHealth = 100f;
-    public float baseMaxMana = 50f;
-    public float baseMaxStamina = 75f;
-    
-    [Header("Current Resources")]
+    [Header("Base Stats")]
+    public float maxHealth = 100f;
     public float currentHealth;
-    public float currentMana;
-    public float currentStamina;
     
-    [Header("Base Regeneration Rates (per second)")]
-    public float baseHealthRegenRate = 5f;
-    public float baseManaRegenRate = 3f;
-    public float baseStaminaRegenRate = 4f;
-    
-    [Header("Base Offensive Stats")]
-    public float baseDamage = 10f;
-    public float baseAttackSpeed = 1f;
-    public float baseCriticalChance = 0.1f;
-    public float baseCriticalDamage = 1.5f;
+    // UI Dummies (Damit die Anzeigen voll bleiben)
+    [HideInInspector] public float maxMana = 100f;
+    [HideInInspector] public float currentMana = 100f;
+    [HideInInspector] public float maxStamina = 100f;
+    [HideInInspector] public float currentStamina = 100f;
 
-    [Header("Base Defensive Stats")]
-    public float baseDefense = 5f;
-    public float baseResistance = 3f;
-    public float baseEvasion = 0.05f;
-    
-    [Header("Calculated Total Stats (Base + Level + Equipment)")]
-    public float maxHealth;
-    public float maxMana;
-    public float maxStamina;
+    [Header("Offensive Stats (Calculated)")]
+    public float baseDamage = 10f;
     public float totalDamage;
-    public float totalAttackSpeed;
-    public float totalCriticalChance;
-    public float totalCriticalDamage;
-    public float totalDefense;
-    public float totalResistance;
-    public float totalEvasion;
-    public float totalHealthRegen;
-    public float totalManaRegen;
-    public float totalStaminaRegen;
+    public float totalAttackSpeed = 1f;
+    public float totalCriticalChance = 0f;
+    public float totalCriticalDamage = 1.5f;
+    
+    [Header("Defensive Stats (Calculated)")]
+    public float totalDefense = 0f;
+    public float totalResistance = 0f;
+    public float totalEvasion = 0f;
+    
+    [Header("Regen Stats (Calculated)")]
+    public float totalHealthRegen = 1f;
+    public float totalManaRegen = 0f;  
+    public float totalStaminaRegen = 0f;
 
     [Header("Level System")]
     public int currentLevel = 1;
     public int experiencePoints = 0;
-    public int experienceToNextLevel = 100;
-    public float experienceRequired; // Wird in Awake() berechnet
-    
-    [Header("Stat Growth per Level")]
-    public float healthPerLevel = 10f;
-    public float manaPerLevel = 8f;
-    public float staminaPerLevel = 5f;
-    public float damagePerLevel = 2f;
-    public float defensePerLevel = 1f;
-    public float criticalChancePerLevel = 0.005f; // 0.5%
-    
-    // Equipment Bonuses
-    private ItemStats equipmentBonus = new ItemStats();  // Armor + Accessories
-    private ItemStats activeWeaponBonus = new ItemStats(); // Nur aktive Waffe
-    
-    // Events für UI Updates
+    public float experienceRequired = 100f; 
+    public int experienceToNextLevel = 100; 
+
+    private float temporaryDamageMultiplier = 1.0f;
+    private ItemStats equipmentBonus = new ItemStats();
+    private ItemStats activeWeaponBonus = new ItemStats();
+
+    // EVENTS
     public event Action OnStatsChanged;
     public event Action OnHealthChanged;
-    public event Action OnManaChanged;
-    public event Action OnStaminaChanged;
+    public event Action OnManaChanged;    
+    public event Action OnStaminaChanged; 
+    public event Action OnXPChanged;      
+    public event Action<int, int> OnLevelUp; 
     public event Action OnPlayerDeath;
-    public event Action OnPlayerRespawn;
-    public event Action<int, int> OnLevelUp; // (fromLevel, toLevel)
-    public event Action OnXPChanged; // NEU: Für XP Bar Updates
-    
-    [Header("Death Settings")]
-    public float deathAnimationDuration = 1.5f;
-    public float respawnDelay = 2f;
-    public bool isDead = false;
-    
-    // Referenzen
-    private Animator anim;
+    public event Action OnPlayerRespawn { add { } remove { } }
+
     private PlayerMovement2D playerMovement;
     
     private void Awake()
     {
-        experienceRequired = CalculateEXPForNextLevel();
+        playerMovement = GetComponent<PlayerMovement2D>();
+        experienceRequired = experienceToNextLevel;
         RecalculateStats();
         
+        // Alles voll machen zum Start
         currentHealth = maxHealth;
         currentMana = maxMana;
         currentStamina = maxStamina;
-        
-        anim = GetComponentInChildren<Animator>();
-        playerMovement = GetComponent<PlayerMovement2D>();
     }
-    
-    private void Update()
+
+    private void Start()
     {
-        RegenerateResources();
+        OnHealthChanged?.Invoke();
+        OnManaChanged?.Invoke();
+        OnStaminaChanged?.Invoke();
+        OnXPChanged?.Invoke();
     }
 
-    // --- NEU: DIESE METHODE BEHEBT DEN FEHLER CS1061 ---
-    /// <summary>
-    /// Wird von der InventorySlotUI aufgerufen.
-    /// Wendet den Effekt eines verbrauchbaren Gegenstands (Trank) an.
-    /// </summary>
-    public void UsePotion(ItemData item)
+    public void UpdateEquipmentBonus(ItemStats newBonus)
     {
-        if (item == null) return;
-
-        Debug.Log($"<color=green>PlayerStats:</color> Benutze Gegenstand {item.itemName}");
-
-        // Beispiel-Logik für Heilung:
-        // Wir suchen im Item-Namen nach "Health" oder "Mana"
-        if (item.itemName.Contains("Health"))
-        {
-            Heal(20f); // Heilt 20 Punkte
-        }
-        else if (item.itemName.Contains("Mana"))
-        {
-            RestoreMana(15f); // Stellt 15 Mana wieder her
-        }
-
-        OnStatsChanged?.Invoke();
+        equipmentBonus = newBonus;
+        RecalculateStats();
     }
-    // --------------------------------------------------
 
-    private void RegenerateResources()
-    {
-        if (currentHealth < maxHealth)
-        {
-            currentHealth = Mathf.Min(currentHealth + totalHealthRegen * Time.deltaTime, maxHealth);
-            OnHealthChanged?.Invoke();
-        }
-        
-        if (currentMana < maxMana)
-        {
-            currentMana = Mathf.Min(currentMana + totalManaRegen * Time.deltaTime, maxMana);
-            OnManaChanged?.Invoke();
-        }
-        
-        if (currentStamina < maxStamina)
-        {
-            currentStamina = Mathf.Min(currentStamina + totalStaminaRegen * Time.deltaTime, maxStamina);
-            OnStaminaChanged?.Invoke();
-        }
-    }
-    
     public void SetActiveWeapon(ItemData weapon)
     {
-        if (weapon != null && weapon.itemType == ItemType.Weapon && weapon.stats != null)
-        {
+        if (weapon != null && weapon.stats != null)
             activeWeaponBonus = weapon.stats;
-            Debug.Log($"Active weapon set: {weapon.itemName}");
-        }
         else
-        {
             activeWeaponBonus = new ItemStats(); 
-            Debug.Log("No weapon active");
-        }
         RecalculateStats();
     }
-    
-    public void UpdateEquipmentBonus(ItemStats newEquipmentBonus)
+
+    // --- TRANK LOGIK ---
+    public void ForceLevelUp()
     {
-        equipmentBonus = newEquipmentBonus;
+        experiencePoints = (int)experienceRequired;
+        LevelUp();
+    }
+
+    public void ApplyStrengthBuff(float multiplier, float duration)
+    {
+        StartCoroutine(StrengthBuffCoroutine(multiplier, duration));
+    }
+
+    private IEnumerator StrengthBuffCoroutine(float multiplier, float duration)
+    {
+        temporaryDamageMultiplier = multiplier; 
+        RecalculateStats(); 
+        yield return new WaitForSeconds(duration);
+        temporaryDamageMultiplier = 1.0f; 
         RecalculateStats();
     }
-    
+
+    public void ApplySpeedBuff(float multiplier, float duration)
+    {
+        // NUTZT JETZT DEINE FUNKTION AUS PlayerMovement2D
+        if (playerMovement != null)
+        {
+            playerMovement.ApplySpeedBoost(multiplier, duration);
+        }
+    }
+
+    // --- BERECHNUNGEN ---
     public void RecalculateStats()
     {
-        float levelMaxHealth = baseMaxHealth + (currentLevel * healthPerLevel);
-        float levelMaxMana = baseMaxMana + (currentLevel * manaPerLevel);
-        float levelMaxStamina = baseMaxStamina + (currentLevel * staminaPerLevel);
-        float levelDamage = baseDamage + (currentLevel * damagePerLevel);
-        float levelDefense = baseDefense + (currentLevel * defensePerLevel);
-        float levelCritChance = baseCriticalChance + (currentLevel * criticalChancePerLevel);
+        float levelDamage = baseDamage + (currentLevel * 2f);
+        totalDamage = (levelDamage + equipmentBonus.bonusDamage + activeWeaponBonus.bonusDamage) * temporaryDamageMultiplier;
         
-        maxHealth = levelMaxHealth + equipmentBonus.bonusHealth;
-        maxMana = levelMaxMana + equipmentBonus.bonusMana;
-        maxStamina = levelMaxStamina + equipmentBonus.bonusStamina;
-        totalDefense = levelDefense + equipmentBonus.bonusDefense;
-        totalResistance = baseResistance + equipmentBonus.bonusResistance;
-        totalEvasion = baseEvasion + equipmentBonus.bonusEvasion;
-        
-        totalDamage = levelDamage + equipmentBonus.bonusDamage + activeWeaponBonus.bonusDamage;
-        totalAttackSpeed = baseAttackSpeed + equipmentBonus.bonusAttackSpeed + activeWeaponBonus.bonusAttackSpeed;
-        totalCriticalChance = levelCritChance + equipmentBonus.bonusCritChance + activeWeaponBonus.bonusCritChance;
-        totalCriticalDamage = baseCriticalDamage + equipmentBonus.bonusCritDamage + activeWeaponBonus.bonusCritDamage;
-        
-        totalHealthRegen = baseHealthRegenRate + equipmentBonus.bonusHealthRegen + activeWeaponBonus.bonusHealthRegen;
-        totalManaRegen = baseManaRegenRate + equipmentBonus.bonusManaRegen + activeWeaponBonus.bonusManaRegen;
-        totalStaminaRegen = baseStaminaRegenRate + equipmentBonus.bonusStaminaRegen + activeWeaponBonus.bonusStaminaRegen;
-        
-        if (activeWeaponBonus.damageMultiplier > 1f)
-        {
-            totalDamage *= activeWeaponBonus.damageMultiplier;
-        }
-        
-        currentHealth = Mathf.Min(currentHealth, maxHealth);
-        currentMana = Mathf.Min(currentMana, maxMana);
-        currentStamina = Mathf.Min(currentStamina, maxStamina);
+        totalAttackSpeed = 1f + equipmentBonus.bonusAttackSpeed + activeWeaponBonus.bonusAttackSpeed;
+        totalCriticalChance = equipmentBonus.bonusCritChance + activeWeaponBonus.bonusCritChance;
+        totalCriticalDamage = 1.5f + equipmentBonus.bonusCritDamage + activeWeaponBonus.bonusCritDamage;
+
+        totalDefense = equipmentBonus.bonusDefense;
+        totalResistance = equipmentBonus.bonusResistance;
+        totalEvasion = equipmentBonus.bonusEvasion;
+
+        maxHealth = 100 + (currentLevel * 10) + equipmentBonus.bonusHealth;
+        totalHealthRegen = 1f + equipmentBonus.bonusHealthRegen;
+
+        // Fix für die 0/0 Anzeigen
+        maxMana = 100f;
+        currentMana = 100f;
+        maxStamina = 100f;
+        currentStamina = 100f;
+
+        if (currentHealth > maxHealth) currentHealth = maxHealth;
         
         OnStatsChanged?.Invoke();
-    }
-    
-    private float CalculateEXPForNextLevel()
-    {
-        return Mathf.Round(experienceToNextLevel * Mathf.Pow(currentLevel, 1.2f));
-    }
-    
-    public void GainExperience(int amount)
-    {
-        experiencePoints += amount;
-        OnXPChanged?.Invoke();
-        while (experiencePoints >= experienceRequired)
-        {
-            LevelUp();
-        }
+        OnManaChanged?.Invoke();    
+        OnStaminaChanged?.Invoke(); 
     }
     
     private void LevelUp()
     {
-        int previousLevel = currentLevel;
         currentLevel++;
-        experiencePoints -= (int)experienceRequired;
-        experienceRequired = CalculateEXPForNextLevel();
-        
+        experiencePoints = 0;
+        experienceToNextLevel = (int)(experienceToNextLevel * 1.5f);
+        experienceRequired = experienceToNextLevel; 
+
+        currentHealth = maxHealth; 
+        OnHealthChanged?.Invoke();
+        OnLevelUp?.Invoke(currentLevel - 1, currentLevel);
+        OnXPChanged?.Invoke(); 
         RecalculateStats();
-        
-        currentHealth = maxHealth;
-        currentMana = maxMana;
-        currentStamina = maxStamina;
-        
-        OnHealthChanged?.Invoke();
-        OnManaChanged?.Invoke();
-        OnStaminaChanged?.Invoke();
-        
-        OnLevelUp?.Invoke(previousLevel, currentLevel);
     }
-    
-    public float GetFinalDamage() => totalDamage;
-    public bool IsCriticalHit() => UnityEngine.Random.value < totalCriticalChance;
-    public float GetCriticalDamage() => totalDamage * totalCriticalDamage;
-    
-    public void TakeDamage(float damage)
+
+    public void GainExperience(int amount)
     {
-        float finalDamage = Mathf.Max(damage - totalDefense, 0);
-        currentHealth = Mathf.Max(currentHealth - finalDamage, 0);
-        OnHealthChanged?.Invoke();
-        
-        if (currentHealth <= 0) Die();
+        experiencePoints += amount;
+        OnXPChanged?.Invoke(); 
+        if (experiencePoints >= experienceRequired)
+        {
+            LevelUp();
+        }
     }
-    
+
     public void Heal(float amount)
     {
         currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
         OnHealthChanged?.Invoke();
     }
-    
-    public void RestoreMana(float amount)
+
+    public void TakeDamage(float damage)
     {
-        currentMana = Mathf.Min(currentMana + amount, maxMana);
-        OnManaChanged?.Invoke();
-    }
-    
-    public void RestoreStamina(float amount)
-    {
-        currentStamina = Mathf.Min(currentStamina + amount, maxStamina);
-        OnStaminaChanged?.Invoke();
-    }
-    
-    public bool UseMana(float amount)
-    {
-        if (currentMana >= amount)
-        {
-            currentMana -= amount;
-            OnManaChanged?.Invoke();
-            return true;
-        }
-        return false;
-    }
-    
-    public bool UseStamina(float amount)
-    {
-        if (currentStamina >= amount)
-        {
-            currentStamina -= amount;
-            OnStaminaChanged?.Invoke();
-            return true;
-        }
-        return false;
+        float damageAfterDef = Mathf.Max(damage - totalDefense, 1); 
+        currentHealth -= damageAfterDef;
+        OnHealthChanged?.Invoke();
+        if (currentHealth <= 0) Die();
     }
     
     private void Die()
     {
-        if (isDead) return;
-        isDead = true;
-        if (playerMovement != null)
-        {
-            playerMovement.ForceStop();
-            playerMovement.movementLocked = true;
-        }
-        if (anim != null) anim.SetTrigger("Death");
         OnPlayerDeath?.Invoke();
-        StartCoroutine(RespawnCoroutine());
     }
-    
-    private IEnumerator RespawnCoroutine()
-    {
-        yield return new WaitForSeconds(deathAnimationDuration + respawnDelay);
-        Respawn();
-    }
-    
-    public void Respawn()
-    {
-        isDead = false;
-        currentHealth = maxHealth;
-        currentMana = maxMana;
-        currentStamina = maxStamina;
-        if (anim != null)
-        {
-            anim.SetTrigger("Respawn");
-            anim.ResetTrigger("Death");
-        }
-        if (playerMovement != null) playerMovement.movementLocked = false;
-        OnHealthChanged?.Invoke();
-        OnManaChanged?.Invoke();
-        OnStaminaChanged?.Invoke();
-        OnPlayerRespawn?.Invoke();
-    }
+
+    public void RestoreMana(float amount) { OnManaChanged?.Invoke(); }
+    public void RestoreStamina(float amount) { OnStaminaChanged?.Invoke(); }
+    public void UseMana(float amount) { } 
+    public void UseStamina(float amount) { } 
 
     public void LoadSaveData(float savedHealth, float savedMaxHealth, float savedMana, float savedMaxMana)
     {
-        maxHealth = savedMaxHealth;
-        maxMana = savedMaxMana;
-        currentHealth = Mathf.Clamp(savedHealth, 0f, maxHealth);
-        currentMana = Mathf.Clamp(savedMana, 0f, maxMana);
+        maxHealth = savedMaxHealth > 0 ? savedMaxHealth : 100f;
+        currentHealth = (savedHealth <= 1) ? maxHealth : savedHealth;
         OnHealthChanged?.Invoke();
-        OnManaChanged?.Invoke();
-        OnStatsChanged?.Invoke();
+        RecalculateStats();
     }
 }

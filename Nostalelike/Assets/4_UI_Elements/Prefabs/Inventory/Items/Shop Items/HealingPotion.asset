@@ -10,15 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 27e2402cf9c99c4c9b410030018ed075, type: 3}
-  m_Name: Sword_Basic
+  m_Name: HealingPotion
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  itemName: 
-  itemIcon: {fileID: 0}
-  itemDescription: 
-  isStackable: 0
+  itemName: Healing Potion
+  itemIcon: {fileID: -5867177917300053870, guid: 7b0148d56cb2e3642ab53fa30c8dbfff, type: 3}
+  itemDescription: 'This Item Heals you to 100 % '
+  isStackable: 1
   itemValue: 0
   itemRarity: 0
   itemType: 0
+  consumableType: 0
+  healAmount: 70
+  manaAmount: 0
+  staminaAmount: 0
+  duration: 0
+  cooldown: 0
   equipSlot: 0
   weaponType: 3
   accessoryType: 3
@@ -39,16 +45,7 @@ MonoBehaviour:
     bonusStaminaRegen: 0
     bonusMagicDamage: 0
     bonusMagicPower: 0
-  consumableType: 0
-  healAmount: 0
-  manaAmount: 0
-  staminaAmount: 0
-  duration: 0
-  cooldown: 0
   toolType: 0
-  toolPower: 0
-  toolSpeed: 0
-  toolDamage: 0
   currencyType: 0
   questItemType: 0
   miscellaneousType: 0

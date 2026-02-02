@@ -3,61 +3,57 @@ using UnityEngine;
 public class ShopNPC : MonoBehaviour
 {
     [Header("UI Referenzen")]
-    public GameObject dialogUI;        // Das Dialog_Canvas aus der Hierarchy
-    public GameObject shopSystem;      // Das ShopPanel (das eigentliche Fenster)
-    public GameObject interactionUI;   // Der "[E] Reden" Hinweistext (optional)
+    public GameObject dialogUI;        // Das Dialog-Fenster (Zuerst reden)
+    public GameObject shopSystem;      // Das eigentliche Shop-Menü
+    public GameObject interactionUI;   // Das [E] Interaktions-Pop-up
 
-    [Header("Audio")]
-    public AudioSource audioSource;    // Ziehe hier deinen SoundManager rein
-    public AudioClip dialogPlopp;     // Dein in Bfxr erstellter Plopp-Sound
-
-    [Header("Status (Nur zum schauen)")]
+    [Header("Status (Nur zur Ansicht)")]
     public bool isPlayerInRange = false;
 
     void Update()
     {
-        // Prüft, ob der Player im Kreis steht, E drückt UND der Shop nicht schon offen ist
+        // 1. Prüfen, ob Spieler in Reichweite und E drückt
         if (isPlayerInRange && Input.GetKeyDown(KeyCode.E))
         {
-            // Verhindert, dass der Dialog aufploppt, wenn man im Shop-Menü E drückt
-            if (shopSystem != null && shopSystem.activeSelf) 
+            // Wenn der Shop oder Dialog schon offen ist, nichts tun
+            if ((shopSystem != null && shopSystem.activeSelf) || (dialogUI != null && dialogUI.activeSelf))
             {
-                return; 
+                return;
             }
 
-            if (dialogUI != null)
+            OpenDialog();
+        }
+    }
+
+    void OpenDialog()
+    {
+        if (dialogUI != null)
+        {
+            dialogUI.SetActive(true);
+            
+            // --- AUDIO FIX: Nutzt den globalen Manager von Robin ---
+            // Wir suchen den AudioManager in der Szene, falls er nicht schon da ist
+            if (GameObject.Find("AudioManager") != null) 
             {
-                dialogUI.SetActive(true); // Dialog einschalten
-                
-                // --- NEU: Dialog-Sound abspielen ---
-                if (audioSource != null && dialogPlopp != null)
-                {
-                    audioSource.PlayOneShot(dialogPlopp);
-                }
-                
-                // Hinweistext ausblenden, wenn der Dialog startet
-                if (interactionUI != null) interactionUI.SetActive(false);
-                
-                Debug.Log("E wurde gedrückt - Dialog mit Sound geöffnet!");
+                // Beispiel: Rufe die Play-Funktion eures Managers auf
+                // Ersetze "Plopp" durch den exakten Namen eures Sounds
+                // AudioManager.instance.PlaySound("Plopp"); 
             }
-            else
-            {
-                Debug.LogError("Fehler: Dialog UI ist nicht im Inspector zugewiesen!");
-            }
+
+            // [E] Hinweistext ausblenden, während man redet
+            if (interactionUI != null) interactionUI.SetActive(false);
+            
+            Debug.Log("Dialog geöffnet.");
         }
     }
 
     // Diese Funktion beim Button "Kaufen" im Dialog-Fenster verknüpfen
     public void OpenShopMenu()
     {
-        Debug.Log("Button geklickt - Shop wird geöffnet!");
+        if (dialogUI != null) dialogUI.SetActive(false);
+        if (shopSystem != null) shopSystem.SetActive(true);
         
-        if (dialogUI != null) dialogUI.SetActive(false); // Dialog schließen
-        
-        if (shopSystem != null) 
-        {
-            shopSystem.SetActive(true); // Shop öffnen
-        }
+        Debug.Log("Shop-Menü geöffnet.");
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -65,9 +61,8 @@ public class ShopNPC : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             isPlayerInRange = true;
-            Debug.Log("Erfolg: Player erkannt!");
             
-            // Hinweistext nur einblenden, wenn Dialog und Shop zu sind
+            // Zeige das [E] Pop-up nur, wenn noch nichts offen ist
             if (interactionUI != null && !dialogUI.activeSelf && !shopSystem.activeSelf) 
             {
                 interactionUI.SetActive(true);
@@ -81,12 +76,10 @@ public class ShopNPC : MonoBehaviour
         {
             isPlayerInRange = false;
             
-            // Alles ausblenden, wenn der Player weggeht
+            // Alles schließen, wenn der Spieler weggeht (Sicherheit)
             if (interactionUI != null) interactionUI.SetActive(false);
             if (dialogUI != null) dialogUI.SetActive(false);
             if (shopSystem != null) shopSystem.SetActive(false);
-            
-            Debug.Log("Player hat Bereich verlassen - Alles geschlossen.");
         }
     }
 }
