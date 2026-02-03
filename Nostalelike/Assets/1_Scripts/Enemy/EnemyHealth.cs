@@ -5,14 +5,15 @@ public class EnemyHealth : MonoBehaviour
     [Header("Stats")]
     public float maxHealth = 100f;
     private float currentHealth;
+    
+    [Header("XP Reward")]
+    public int xpReward = 25;
 
-    [Header("Debug - Zum Testen!")]
-    public bool debugTakeDamage = false;  // Im Inspector anklicken = 20 Schaden
-    public bool debugKill = false;         // Im Inspector anklicken = Sofort töten
+    // --- NEU: Sicherung gegen Mehrfach-Drops ---
+    private bool isDead = false; 
+    // -------------------------------------------
 
     private Animator anim;
-    
-    // Speichert die aktuelle Blickrichtung für Animationen (Up, Down, Left)
     private Vector2 facingDirection = Vector2.down;
 
     void Start()
@@ -21,48 +22,26 @@ public class EnemyHealth : MonoBehaviour
         anim = GetComponent<Animator>();
     }
 
-    void Update()
-    {
-        // DEBUG: Im Play-Mode im Inspector anklicken zum Testen!
-        if (debugTakeDamage)
-        {
-            debugTakeDamage = false;
-            TakeDamage(20f);
-        }
-        if (debugKill)
-        {
-            debugKill = false;
-            TakeDamage(currentHealth + 10f);
-        }
-    }
-
-    /// <summary>
-    /// Wird vom Movement-Script aufgerufen, um die Blickrichtung zu aktualisieren.
-    /// </summary>
     public void SetFacingDirection(Vector2 direction)
     {
-        if (direction != Vector2.zero)
-        {
-            facingDirection = direction.normalized;
-        }
+        if (direction != Vector2.zero) facingDirection = direction.normalized;
     }
 
     public void TakeDamage(float damage)
     {
-        currentHealth -= damage;
+        // WICHTIG: Wenn er schon tot ist, ignorieren wir weitere Treffer!
+        if (isDead) return;
 
-        // Hit Sound abspielen
+        currentHealth -= damage;
         AudioManager.Instance?.PlayHitSFX();
 
         if (anim != null)
         {
             SetAnimationDirection();
-            // Reset trigger first to avoid stuck animations
-            anim.ResetTrigger("Hurt");
             anim.SetTrigger("Hurt");
         }
 
-        Debug.Log($"<color=red>{gameObject.name} took {damage} damage. Current HP: {currentHealth}</color>");
+        Debug.Log($"<color=red>{gameObject.name} took {damage} damage. HP: {currentHealth}</color>");
 
         if (currentHealth <= 0)
         {
@@ -72,9 +51,15 @@ public class EnemyHealth : MonoBehaviour
 
     void Die()
     {
+        // WICHTIG: Doppelte Sicherheit
+        if (isDead) return;
+        isDead = true; 
+
         Debug.Log($"{gameObject.name} died!");
         
-        // Death Sound abspielen
+        GiveXPToPlayer();
+        GiveGoldToPlayer(); // Wird jetzt garantiert nur 1x ausgeführt
+        
         AudioManager.Instance?.PlayEnemyDeathSFX();
         
         if (anim != null)
@@ -83,21 +68,35 @@ public class EnemyHealth : MonoBehaviour
             anim.SetTrigger("Death");
         }
         
-        // Deaktiviere Kollision sofort, damit der Gegner nicht mehr getroffen werden kann
-        GetComponent<Collider2D>().enabled = false;
+        if (GetComponent<Collider2D>() != null)
+            GetComponent<Collider2D>().enabled = false;
         
-        // Warte auf Death-Animation, dann zerstöre das Objekt
         Destroy(gameObject, 1f);
     }
+
+    private void GiveGoldToPlayer()
+    {
+        EnemyLoot loot = GetComponent<EnemyLoot>();
+        if (loot != null) loot.DropLoot();
+    }
     
-    /// <summary>
-    /// Setzt die Animator-Parameter für Richtungs-Animationen.
-    /// Blend Tree nutzt 4 Animationen (Down, Up, Left für links, Left nochmal für rechts).
-    /// </summary>
+    private void GiveXPToPlayer()
+    {
+        if (xpReward <= 0) return;
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+        {
+            PlayerStats playerStats = player.GetComponent<PlayerStats>();
+            if (playerStats != null) playerStats.GainExperience(xpReward);
+        }
+    }
+    
     private void SetAnimationDirection()
     {
-        // Direkte Übergabe der Richtung an den Blend Tree
-        anim.SetFloat("FaceX", facingDirection.x);
-        anim.SetFloat("FaceY", facingDirection.y);
+        if (anim != null)
+        {
+            anim.SetFloat("FaceX", facingDirection.x);
+            anim.SetFloat("FaceY", facingDirection.y);
+        }
     }
 }

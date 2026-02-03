@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class PauseMenu : MonoBehaviour
 {
@@ -15,6 +16,10 @@ public class PauseMenu : MonoBehaviour
     [Header("Audio Sliders")]
     [SerializeField] private Slider musicSlider;
     [SerializeField] private Slider sfxSlider;
+    
+    [Header("Slider Labels")]
+    [SerializeField] private TextMeshProUGUI musicLabel;
+    [SerializeField] private TextMeshProUGUI sfxLabel;
     
     private bool isPaused = false;
     
@@ -68,6 +73,7 @@ public class PauseMenu : MonoBehaviour
             
             musicSlider.SetValueWithoutNotify(musicVol);
             musicSlider.onValueChanged.AddListener(OnMusicVolumeChanged);
+            UpdateMusicLabel(musicVol);
             
             Debug.Log($"Music Slider initialisiert mit: {musicVol}");
         }
@@ -83,6 +89,7 @@ public class PauseMenu : MonoBehaviour
             
             sfxSlider.SetValueWithoutNotify(sfxVol);
             sfxSlider.onValueChanged.AddListener(OnSFXVolumeChanged);
+            UpdateSFXLabel(sfxVol);
             
             Debug.Log($"SFX Slider initialisiert mit: {sfxVol}");
         }
@@ -118,10 +125,18 @@ public class PauseMenu : MonoBehaviour
         if (AudioManager.Instance != null)
         {
             if (musicSlider != null)
-                musicSlider.SetValueWithoutNotify(AudioManager.Instance.GetMusicVolume());
+            {
+                float musicVol = AudioManager.Instance.GetMusicVolume();
+                musicSlider.SetValueWithoutNotify(musicVol);
+                UpdateMusicLabel(musicVol);
+            }
             
             if (sfxSlider != null)
-                sfxSlider.SetValueWithoutNotify(AudioManager.Instance.GetSFXVolume());
+            {
+                float sfxVol = AudioManager.Instance.GetSFXVolume();
+                sfxSlider.SetValueWithoutNotify(sfxVol);
+                UpdateSFXLabel(sfxVol);
+            }
         }
     }
     
@@ -186,18 +201,26 @@ public class PauseMenu : MonoBehaviour
     
     private void OnMusicVolumeChanged(float value)
     {
-        if (AudioManager.Instance != null)
-        {
-            AudioManager.Instance.SetMusicVolume(value);
-        }
+        AudioManager.Instance?.SetMusicVolume(value);
+        UpdateMusicLabel(value);
     }
     
     private void OnSFXVolumeChanged(float value)
     {
-        if (AudioManager.Instance != null)
-        {
-            AudioManager.Instance.SetSFXVolume(value);
-        }
+        AudioManager.Instance?.SetSFXVolume(value);
+        UpdateSFXLabel(value);
+    }
+    
+    private void UpdateMusicLabel(float value)
+    {
+        if (musicLabel != null)
+            musicLabel.text = $"Musik: {Mathf.RoundToInt(value * 100)}%";
+    }
+    
+    private void UpdateSFXLabel(float value)
+    {
+        if (sfxLabel != null)
+            sfxLabel.text = $"Effekte: {Mathf.RoundToInt(value * 100)}%";
     }
     
     private void OnDestroy()

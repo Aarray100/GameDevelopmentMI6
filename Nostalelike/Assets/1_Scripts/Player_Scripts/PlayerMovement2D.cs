@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections; // Wichtig für Coroutines
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerMovement2D : MonoBehaviour
@@ -30,6 +31,11 @@ public class PlayerMovement2D : MonoBehaviour
     private float currentSpeed;
     private float initialScaleX;
 
+    // --- NEU: Variable für Speed Bonus ---
+    private float activeSpeedMultiplier = 1.0f; 
+    // ------------------------------------
+
+   
     void Start() {
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = 0; 
@@ -61,6 +67,10 @@ public class PlayerMovement2D : MonoBehaviour
         float baseSpeed = isRunning ? runSpeed : walkSpeed;
         currentSpeed = onMud ? baseSpeed * mudSpeedMultiplier : baseSpeed;
 
+        // --- HIER WIRD DER TRANK EINGERECHNET ---
+        currentSpeed *= activeSpeedMultiplier;
+        // ----------------------------------------
+
         rb.linearVelocity = dir * currentSpeed;
 
         HandleFootsteps(isMoving, isRunning);
@@ -75,17 +85,36 @@ public class PlayerMovement2D : MonoBehaviour
         if (x != 0) visuals.localScale = new Vector3(Mathf.Sign(x) * initialScaleX, visuals.localScale.y, visuals.localScale.z);
     }
 
+    // --- NEU: FUNKTION FÜR SPEED TRANK ---
+    public void ApplySpeedBoost(float multiplier, float duration)
+    {
+        StartCoroutine(SpeedBoostCoroutine(multiplier, duration));
+    }
+
+    private IEnumerator SpeedBoostCoroutine(float multiplier, float duration)
+    {
+        activeSpeedMultiplier = multiplier; // Z.B. 1.3f für 30% mehr
+        Debug.Log($"Speed Boost aktiviert! (x{multiplier})");
+        
+        yield return new WaitForSeconds(duration);
+        
+        activeSpeedMultiplier = 1.0f; // Zurücksetzen
+        Debug.Log("Speed Boost abgelaufen.");
+    }
+    // -------------------------------------
+
     private void HandleFootsteps(bool isMoving, bool isRunning)
     {
         if (isMoving)
         {
             stepTimer -= Time.deltaTime;
+            // Wenn wir schneller laufen (Trank), spielen wir Sounds auch schneller ab
+            float speedFactor = (activeSpeedMultiplier > 1f) ? 0.7f : 1f;
+
             if (stepTimer <= 0f)
             {
-                // Nutze Ground-Type basierte Sounds
-                AudioManager.Instance?.PlayFootstep(currentGround);
-                
-                stepTimer = isRunning ? runStepInterval : walkStepInterval;
+                if (AudioManager.Instance != null) AudioManager.Instance.PlayFootstep(currentGround);
+                stepTimer = (isRunning ? runStepInterval : walkStepInterval) * speedFactor;
             }
         }
         else
@@ -96,7 +125,6 @@ public class PlayerMovement2D : MonoBehaviour
 
     private bool CheckFootSensor() {
         Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position + footOffset, sensorRadius);
-        
         foreach (Collider2D hit in hits) {
             if (hit.transform == transform || hit.transform.IsChildOf(transform)) continue;
             if (hit.GetComponent<Mud>() != null) return true;
@@ -104,26 +132,19 @@ public class PlayerMovement2D : MonoBehaviour
         return false;
     }
 
-    // Ground-Type Detection via Trigger
     void OnTriggerEnter2D(Collider2D other)
     {
-        // Ignoriere Items
         if (other.GetComponent<ItemPickup>() != null) return;
         
-        if (other.CompareTag("Grass"))
-            currentGround = GroundType.Grass;
-        else if (other.CompareTag("Rock"))
-            currentGround = GroundType.Rock;
-        else if (other.CompareTag("Wood"))
-            currentGround = GroundType.Wood;
-        else if (other.CompareTag("Water"))
-            currentGround = GroundType.Water;
+        if (other.CompareTag("Grass")) currentGround = GroundType.Grass;
+        else if (other.CompareTag("Rock")) currentGround = GroundType.Rock;
+        else if (other.CompareTag("Wood")) currentGround = GroundType.Wood;
+        else if (other.CompareTag("Water")) currentGround = GroundType.Water;
     }
     
     void OnTriggerExit2D(Collider2D other)
     {
-        if (IsGroundTag(other.tag))
-            currentGround = GroundType.Grass;
+        if (IsGroundTag(other.tag)) currentGround = GroundType.Grass;
     }
     
     private bool IsGroundTag(string tag)

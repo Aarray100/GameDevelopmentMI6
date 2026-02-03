@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems; // <--- WICHTIG: Das hier wurde hinzugefügt!
 
 public class PlayerCombat : MonoBehaviour
 {
@@ -27,14 +28,28 @@ public class PlayerCombat : MonoBehaviour
 
     public void MeleeAttack()
     {
+        // ------------------------------------------------------------------
+        // NEU: UI-BLOCKER
+        // Verhindert Angriff, wenn man im Shop klickt oder das Inventar bedient
+        // ------------------------------------------------------------------
+        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+        {
+            return; // ABBRUCH: Wir klicken gerade auf UI!
+        }
+        // ------------------------------------------------------------------
+
+        // Nicht angreifen wenn Spiel pausiert oder UI offen ist (deine existierenden Checks)
+        if (PauseMenu.IsPaused) return;
+        if (JournalOverlay.IsOpen) return;
+        
         // 0. Cooldown Check (Rate Limiting)
         if (Time.time < nextAttackTime) return;
         nextAttackTime = Time.time + 1f / attackRate;
 
-        Debug.Log("PlayerCombat: MeleeAttack called");
+        // Debug.Log("PlayerCombat: MeleeAttack called");
 
         // Slash Sound abspielen (immer bei Angriff)
-        AudioManager.Instance?.PlaySlashSFX();
+        if (AudioManager.Instance != null) AudioManager.Instance.PlaySlashSFX();
 
         Camera cam = Camera.main;
         if (cam == null)
@@ -65,7 +80,7 @@ public class PlayerCombat : MonoBehaviour
         // 4. Animator Parameter setzen
         if (anim != null)
         {
-            Debug.Log($"PlayerCombat: Attack in Richtung {direction}");
+            // Debug.Log($"PlayerCombat: Attack in Richtung {direction}");
             anim.SetFloat("AttackX", direction.x);
             anim.SetFloat("AttackY", direction.y);
             anim.SetTrigger("Attack");
@@ -81,22 +96,8 @@ public class PlayerCombat : MonoBehaviour
     /// </summary>
     void DetectAndDamageEnemiesInArc(Vector2 origin, Vector2 attackDirection)
     {
-        // DEBUG: Zeige was wir suchen
-        Debug.Log($"PlayerCombat: Suche auf Layer {enemyLayers.value} mit Range {attackRange}");
-        
         // Alle Gegner in der maximalen Reichweite finden (Kreis als Vorfilter)
         Collider2D[] potentialTargets = Physics2D.OverlapCircleAll(origin, attackRange, enemyLayers);
-        
-        // FALLBACK: Wenn keine Targets gefunden, suche ALLE Collider (Debug)
-        if (potentialTargets.Length == 0)
-        {
-            Collider2D[] allNearby = Physics2D.OverlapCircleAll(origin, attackRange);
-            Debug.LogWarning($"PlayerCombat: Keine Enemies auf Layer! Aber {allNearby.Length} andere Collider in Range.");
-            foreach (var col in allNearby)
-            {
-                Debug.LogWarning($"  - {col.name} auf Layer {col.gameObject.layer} ({LayerMask.LayerToName(col.gameObject.layer)})");
-            }
-        }
         
         int hitCount = 0;
         
@@ -104,12 +105,10 @@ public class PlayerCombat : MonoBehaviour
         {
             // Richtung zum Gegner berechnen
             Vector2 directionToEnemy = ((Vector2)target.transform.position - origin).normalized;
-            float distanceToEnemy = Vector2.Distance(origin, target.transform.position);
+            // float distanceToEnemy = Vector2.Distance(origin, target.transform.position); // (Optional für Logik)
             
             // Winkel zwischen Angriffsrichtung und Richtung zum Gegner
             float angleToEnemy = Vector2.Angle(attackDirection, directionToEnemy);
-            
-            Debug.Log($"PlayerCombat: Prüfe {target.name} - Dist: {distanceToEnemy:F2}, Winkel: {angleToEnemy:F1}° (Max: {attackAngle/2f}°)");
             
             // Ist der Gegner innerhalb des Angriffs-Kegels?
             if (angleToEnemy <= attackAngle / 2f)
@@ -120,11 +119,7 @@ public class PlayerCombat : MonoBehaviour
                 {
                     healthScript.TakeDamage(attackDamage);
                     hitCount++;
-                    Debug.Log($"<color=green>PlayerCombat: {target.name} GETROFFEN!</color>");
-                }
-                else
-                {
-                    Debug.LogWarning($"PlayerCombat: {target.name} hat kein EnemyHealth Script!");
+                    // Debug.Log($"<color=green>PlayerCombat: {target.name} GETROFFEN!</color>");
                 }
             }
         }
@@ -132,21 +127,15 @@ public class PlayerCombat : MonoBehaviour
         // Hit Sound nur wenn mindestens ein Treffer
         if (hitCount > 0)
         {
-            AudioManager.Instance?.PlayHitSFX();
+            if (AudioManager.Instance != null) AudioManager.Instance.PlayHitSFX();
         }
         else if (hitCount == 0 && potentialTargets.Length > 0)
         {
             // Verfehlt - optional: Miss Sound
-            AudioManager.Instance?.PlayMissEvadeSFX();
-            Debug.Log($"PlayerCombat: {potentialTargets.Length} Gegner in Reichweite, aber keiner im Kegel!");
-        }
-        else if (potentialTargets.Length == 0)
-        {
-            Debug.Log("PlayerCombat: Keine Gegner in Reichweite (Layer-Problem?)");
+            if (AudioManager.Instance != null) AudioManager.Instance.PlayMissEvadeSFX();
         }
     }
 
-    // ...existing code...
     // Visualisierung im Editor und während Play-Mode
     void OnDrawGizmos()
     {
