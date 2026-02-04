@@ -5,37 +5,73 @@ public class Enemy_Movement : MonoBehaviour
 {
     [Header("Movement")]
     public float speed = 2f;
+    public float wanderSpeed = 1f;          // Langsamere Geschwindigkeit beim Wandern
     
     [Header("Detection")]
-    public float detectionRange = 5f;   // Reichweite um Spieler zu entdecken
-    public float attackRange = 2.0f;    // Reichweite für Angriffs-ENTSCHEIDUNG (MUSS größer sein!)
-    public float attackHitRange = 1.2f; // Reichweite für tatsächlichen TREFFER (kleiner, Spieler kann ausweichen)
+    public float detectionRange = 5f;       // Reichweite um Spieler zu entdecken
+    public float attackRange = 2.0f;        // Reichweite für Angriffs-ENTSCHEIDUNG (MUSS größer sein!)
+    public float attackHitRange = 1.2f;     // Reichweite für tatsächlichen TREFFER (kleiner, Spieler kann ausweichen)
     
     [Header("Combat")]
-    public float attackCooldown = 1.5f;  // Zeit zwischen Angriffen
+    public float attackCooldown = 1.5f;     // Zeit zwischen Angriffen
     public float attackDamage = 10f;
-    public float attackWindupTime = 0.4f; // Zeit bevor der Schlag trifft (Ausweichen möglich!)
+    public float attackWindupTime = 0.4f;   // Zeit bevor der Schlag trifft (Ausweichen möglich!)
+    
+    [Header("Wandering (wenn Spieler nicht da)")]
+    public bool enableWandering = true;
+    public float wanderRadius = 3f;         // Radius um Spawn-Position
+    public float minWanderPause = 1f;
+    public float maxWanderPause = 4f;
+    
+    [Header("Obstacle Avoidance")]
+    public bool enableObstacleAvoidance = true;
+    public float raycastDistance = 1.5f;
+    public LayerMask obstacleLayer;
+    public float avoidanceStrength = 2f;    // Wie stark der Enemy ausweicht
     
     [Header("Visuals")]
-    public Transform visualsTransform;   // Das Sprite/Animator-Objekt zum Flippen
+    public Transform visualsTransform;      // Das Sprite/Animator-Objekt zum Flippen
     
     private EnemyState enemyState;
     private float nextAttackTime = 0f;
     private Vector2 lastDirection = Vector2.down;
     private float initialFacingDirection = 1f;
     private float lastStableHorizontal = 1f;
-    private bool isAttacking = false;    // Verhindert Spam während Attack-Animation
+    private bool isAttacking = false;       // Verhindert Spam während Attack-Animation
 
     private Rigidbody2D rb;
     private Transform player;
     private Animator anim;
     private EnemyHealth enemyHealth;
+    
+    // Wandering Variablen
+    private Vector2 spawnPosition;
+    private Vector2 wanderTarget;
+    private bool isWandering = false;
+    private float wanderPauseTimer = 0f;
+    
+    // Obstacle Avoidance
+    private Vector2 lastAvoidanceDirection = Vector2.zero;
+    private float avoidanceCooldown = 0f;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         enemyHealth = GetComponent<EnemyHealth>();
+        
+        // Spawn-Position für Wandering speichern
+        spawnPosition = transform.position;
+        
+        // Obstacle Layer automatisch finden falls nicht gesetzt
+        if (obstacleLayer == 0)
+        {
+            int layer = LayerMask.NameToLayer("NPC_Collision");
+            if (layer != -1)
+            {
+                obstacleLayer = 1 << layer;
+            }
+        }
         
         // Visuals Transform automatisch finden falls nicht zugewiesen
         if (visualsTransform == null)
@@ -110,13 +146,95 @@ public class Enemy_Movement : MonoBehaviour
     
     void HandleIdleState(float distanceToPlayer)
     {
-        rb.linearVelocity = Vector2.zero;
-        
         // Spieler entdeckt?
         if (distanceToPlayer <= detectionRange)
         {
+            isWandering = false;
             ChangeState(EnemyState.Chasing);
+            return;
         }
+        
+        // Wandering Logik
+        if (enableWandering)
+        {
+            HandleWandering();
+        }
+        else
+        {
+            rb.linearVelocity = Vector2.zero;
+        }
+    }
+    
+    /// <summary>
+    /// Zufälliges Herumwandern wenn kein Spieler in der Nähe
+    /// </summary>
+    void HandleWandering()
+    {
+        // Pause-Timer läuft?
+        if (wanderPauseTimer > 0)
+        {
+            wanderPauseTimer -= Time.deltaTime;
+            rb.linearVelocity = Vector2.zero;
+            
+            // Idle Animation
+            if (anim != null)
+            {
+                anim.SetBool("isChasing", false);
+            }
+            return;
+        }
+        
+        // Neues Ziel wählen wenn keins vorhanden
+        if (!isWandering)
+        {
+            PickNewWanderTarget();
+            isWandering = true;
+        }
+        
+        // Zum Wander-Ziel bewegen
+        float distanceToTarget = Vector2.Distance(transform.position, wanderTarget);
+        
+        if (distanceToTarget < 0.3f)
+        {
+            // Ziel erreicht - Pause machen
+            isWandering = false;
+            wanderPauseTimer = Random.Range(minWanderPause, maxWanderPause);
+            rb.linearVelocity = Vector2.zero;
+            return;
+        }
+        
+        // Bewegung zum Ziel mit Hindernissvermeidung
+        Vector2 direction = (wanderTarget - (Vector2)transform.position).normalized;
+        
+        if (enableObstacleAvoidance)
+        {
+            direction = ApplyObstacleAvoidance(direction);
+        }
+        
+        rb.linearVelocity = direction * wanderSpeed;
+        
+        // Animation für Bewegung
+        if (anim != null)
+        {
+            anim.SetBool("isChasing", true); // Nutzt dieselbe Walk-Animation
+        }
+        
+        // Sprite flippen
+        if (Mathf.Abs(direction.x) > 0.1f)
+        {
+            lastStableHorizontal = Mathf.Sign(direction.x);
+            Flip(lastStableHorizontal);
+        }
+        UpdateAnimatorDirection(direction);
+    }
+    
+    /// <summary>
+    /// Wählt ein zufälliges Wander-Ziel im Radius um die Spawn-Position
+    /// </summary>
+    void PickNewWanderTarget()
+    {
+        Vector2 randomOffset = Random.insideUnitCircle * wanderRadius;
+        wanderTarget = spawnPosition + randomOffset;
     }
     
     void HandleChasingState(float distanceToPlayer)
@@ -124,13 +242,6 @@ public class Enemy_Movement : MonoBehaviour
         // Combat Music aktivieren
         AudioManager.Instance?.EnterCombat();
         
-        // Spieler außer Reichweite? Zurück zu Idle
-        if (distanceToPlayer > detectionRange)
-        {
-            ChangeState(EnemyState.Idle);
-            return;
-        }
-
         // Spieler außer Reichweite? Zurück zu Idle
         if (distanceToPlayer > detectionRange)
         {
@@ -145,8 +256,15 @@ public class Enemy_Movement : MonoBehaviour
             return;
         }
         
-        // Zum Spieler bewegen
+        // Richtung zum Spieler berechnen
         Vector2 direction = (player.position - transform.position).normalized;
+        
+        // Hindernissvermeidung anwenden
+        if (enableObstacleAvoidance)
+        {
+            direction = ApplyObstacleAvoidance(direction);
+        }
+        
         rb.linearVelocity = direction * speed;
         
         // Richtung speichern und an EnemyHealth weitergeben
@@ -278,6 +396,100 @@ public class Enemy_Movement : MonoBehaviour
         }
     }
     
+    /// <summary>
+    /// Wendet Hindernissvermeidung auf eine Bewegungsrichtung an
+    /// </summary>
+    Vector2 ApplyObstacleAvoidance(Vector2 desiredDirection)
+    {
+        if (obstacleLayer == 0) return desiredDirection;
+        
+        // Cooldown für sanftere Bewegung
+        if (avoidanceCooldown > 0)
+        {
+            avoidanceCooldown -= Time.deltaTime;
+            if (lastAvoidanceDirection != Vector2.zero)
+            {
+                return (desiredDirection + lastAvoidanceDirection * avoidanceStrength).normalized;
+            }
+        }
+        
+        // Raycast in Bewegungsrichtung
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, desiredDirection, raycastDistance, obstacleLayer);
+        
+        if (hit.collider != null)
+        {
+            // Hindernis erkannt! Berechne Ausweichrichtung
+            Vector2 avoidDirection = CalculateAvoidanceDirection(desiredDirection, hit.normal);
+            lastAvoidanceDirection = avoidDirection;
+            avoidanceCooldown = 0.2f; // Kurzer Cooldown für sanftes Ausweichen
+            
+            return (desiredDirection + avoidDirection * avoidanceStrength).normalized;
+        }
+        
+        // Zusätzliche Raycasts für breitere Erkennung (links und rechts)
+        Vector2 leftRay = RotateVector(desiredDirection, 30f);
+        Vector2 rightRay = RotateVector(desiredDirection, -30f);
+        
+        RaycastHit2D hitLeft = Physics2D.Raycast(transform.position, leftRay, raycastDistance * 0.7f, obstacleLayer);
+        RaycastHit2D hitRight = Physics2D.Raycast(transform.position, rightRay, raycastDistance * 0.7f, obstacleLayer);
+        
+        if (hitLeft.collider != null && hitRight.collider == null)
+        {
+            // Hindernis links - nach rechts ausweichen
+            lastAvoidanceDirection = RotateVector(desiredDirection, -45f);
+            avoidanceCooldown = 0.15f;
+            return (desiredDirection + lastAvoidanceDirection * avoidanceStrength * 0.5f).normalized;
+        }
+        else if (hitRight.collider != null && hitLeft.collider == null)
+        {
+            // Hindernis rechts - nach links ausweichen
+            lastAvoidanceDirection = RotateVector(desiredDirection, 45f);
+            avoidanceCooldown = 0.15f;
+            return (desiredDirection + lastAvoidanceDirection * avoidanceStrength * 0.5f).normalized;
+        }
+        else if (hitLeft.collider != null && hitRight.collider != null)
+        {
+            // Hindernisse auf beiden Seiten - Umdrehen
+            lastAvoidanceDirection = -desiredDirection;
+            avoidanceCooldown = 0.3f;
+            return lastAvoidanceDirection;
+        }
+        
+        // Kein Hindernis - normaler Bewegung folgen
+        lastAvoidanceDirection = Vector2.zero;
+        return desiredDirection;
+    }
+    
+    /// <summary>
+    /// Berechnet die beste Ausweichrichtung basierend auf der Hindernis-Normale
+    /// </summary>
+    Vector2 CalculateAvoidanceDirection(Vector2 moveDirection, Vector2 hitNormal)
+    {
+        // Reflektiere die Bewegungsrichtung an der Normale
+        Vector2 reflected = Vector2.Reflect(moveDirection, hitNormal);
+        
+        // Wähle die Seite die mehr in Richtung Ziel geht
+        Vector2 left = RotateVector(moveDirection, 90f);
+        Vector2 right = RotateVector(moveDirection, -90f);
+        
+        // Welche Seite ist besser?
+        float leftDot = Vector2.Dot(left, reflected);
+        float rightDot = Vector2.Dot(right, reflected);
+        
+        return (leftDot > rightDot) ? left : right;
+    }
+    
+    /// <summary>
+    /// Rotiert einen Vector2 um einen Winkel in Grad
+    /// </summary>
+    Vector2 RotateVector(Vector2 v, float degrees)
+    {
+        float radians = degrees * Mathf.Deg2Rad;
+        float sin = Mathf.Sin(radians);
+        float cos = Mathf.Cos(radians);
+        return new Vector2(cos * v.x - sin * v.y, sin * v.x + cos * v.y);
+    }
+    
     void UpdateAnimatorDirection(Vector2 direction)
     {
         // Für Blend Tree mit 4 Animationen (Down, Up, Left, Right)
@@ -359,6 +571,36 @@ public class Enemy_Movement : MonoBehaviour
         // Attack Range (rot)
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, attackRange);
+        
+        // Wander Radius (cyan) - um Spawn-Position
+        if (enableWandering)
+        {
+            Gizmos.color = Color.cyan;
+            Vector2 center = Application.isPlaying ? spawnPosition : (Vector2)transform.position;
+            Gizmos.DrawWireSphere(center, wanderRadius);
+        }
+        
+        // Raycast Distanz (magenta)
+        if (enableObstacleAvoidance)
+        {
+            Gizmos.color = Color.magenta;
+            Gizmos.DrawLine(transform.position, transform.position + Vector3.right * raycastDistance);
+            
+            // Zeige auch seitliche Raycasts
+            Vector3 left = Quaternion.Euler(0, 0, 30) * Vector3.right * raycastDistance * 0.7f;
+            Vector3 right = Quaternion.Euler(0, 0, -30) * Vector3.right * raycastDistance * 0.7f;
+            Gizmos.color = new Color(1f, 0f, 1f, 0.5f); // Halbtransparent
+            Gizmos.DrawLine(transform.position, transform.position + left);
+            Gizmos.DrawLine(transform.position, transform.position + right);
+        }
+        
+        // Wander Target (grün) - nur während Spielmodus
+        if (Application.isPlaying && isWandering)
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawLine(transform.position, wanderTarget);
+            Gizmos.DrawWireSphere(wanderTarget, 0.2f);
+        }
     }
 }
 

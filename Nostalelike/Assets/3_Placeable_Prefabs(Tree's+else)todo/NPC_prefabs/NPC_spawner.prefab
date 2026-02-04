@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8487430646132888336
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7143240506551201930}
+  - component: {fileID: 6058507195960485619}
+  m_Layer: 0
+  m_Name: NPC_spawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7143240506551201930
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8487430646132888336}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -243.32, y: 744.22, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6058507195960485619
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8487430646132888336}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f81533c2a59db7552b16537794719d7b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NPCSpawner
+  npcPrefab0: {fileID: 183428855668308988, guid: 1ba7f4d152c523eacb4218a0b96c70ba, type: 3}
+  npcPrefab1: {fileID: 7477086312278696024, guid: 06b5f955792daf0b1a292628170556bc, type: 3}
+  npcPrefab2: {fileID: 2384654686855477665, guid: 97c6afe42ef825e248a82df11a372b68, type: 3}
+  npcPrefab3: {fileID: 6627490464813798607, guid: 409283b11db70031286a6a1aa709f0ec, type: 3}
+  npcPrefab4: {fileID: 156682719049003078, guid: 03021447130772fff807c03e146c4ec8, type: 3}
+  spawnPoints: []
+  spawnRadius: 5
+  spawnCount0: 1
+  spawnCount1: 1
+  spawnCount2: 1
+  spawnCount3: 1
+  spawnCount4: 1
+  wanderWidth: 8
+  wanderHeight: 8
+  npcSpeed: 2
+  pauseDuration: 2
+  showDebugInfo: 1
