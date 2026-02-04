@@ -15,6 +15,13 @@ public class LootChest : MonoBehaviour
     [SerializeField] string journalEntryId = "";
     [SerializeField] JournalDatabase journalDb;
     
+    [Header("Auto-Unlock bei allen Fragmenten")]
+    [SerializeField] bool checkForAllFragments = false;
+    [Tooltip("Entry-ID die freigeschaltet wird wenn alle Fragmente da sind (z.B. 008)")]
+    [SerializeField] string autoUnlockEntryIfAllFragments = "008";
+    [Tooltip("Boss-Fragment IDs die gesammelt werden müssen (004, 005, 006, 007)")]
+    [SerializeField] string[] requiredFragmentIDs = { "004", "005", "006", "007" };
+    
     [Header("Visuals")]
     public Sprite openChestSprite;
     
@@ -94,6 +101,12 @@ public class LootChest : MonoBehaviour
                 NotificationManager.Instance?.ShowNotification($"Neuer Eintrag: {entry.title}");
             }
         }
+        
+        // Prüfe ob jetzt alle Fragmente gesammelt wurden
+        if (checkForAllFragments)
+        {
+            CheckAndUnlockOmnis();
+        }
     }
     
     private void SetOpenedVisual()
@@ -101,6 +114,71 @@ public class LootChest : MonoBehaviour
         isOpened = true;
         if (openChestSprite != null) 
             spriteRenderer.sprite = openChestSprite;
+    }
+    
+    /// <summary>
+    /// Prüft ob alle Boss-Fragmente (004-007) freigeschaltet sind.
+    /// Wenn ja: Schaltet automatisch Entry 008 (Das Erwachen von Omnis) frei.
+    /// </summary>
+    void CheckAndUnlockOmnis()
+    {
+        if (AreAllFragmentsUnlocked())
+        {
+            // Nur freischalten wenn noch nicht geschehen
+            if (!JournalProgress.IsUnlocked(autoUnlockEntryIfAllFragments))
+            {
+                JournalProgress.Unlock(autoUnlockEntryIfAllFragments);
+                JournalToast.Enqueue($"🌟 ALLE FRAGMENTE GESAMMELT!");
+                
+                if (journalDb != null)
+                {
+                    var entry = journalDb.GetById(autoUnlockEntryIfAllFragments);
+                    if (entry != null)
+                    {
+                        NotificationManager.Instance?.ShowNotification($"Neuer Eintrag: {entry.title}");
+                    }
+                }
+                
+                Debug.Log($"🌟 ALLE FRAGMENTE GESAMMELT! '{autoUnlockEntryIfAllFragments}' wurde freigeschaltet!");
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Prüft ob alle angegebenen Fragment-IDs freigeschaltet sind.
+    /// </summary>
+    bool AreAllFragmentsUnlocked()
+    {
+        foreach (string fragmentID in requiredFragmentIDs)
+        {
+            if (!JournalProgress.IsUnlocked(fragmentID))
+            {
+                return false;
+            }
+        }
+        return true; // Alle Fragmente sind da!
+    }
+    
+    /// <summary>
+    /// Öffentliche Methode: Prüft einzelnes Fragment.
+    /// </summary>
+    public static bool IsFragmentUnlocked(string fragmentID)
+    {
+        return JournalProgress.IsUnlocked(fragmentID);
+    }
+    
+    /// <summary>
+    /// Öffentliche Methode: Gibt Anzahl gesammelter Fragmente zurück.
+    /// </summary>
+    public static int GetUnlockedFragmentCount(string[] fragmentIDs)
+    {
+        int count = 0;
+        foreach (string id in fragmentIDs)
+        {
+            if (JournalProgress.IsUnlocked(id))
+                count++;
+        }
+        return count;
     }
     
     private void OnTriggerEnter2D(Collider2D other)
