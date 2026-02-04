@@ -77,7 +77,7 @@ public class PlayerSceneHandler : MonoBehaviour
         TeleportToSpawnPoint(spawnPointID);
     }
     
-    void TeleportToSpawnPoint(string spawnPointID)
+    public void TeleportToSpawnPoint(string spawnPointID)
     {
         // Finde den Spawn-Punkt in der Szene
         SceneSpawnPoint[] spawnPoints = FindObjectsByType<SceneSpawnPoint>(FindObjectsSortMode.None);

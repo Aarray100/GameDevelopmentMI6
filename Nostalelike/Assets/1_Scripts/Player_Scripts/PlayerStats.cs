@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using System;
 using System.Collections;
 
@@ -49,9 +50,10 @@ public class PlayerStats : MonoBehaviour
     public event Action OnXPChanged;      
     public event Action<int, int> OnLevelUp; 
     public event Action OnPlayerDeath;
-    public event Action OnPlayerRespawn { add { } remove { } }
+    public event Action OnPlayerRespawn;
 
     private PlayerMovement2D playerMovement;
+    private Coroutine regenCoroutine;
     
     private void Awake()
     {
@@ -71,6 +73,23 @@ public class PlayerStats : MonoBehaviour
         OnManaChanged?.Invoke();
         OnStaminaChanged?.Invoke();
         OnXPChanged?.Invoke();
+        
+        // Starte Health Regeneration
+        regenCoroutine = StartCoroutine(HealthRegeneration());
+    }
+
+    private IEnumerator HealthRegeneration()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(2f); // Alle 2 Sekunden
+            
+            if (currentHealth < maxHealth && currentHealth > 0)
+            {
+                currentHealth = Mathf.Min(currentHealth + totalHealthRegen, maxHealth);
+                OnHealthChanged?.Invoke();
+            }
+        }
     }
 
     public void UpdateEquipmentBonus(ItemStats newBonus)
@@ -188,7 +207,59 @@ public class PlayerStats : MonoBehaviour
     
     private void Die()
     {
+        if (regenCoroutine != null)
+        {
+            StopCoroutine(regenCoroutine);
+        }
         OnPlayerDeath?.Invoke();
+        StartCoroutine(DeathSequenceRoutine());
+    }
+
+    private IEnumerator DeathSequenceRoutine()
+    {
+        // Spiel pausieren
+        Time.timeScale = 0f;
+        
+        // 3 Sekunden warten (Realtime, da Time.timeScale = 0)
+        yield return new WaitForSecondsRealtime(3f);
+        
+        // Spiel fortsetzen
+        Time.timeScale = 1f;
+        Respawn();
+    }
+
+    private void Respawn()
+    {
+        currentHealth = maxHealth;
+        OnHealthChanged?.Invoke();
+        OnPlayerRespawn?.Invoke();
+        
+        // Starte Health Regeneration wieder
+        regenCoroutine = StartCoroutine(HealthRegeneration());
+
+        // Prüfe ob wir bereits in 002_HomeScene sind
+        string currentScene = SceneManager.GetActiveScene().name;
+        if (currentScene != "002_HomeScene")
+        {
+            // Lade 002_HomeScene und setze den Spawn-Punkt
+            SceneTransitionManager manager = SceneTransitionManager.EnsureInstance();
+            if (manager != null)
+            {
+                manager.targetSpawnPointID = "deathSpawn";
+            }
+            SceneManager.LoadScene("002_HomeScene");
+        }
+        else
+        {
+            // Wir sind schon in HomeScene, teleportiere direkt
+            PlayerSceneHandler handler = GetComponent<PlayerSceneHandler>();
+            if (handler != null)
+            {
+                handler.TeleportToSpawnPoint("deathSpawn");
+            }
+        }
+        
+        Debug.Log("Player respawned at 'deathSpawn' in 002_HomeScene.");
     }
 
     public void RestoreMana(float amount) { OnManaChanged?.Invoke(); }
