@@ -33012,6 +33012,83 @@ MonoBehaviour:
   ironChestplate: {fileID: 0}
   ironAmulet: {fileID: 0}
   ironRing: {fileID: 0}
+--- !u!1001 &711330777
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 12075357097814565, guid: 7221c6d37f99059d98f22ce92924e99a, type: 3}
+      propertyPath: m_SortingOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 279460713038009498, guid: 7221c6d37f99059d98f22ce92924e99a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 33.32
+      objectReference: {fileID: 0}
+    - target: {fileID: 279460713038009498, guid: 7221c6d37f99059d98f22ce92924e99a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.56
+      objectReference: {fileID: 0}
+    - target: {fileID: 279460713038009498, guid: 7221c6d37f99059d98f22ce92924e99a, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 279460713038009498, guid: 7221c6d37f99059d98f22ce92924e99a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 279460713038009498, guid: 7221c6d37f99059d98f22ce92924e99a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 279460713038009498, guid: 7221c6d37f99059d98f22ce92924e99a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 279460713038009498, guid: 7221c6d37f99059d98f22ce92924e99a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 279460713038009498, guid: 7221c6d37f99059d98f22ce92924e99a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 279460713038009498, guid: 7221c6d37f99059d98f22ce92924e99a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 279460713038009498, guid: 7221c6d37f99059d98f22ce92924e99a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4584557612786406351, guid: 7221c6d37f99059d98f22ce92924e99a, type: 3}
+      propertyPath: chestID
+      value: 003c
+      objectReference: {fileID: 0}
+    - target: {fileID: 4584557612786406351, guid: 7221c6d37f99059d98f22ce92924e99a, type: 3}
+      propertyPath: journalDb
+      value: 
+      objectReference: {fileID: 11400000, guid: 1c44ab5639d1c1ed6819918f006ea645, type: 2}
+    - target: {fileID: 4584557612786406351, guid: 7221c6d37f99059d98f22ce92924e99a, type: 3}
+      propertyPath: journalEntryId
+      value: 003c
+      objectReference: {fileID: 0}
+    - target: {fileID: 4584557612786406351, guid: 7221c6d37f99059d98f22ce92924e99a, type: 3}
+      propertyPath: unlockJournalEntry
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8365622928531072412, guid: 7221c6d37f99059d98f22ce92924e99a, type: 3}
+      propertyPath: m_Name
+      value: StoryChest (1)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 7221c6d37f99059d98f22ce92924e99a, type: 3}
 --- !u!1 &781991869
 GameObject:
   m_ObjectHideFlags: 0
@@ -39648,3 +39725,4 @@ SceneRoots:
   - {fileID: 111757884}
   - {fileID: 1553724629}
   - {fileID: 1260077960}
+  - {fileID: 711330777}
