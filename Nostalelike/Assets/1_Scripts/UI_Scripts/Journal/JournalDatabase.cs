@@ -40,6 +40,14 @@ public class JournalDatabase : ScriptableObject
         if (string.IsNullOrEmpty(id)) return (0, "");
 
         int i = 0;
+        
+        // Unterstütze negative Zahlen (z.B. -002, -001)
+        if (i < id.Length && id[i] == '-')
+        {
+            i++;
+        }
+        
+        // Lese alle Ziffern
         while (i < id.Length && char.IsDigit(id[i])) i++;
 
         var num = id.Substring(0, i);
