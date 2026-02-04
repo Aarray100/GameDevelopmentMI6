@@ -12,21 +12,46 @@ public class JournalViewer : MonoBehaviour
 
     [Header("Data")]
     [SerializeField] JournalDatabase database;
-    [SerializeField] string currentEntryId = ""; // optional: Start-Entry
+    [SerializeField] string currentEntryId = "-002"; // Start mit Tutorial-Seite
 
     int leftPageIndex = 0;
 
    void OnEnable()
 {
-    // Sicherheitsnetz: Wenn keine ID da ist, nimm die erste aus der Datenbank
-    if (string.IsNullOrEmpty(currentEntryId) && database != null && database.entries.Count > 0)
+    // Debug: Zeige alle Einträge in der Database
+    if (database != null)
     {
+        Debug.Log($"JournalViewer: Database hat {database.entries.Count} Einträge");
         var ordered = database.GetOrderedEntries();
-        if (ordered.Count > 0)
-            currentEntryId = ordered[0].id;
-        Debug.Log($"JournalViewer: Keine ID gesetzt, verwende Fallback: {currentEntryId}");
+        foreach (var e in ordered)
+        {
+            bool unlocked = JournalProgress.IsUnlocked(e.id);
+            Debug.Log($"  → Entry '{e.id}' | Unlocked: {unlocked} | Pages: {e.pages.Count}");
+        }
     }
 
+    // Fallback: Wenn currentEntryId leer oder nicht freigeschaltet, nimm erste freigeschaltete Entry
+    if (database != null)
+    {
+        var entry = database.GetById(currentEntryId);
+        if (entry == null || !JournalProgress.IsUnlocked(currentEntryId))
+        {
+            // Finde erste freigeschaltete Entry
+            var ordered = database.GetOrderedEntries();
+            foreach (var e in ordered)
+            {
+                if (JournalProgress.IsUnlocked(e.id))
+                {
+                    currentEntryId = e.id;
+                    leftPageIndex = 0; // Reset page index
+                    Debug.Log($"JournalViewer: Wechsle zu erster freigeschalteter Entry: {currentEntryId}");
+                    break;
+                }
+            }
+        }
+    }
+
+    Debug.Log($"JournalViewer: Starte mit Entry ID '{currentEntryId}'");
     Refresh();
 }
 

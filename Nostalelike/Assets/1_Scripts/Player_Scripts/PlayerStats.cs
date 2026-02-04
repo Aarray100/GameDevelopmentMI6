@@ -53,11 +53,13 @@ public class PlayerStats : MonoBehaviour
     public event Action OnPlayerRespawn;
 
     private PlayerMovement2D playerMovement;
+    private Animator anim;
     private Coroutine regenCoroutine;
     
     private void Awake()
     {
         playerMovement = GetComponent<PlayerMovement2D>();
+        anim = GetComponentInChildren<Animator>();
         experienceRequired = experienceToNextLevel;
         RecalculateStats();
         
@@ -211,6 +213,24 @@ public class PlayerStats : MonoBehaviour
         {
             StopCoroutine(regenCoroutine);
         }
+        
+        // Trigger Death Animation
+        if (anim != null)
+        {
+            Debug.Log("PlayerStats: Triggering Death animation");
+            anim.SetTrigger("Death");
+        }
+        else
+        {
+            Debug.LogWarning("PlayerStats: Animator not found!");
+        }
+        
+        // Deaktiviere Movement während Tod
+        if (playerMovement != null)
+        {
+            playerMovement.enabled = false;
+        }
+        
         StartCoroutine(DeathSequenceRoutine());
     }
 
@@ -238,6 +258,12 @@ public class PlayerStats : MonoBehaviour
         currentHealth = maxHealth;
         OnHealthChanged?.Invoke();
         OnPlayerRespawn?.Invoke();
+        
+        // Reaktiviere Movement
+        if (playerMovement != null)
+        {
+            playerMovement.enabled = true;
+        }
         
         // Starte Health Regeneration wieder
         regenCoroutine = StartCoroutine(HealthRegeneration());

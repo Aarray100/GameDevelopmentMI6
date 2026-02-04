@@ -9,7 +9,7 @@ public class JournalToast : MonoBehaviour
 
     [SerializeField] CanvasGroup group;
     [SerializeField] TMP_Text text;
-    [SerializeField] float showSeconds = 5f;
+    [SerializeField] float showSeconds = 1.5f; // Kurze Anzeigezeit für schnelle Items
 
     readonly Queue<string> queue = new();
     bool running;
