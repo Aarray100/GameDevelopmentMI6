@@ -211,13 +211,18 @@ public class PlayerStats : MonoBehaviour
         {
             StopCoroutine(regenCoroutine);
         }
-        OnPlayerDeath?.Invoke();
         StartCoroutine(DeathSequenceRoutine());
     }
 
     private IEnumerator DeathSequenceRoutine()
     {
-        // Spiel pausieren
+        // Event ZUERST auslösen (bevor Time.timeScale = 0)
+        OnPlayerDeath?.Invoke();
+        
+        // Warte einen Frame damit UI sich aktualisiert
+        yield return null;
+        
+        // JETZT pausieren
         Time.timeScale = 0f;
         
         // 3 Sekunden warten (Realtime, da Time.timeScale = 0)
@@ -241,12 +246,15 @@ public class PlayerStats : MonoBehaviour
         string currentScene = SceneManager.GetActiveScene().name;
         if (currentScene != "002_HomeScene")
         {
-            // Lade 002_HomeScene und setze den Spawn-Punkt
+            // Setze den Spawn-Punkt VOR dem Scene-Load
             SceneTransitionManager manager = SceneTransitionManager.EnsureInstance();
             if (manager != null)
             {
                 manager.targetSpawnPointID = "deathSpawn";
+                Debug.Log("PlayerStats: Set targetSpawnPointID to 'deathSpawn' before scene load");
             }
+            
+            // JETZT lade die Scene
             SceneManager.LoadScene("002_HomeScene");
         }
         else

@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class DeathScreenUI : MonoBehaviour
 {
@@ -41,9 +42,21 @@ public class DeathScreenUI : MonoBehaviour
     {
         if (deathScreenPanel != null)
         {
-            deathScreenPanel.SetActive(true);
-            Debug.Log("Death Screen angezeigt");
+            StartCoroutine(ShowDeathScreenCoroutine());
         }
+    }
+
+    private IEnumerator ShowDeathScreenCoroutine()
+    {
+        deathScreenPanel.SetActive(true);
+        
+        // Force Canvas Update für Time.timeScale = 0
+        Canvas.ForceUpdateCanvases();
+        
+        // Warte einen Frame (mit unscaled time)
+        yield return null;
+        
+        Debug.Log($"Death Screen angezeigt - Panel aktiv: {deathScreenPanel.activeSelf}");
     }
 
     private void HideDeathScreen()
