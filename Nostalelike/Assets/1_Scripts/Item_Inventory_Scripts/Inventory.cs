@@ -102,31 +102,49 @@ public class Inventory
     }
     // -------------------------------------------------------------
 
-    // --- DROP ITEM FUNKTION ---
-    // Gibt das Item und die Menge zurück, die gedroppt werden soll, und entfernt es aus dem Inventar
-    public (ItemData item, int quantity) DropItemAt(int index, int dropQuantity = -1)
+    /// <summary>
+    /// Tauscht zwei Slots im Inventar
+    /// </summary>
+    public void SwapSlots(int indexA, int indexB)
     {
-        if (index < 0 || index >= slots.Count) return (null, 0);
+        if (indexA < 0 || indexA >= slots.Count) return;
+        if (indexB < 0 || indexB >= slots.Count) return;
+        if (indexA == indexB) return;
         
-        InventorySlot slot = slots[index];
-        if (slot == null || slot.item == null || slot.quantity <= 0) return (null, 0);
+        // Temporär speichern
+        ItemData tempItem = slots[indexA].item;
+        int tempQuantity = slots[indexA].quantity;
         
-        ItemData itemToDrop = slot.item;
-        int actualDropQuantity = dropQuantity <= 0 || dropQuantity >= slot.quantity 
-            ? slot.quantity 
-            : dropQuantity;
+        // A = B
+        slots[indexA].item = slots[indexB].item;
+        slots[indexA].quantity = slots[indexB].quantity;
         
-        slot.quantity -= actualDropQuantity;
-        if (slot.quantity <= 0)
-        {
-            slot.item = null;
-            slot.quantity = 0;
-        }
+        // B = temp (ursprünglich A)
+        slots[indexB].item = tempItem;
+        slots[indexB].quantity = tempQuantity;
         
         OnInventoryChanged?.Invoke();
-        return (itemToDrop, actualDropQuantity);
     }
-    // --------------------------
+
+    /// <summary>
+    /// Setzt ein Item direkt in einen bestimmten Slot
+    /// </summary>
+    public void SetItemAt(int index, ItemData item, int quantity)
+    {
+        if (index < 0 || index >= slots.Count) return;
+        slots[index].item = item;
+        slots[index].quantity = quantity;
+        OnInventoryChanged?.Invoke();
+    }
+    
+    /// <summary>
+    /// Prüft ob ein bestimmter Slot leer ist
+    /// </summary>
+    public bool IsSlotEmpty(int index)
+    {
+        if (index < 0 || index >= slots.Count) return false;
+        return slots[index].item == null || slots[index].quantity <= 0;
+    }
 
     public void Clear()
     {

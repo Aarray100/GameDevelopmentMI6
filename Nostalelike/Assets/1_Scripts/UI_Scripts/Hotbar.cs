@@ -424,8 +424,19 @@ public class Hotbar : MonoBehaviour
         slots[indexA] = slots[indexB];
         slots[indexB] = temp;
         
-        UpdateSlotUI(indexA);
-        UpdateSlotUI(indexB);
+        // WICHTIG: UI-Referenzen aktualisieren, damit sie auf die richtigen Slots zeigen
+        if (slotUIElements != null)
+        {
+            if (indexA < slotUIElements.Length && slotUIElements[indexA] != null)
+            {
+                slotUIElements[indexA].Initialize(indexA, slots[indexA]);
+            }
+            if (indexB < slotUIElements.Length && slotUIElements[indexB] != null)
+            {
+                slotUIElements[indexB].Initialize(indexB, slots[indexB]);
+            }
+        }
+        
         OnHotbarUpdated?.Invoke();
         
         // Update Waffe wenn aktiver Slot betroffen

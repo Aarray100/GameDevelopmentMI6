@@ -66,93 +66,77 @@ public class PlayerInventory : MonoBehaviour
         }
     }
     // ---------------------
-
+    
     // --- ITEM DROPPEN ---
     [Header("Drop Settings")]
-    public GameObject itemPickupPrefab; // Das Prefab, das gespawnt wird wenn ein Item gedroppt wird
-    public float dropDistance = 1.5f;   // Wie weit vor dem Spieler das Item gespawnt wird
-
-    public void DropItem(int index, int dropQuantity = -1)
+    public GameObject itemPickupPrefab; // Im Inspector zuweisen!
+    public float dropOffset = 2.5f; // Abstand vom Spieler (größer = weiter weg)
+    
+    /// <summary>
+    /// Droppt ein Item aus einem bestimmten Slot auf den Boden
+    /// </summary>
+    public void DropItem(int slotIndex, int amount = -1)
     {
-        if (index < 0 || index >= inventory.slots.Count) return;
+        if (slotIndex < 0 || slotIndex >= inventory.slots.Count) return;
         
-        var (item, quantity) = inventory.DropItemAt(index, dropQuantity);
+        InventorySlot slot = inventory.slots[slotIndex];
+        if (slot == null || slot.item == null || slot.quantity <= 0) return;
         
-        if (item != null && quantity > 0)
+        // Wenn amount nicht angegeben, droppe alles
+        int dropAmount = (amount <= 0 || amount > slot.quantity) ? slot.quantity : amount;
+        
+        // Item spawnen
+        SpawnDroppedItem(slot.item, dropAmount);
+        
+        // Aus Inventar entfernen - nutze die vorhandene Methode die das Event triggert
+        if (dropAmount >= slot.quantity)
         {
-            SpawnDroppedItem(item, quantity);
-            UpdateUISlots();
+            // Alles droppen
+            inventory.RemoveItemAt(slotIndex);
         }
+        else
+        {
+            // Nur teilweise droppen
+            inventory.RemoveItem(slot.item, dropAmount);
+        }
+        
+        UpdateUISlots();
     }
-
+    
+    /// <summary>
+    /// Spawnt ein Item auf dem Boden neben dem Spieler
+    /// </summary>
     private void SpawnDroppedItem(ItemData item, int quantity)
     {
-        if (itemPickupPrefab == null)
+        if (item == null) return;
+        
+        // Position berechnen (vor dem Spieler)
+        Vector2 dropPosition = (Vector2)transform.position + Random.insideUnitCircle.normalized * dropOffset;
+        
+        GameObject droppedItem;
+        
+        if (itemPickupPrefab != null)
         {
-            // Fallback: Erstelle ein einfaches GameObject wenn kein Prefab zugewiesen ist
-            GameObject droppedItem = new GameObject($"DroppedItem_{item.itemName}");
-            droppedItem.transform.position = GetDropPosition();
-            
-            SpriteRenderer sr = droppedItem.AddComponent<SpriteRenderer>();
-            sr.sprite = item.itemIcon;
-            sr.sortingOrder = 5;
-            
-            CircleCollider2D col = droppedItem.AddComponent<CircleCollider2D>();
-            col.isTrigger = true;
-            col.radius = 0.5f;
-            
-            ItemPickup pickup = droppedItem.AddComponent<ItemPickup>();
-            pickup.itemToPickup = item;
-            pickup.quantity = quantity;
-            
-            Debug.Log($"Item gedroppt: {item.itemName} x{quantity}");
+            droppedItem = Instantiate(itemPickupPrefab, dropPosition, Quaternion.identity);
         }
         else
         {
-            // Benutze das zugewiesene Prefab
-            GameObject droppedItem = Instantiate(itemPickupPrefab, GetDropPosition(), Quaternion.identity);
-            
-            ItemPickup pickup = droppedItem.GetComponent<ItemPickup>();
-            if (pickup != null)
-            {
-                pickup.itemToPickup = item;
-                pickup.quantity = quantity;
-            }
-            
-            // Sprite aktualisieren
-            SpriteRenderer sr = droppedItem.GetComponent<SpriteRenderer>();
-            if (sr != null && item.itemIcon != null)
-            {
-                sr.sprite = item.itemIcon;
-            }
-            
-            Debug.Log($"Item gedroppt: {item.itemName} x{quantity}");
-        }
-    }
-
-    private Vector3 GetDropPosition()
-    {
-        // Position vor dem Spieler berechnen (basierend auf Blickrichtung)
-        Vector3 dropPos = transform.position;
-        
-        // Versuche die Blickrichtung zu ermitteln
-        PlayerMovement2D movement = GetComponent<PlayerMovement2D>();
-        if (movement != null)
-        {
-            // Hier könntest du die lastDirection vom Movement Script nutzen
-            // Fallback: Random Offset
-            Vector2 randomOffset = Random.insideUnitCircle.normalized * dropDistance;
-            dropPos += new Vector3(randomOffset.x, randomOffset.y, 0);
-        }
-        else
-        {
-            // Fallback: Vor dem Spieler (nach unten)
-            dropPos += Vector3.down * dropDistance;
+            // Fallback: Einfaches GameObject erstellen
+            droppedItem = new GameObject($"DroppedItem_{item.itemName}");
+            droppedItem.transform.position = dropPosition;
+            droppedItem.AddComponent<SpriteRenderer>();
+            droppedItem.AddComponent<CircleCollider2D>().isTrigger = true;
         }
         
-        return dropPos;
+        ItemPickup pickup = droppedItem.GetComponent<ItemPickup>();
+        if (pickup == null)
+            pickup = droppedItem.AddComponent<ItemPickup>();
+            
+        pickup.InitializeDroppedItem(item, quantity, 60f); // 60 Sekunden despawn
+        
+        Debug.Log($"Dropped {quantity}x {item.itemName}");
     }
-    // --------------------
+    // ---------------------
 
     public void ToggleInventory()
     {

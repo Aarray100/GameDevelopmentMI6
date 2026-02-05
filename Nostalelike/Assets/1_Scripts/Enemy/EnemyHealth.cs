@@ -4,7 +4,10 @@ public class EnemyHealth : MonoBehaviour
 {
     [Header("Stats - Werden von EnemyStats überschrieben wenn vorhanden")]
     public float maxHealth = 100f;
-    private float currentHealth;
+    private float _currentHealth;
+    
+    // Public Property für Health Bar Zugriff
+    public float CurrentHealth => _currentHealth;
     
     [Header("XP Reward - Wird von EnemyStats überschrieben wenn vorhanden")]
     public int xpReward = 25;
@@ -38,7 +41,7 @@ public class EnemyHealth : MonoBehaviour
         else
         {
             // Fallback: Benutze Inspector-Werte
-            currentHealth = maxHealth;
+            _currentHealth = maxHealth;
         }
     }
 
@@ -55,7 +58,7 @@ public class EnemyHealth : MonoBehaviour
         if (enemyStats == null) return;
         
         maxHealth = enemyStats.MaxHealth;
-        currentHealth = maxHealth;
+        _currentHealth = maxHealth;
         xpReward = enemyStats.XPReward;
         
         Debug.Log($"{gameObject.name}: Stats von EnemyStats geladen - HP: {maxHealth}, XP: {xpReward}");
@@ -71,7 +74,7 @@ public class EnemyHealth : MonoBehaviour
         // WICHTIG: Wenn er schon tot ist, ignorieren wir weitere Treffer!
         if (isDead) return;
 
-        currentHealth -= damage;
+        _currentHealth -= damage;
         AudioManager.Instance?.PlayHitSFX();
 
         if (anim != null)
@@ -80,9 +83,9 @@ public class EnemyHealth : MonoBehaviour
             anim.SetTrigger("Hurt");
         }
 
-        Debug.Log($"<color=red>{gameObject.name} took {damage} damage. HP: {currentHealth}</color>");
+        Debug.Log($"<color=red>{gameObject.name} took {damage} damage. HP: {_currentHealth}</color>");
 
-        if (currentHealth <= 0)
+        if (_currentHealth <= 0)
         {
             Die();
         }
@@ -115,6 +118,15 @@ public class EnemyHealth : MonoBehaviour
 
     private void GiveGoldToPlayer()
     {
+        // Versuche zuerst unser neues LootSystem, dann das alte EnemyLoot
+        EnemyLootSystem lootSystem = GetComponent<EnemyLootSystem>();
+        if (lootSystem != null)
+        {
+            lootSystem.DropLoot();
+            return;
+        }
+        
+        // Fallback für das alte Asset Pack Script
         EnemyLoot loot = GetComponent<EnemyLoot>();
         if (loot != null) loot.DropLoot();
     }
