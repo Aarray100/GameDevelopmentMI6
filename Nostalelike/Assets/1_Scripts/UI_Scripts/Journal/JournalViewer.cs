@@ -27,6 +27,12 @@ public class JournalViewer : MonoBehaviour
         {
             bool unlocked = JournalProgress.IsUnlocked(e.id);
             Debug.Log($"  → Entry '{e.id}' | Unlocked: {unlocked} | Pages: {e.pages.Count}");
+            
+            // Zeige Seiteninhalt
+            for (int i = 0; i < e.pages.Count; i++)
+            {
+                Debug.Log($"     Page {i + 1}: {e.pages[i]}");
+            }
         }
     }
 

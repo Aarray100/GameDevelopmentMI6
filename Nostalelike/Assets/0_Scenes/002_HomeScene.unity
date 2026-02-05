@@ -10798,6 +10798,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4584557612786406351, guid: 7221c6d37f99059d98f22ce92924e99a, type: 3}
+      propertyPath: chestID
+      value: -001
+      objectReference: {fileID: 0}
+    - target: {fileID: 4584557612786406351, guid: 7221c6d37f99059d98f22ce92924e99a, type: 3}
       propertyPath: journalDb
       value: 
       objectReference: {fileID: 11400000, guid: 1c44ab5639d1c1ed6819918f006ea645, type: 2}
@@ -10883,6 +10887,51 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b339e098a7e26e23fad75fec48229e96, type: 3}
+--- !u!1 &1481176490
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1481176492}
+  - component: {fileID: 1481176491}
+  m_Layer: 0
+  m_Name: Databse Output
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1481176491
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1481176490}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71206083f3167f648a98413f92e552b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::JournalDatabaseDebug
+  database: {fileID: 11400000, guid: 1c44ab5639d1c1ed6819918f006ea645, type: 2}
+--- !u!4 &1481176492
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1481176490}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 687.95526, y: 363.75134, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1537648711
 GameObject:
   m_ObjectHideFlags: 0
@@ -12256,3 +12305,4 @@ SceneRoots:
   - {fileID: 1714537232}
   - {fileID: 1835272282}
   - {fileID: 5656746797949188527}
+  - {fileID: 1481176492}
