@@ -30,6 +30,38 @@ public class Inventory
             slots.Add(new InventorySlot(null, 0));
         }
     }
+    
+    /// <summary>
+    /// Prüft ob ein Item ins Inventar passt (ohne es hinzuzufügen)
+    /// </summary>
+    public bool CanAddItem(ItemData item, int quantity = 1)
+    {
+        if (item == null) return false;
+        
+        // Stackable Items: Prüfe ob bereits ein Stack existiert
+        if (item.isStackable)
+        {
+            InventorySlot existingSlot = slots.Find(s => s.item == item);
+            if (existingSlot != null)
+            {
+                // Es gibt bereits einen Stack - immer Platz!
+                return true;
+            }
+        }
+        
+        // Prüfe ob leere Slots vorhanden sind
+        if (item.isStackable)
+        {
+            // Braucht nur 1 freien Slot für den ganzen Stack
+            return slots.Exists(s => s.item == null);
+        }
+        else
+        {
+            // Nicht-stackable: Braucht 'quantity' freie Slots
+            int emptySlots = slots.FindAll(s => s.item == null).Count;
+            return emptySlots >= quantity;
+        }
+    }
 
     public void AddItem(ItemData item, int quantity)
     {

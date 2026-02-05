@@ -50,8 +50,13 @@ public class ItemPickup : MonoBehaviour
 
             if (playerInventory != null)
             {
-                playerInventory.inventory.AddItem(itemToPickup, quantity);
-                Destroy(gameObject);
+                // Prüfe ob das Inventar Platz hat
+                if (playerInventory.inventory.CanAddItem(itemToPickup, quantity))
+                {
+                    playerInventory.inventory.AddItem(itemToPickup, quantity);
+                    Destroy(gameObject);
+                }
+                // Wenn kein Platz: Item bleibt liegen (nichts passiert)
             }
         }
     }
