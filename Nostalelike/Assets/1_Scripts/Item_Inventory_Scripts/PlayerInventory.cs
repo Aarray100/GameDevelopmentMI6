@@ -70,7 +70,7 @@ public class PlayerInventory : MonoBehaviour
     // --- ITEM DROPPEN ---
     [Header("Drop Settings")]
     public GameObject itemPickupPrefab; // Im Inspector zuweisen!
-    public float dropOffset = 2.5f; // Abstand vom Spieler (größer = weiter weg)
+    public float dropOffset = 4f; // Abstand vom Spieler (größer = weiter weg)
     
     /// <summary>
     /// Droppt ein Item aus einem bestimmten Slot auf den Boden
