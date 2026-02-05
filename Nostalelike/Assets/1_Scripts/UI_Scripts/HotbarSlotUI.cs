@@ -267,7 +267,7 @@ public class HotbarSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
             Hotbar hotbar = GetComponentInParent<Hotbar>();
             if (hotbar != null)
             {
-                hotbar.SwapSlots(otherHotbarSlot.slotIndex, this.slotIndex);
+                hotbar.SwapSlots(otherHotbarSlot.GetSlotIndex(), this.slotIndex);
             }
         }
     }

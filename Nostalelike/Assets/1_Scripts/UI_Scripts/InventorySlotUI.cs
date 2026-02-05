@@ -4,7 +4,7 @@ using UnityEngine.EventSystems; // WICHTIG: Das hat gefehlt!
 using TMPro;
 
 // WICHTIG: Jetzt erben wir von den Drag-Interfaces!
-public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler
+public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler, IPointerEnterHandler, IPointerExitHandler
 {
     [Header("UI Components")]
     public Image icon;          
@@ -16,6 +16,7 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     private ItemData currentItem;
     private CanvasGroup canvasGroup; // Brauchen wir für Transparenz beim Ziehen
+    private bool isMouseOver = false; // Für Drop-Funktion
     
     // Static Variablen für das Drag-Icon (geteilt mit EquipmentSlotUI)
     private static GameObject currentlyDraggedIcon;
@@ -32,6 +33,18 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         
         // Setup für das Ghost-Icon (genau wie im Equipment Script)
         SetupDragIcon();
+    }
+    
+    private void Update()
+    {
+        // Q-Taste zum Droppen wenn Maus über Slot ist
+        if (isMouseOver && currentItem != null && Input.GetKeyDown(KeyCode.Q))
+        {
+            if (playerInventory != null)
+            {
+                playerInventory.DropItem(slotIndex);
+            }
+        }
     }
 
     private void SetupDragIcon()
@@ -150,8 +163,100 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     // Erlaubt das Empfangen von Items (z.B. wenn man Ausrüstung zurück ins Inventar legt)
     public void OnDrop(PointerEventData eventData)
     {
-        // Hier könnte man Logik einbauen, um Items innerhalb des Inventars zu tauschen.
-        // Fürs Erste reicht es, wenn der EquipmentSlotUI das handled.
-        // Wenn du Equipment ZURÜCK ins Inventar ziehst, kümmert sich EquipmentSlotUI darum.
+        // === 1. Check: Inventar → Inventar (Slot-Tausch) ===
+        InventorySlotUI sourceInventorySlot = eventData.pointerDrag?.GetComponent<InventorySlotUI>();
+        if (sourceInventorySlot != null && sourceInventorySlot != this)
+        {
+            // Tausche die beiden Slots
+            if (playerInventory != null && playerInventory.inventory != null)
+            {
+                playerInventory.inventory.SwapSlots(sourceInventorySlot.slotIndex, this.slotIndex);
+            }
+            return;
+        }
+        
+        // === 2. Check: Equipment → Inventar (Unequip) ===
+        EquipmentSlotUI sourceEquipmentSlot = eventData.pointerDrag?.GetComponent<EquipmentSlotUI>();
+        if (sourceEquipmentSlot != null)
+        {
+            PlayerEquipment playerEquipment = sourceEquipmentSlot.playerEquipment;
+            if (playerEquipment == null) return;
+            
+            ItemData equippedItem = playerEquipment.GetEquippedItem(sourceEquipmentSlot.slotType);
+            if (equippedItem == null) return;
+            
+            // Prüfe ob dieser Slot leer ist oder ob wir tauschen können
+            bool targetSlotEmpty = playerInventory.inventory.IsSlotEmpty(this.slotIndex);
+            
+            if (targetSlotEmpty)
+            {
+                // Einfach unequip ins leere Slot
+                playerEquipment.UnequipItem(sourceEquipmentSlot.slotType, false); // false = nicht ins Inventar (wir machen das manuell)
+                playerInventory.inventory.SetItemAt(this.slotIndex, equippedItem, 1);
+            }
+            else
+            {
+                // Zielslot hat bereits ein Item - prüfe ob es equipt werden kann
+                ItemData targetItem = playerInventory.inventory.slots[this.slotIndex].item;
+                
+                if (playerEquipment.CanEquipInSlot(targetItem, sourceEquipmentSlot.slotType))
+                {
+                    // Tausche: Equip das Item im Inventar, leg das alte ins Inventar
+                    playerEquipment.SwapEquipment(targetItem, sourceEquipmentSlot.slotType);
+                    playerInventory.inventory.SetItemAt(this.slotIndex, equippedItem, 1);
+                }
+                else
+                {
+                    Debug.Log($"{targetItem.itemName} kann nicht in den {sourceEquipmentSlot.slotType} Slot ausgerüstet werden!");
+                }
+            }
+            return;
+        }
+        
+        // === 3. Check: Hotbar → Inventar ===
+        HotbarSlotUI sourceHotbarSlot = eventData.pointerDrag?.GetComponent<HotbarSlotUI>();
+        if (sourceHotbarSlot != null)
+        {
+            HotbarSlot hotbarSlot = sourceHotbarSlot.GetHotbarSlot();
+            if (hotbarSlot == null || hotbarSlot.IsEmpty()) return;
+            
+            ItemData hotbarItem = hotbarSlot.item;
+            int hotbarQuantity = hotbarSlot.quantity;
+            
+            bool targetSlotEmpty = playerInventory.inventory.IsSlotEmpty(this.slotIndex);
+            
+            if (targetSlotEmpty)
+            {
+                // Einfach ins leere Slot verschieben
+                playerInventory.inventory.SetItemAt(this.slotIndex, hotbarItem, hotbarQuantity);
+                hotbarSlot.ClearSlot();
+                sourceHotbarSlot.UpdateUI();
+            }
+            else
+            {
+                // Tausche mit dem Item im Inventar
+                ItemData targetItem = playerInventory.inventory.slots[this.slotIndex].item;
+                int targetQuantity = playerInventory.inventory.slots[this.slotIndex].quantity;
+                
+                // Inventar bekommt Hotbar-Item
+                playerInventory.inventory.SetItemAt(this.slotIndex, hotbarItem, hotbarQuantity);
+                
+                // Hotbar bekommt Inventar-Item
+                hotbarSlot.SetItem(targetItem, targetQuantity);
+                sourceHotbarSlot.UpdateUI();
+            }
+            return;
+        }
+    }
+    
+    // --- POINTER ENTER/EXIT für Drop-Funktion ---
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        isMouseOver = true;
+    }
+    
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        isMouseOver = false;
     }
 }

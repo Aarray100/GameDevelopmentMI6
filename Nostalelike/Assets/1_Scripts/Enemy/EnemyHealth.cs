@@ -2,24 +2,66 @@ using UnityEngine;
 
 public class EnemyHealth : MonoBehaviour
 {
-    [Header("Stats")]
+    [Header("Stats - Werden von EnemyStats überschrieben wenn vorhanden")]
     public float maxHealth = 100f;
-    private float currentHealth;
+    private float _currentHealth;
     
-    [Header("XP Reward")]
+    // Public Property für Health Bar Zugriff
+    public float CurrentHealth => _currentHealth;
+    
+    [Header("XP Reward - Wird von EnemyStats überschrieben wenn vorhanden")]
     public int xpReward = 25;
 
     // --- NEU: Sicherung gegen Mehrfach-Drops ---
     private bool isDead = false; 
     // -------------------------------------------
 
+    // Referenz auf EnemyStats (optional)
+    private EnemyStats enemyStats;
+
     private Animator anim;
     private Vector2 facingDirection = Vector2.down;
 
+    void Awake()
+    {
+        // Versuche EnemyStats zu finden
+        enemyStats = GetComponent<EnemyStats>();
+        anim = GetComponent<Animator>();
+    }
+
     void Start()
     {
-        currentHealth = maxHealth;
-        anim = GetComponent<Animator>();
+        // Wenn EnemyStats vorhanden, warte auf Stats-Berechnung
+        if (enemyStats != null)
+        {
+            enemyStats.OnStatsCalculated += ApplyStatsFromEnemyStats;
+            // Falls Stats bereits berechnet wurden
+            ApplyStatsFromEnemyStats();
+        }
+        else
+        {
+            // Fallback: Benutze Inspector-Werte
+            _currentHealth = maxHealth;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (enemyStats != null)
+        {
+            enemyStats.OnStatsCalculated -= ApplyStatsFromEnemyStats;
+        }
+    }
+
+    private void ApplyStatsFromEnemyStats()
+    {
+        if (enemyStats == null) return;
+        
+        maxHealth = enemyStats.MaxHealth;
+        _currentHealth = maxHealth;
+        xpReward = enemyStats.XPReward;
+        
+        Debug.Log($"{gameObject.name}: Stats von EnemyStats geladen - HP: {maxHealth}, XP: {xpReward}");
     }
 
     public void SetFacingDirection(Vector2 direction)
@@ -32,7 +74,7 @@ public class EnemyHealth : MonoBehaviour
         // WICHTIG: Wenn er schon tot ist, ignorieren wir weitere Treffer!
         if (isDead) return;
 
-        currentHealth -= damage;
+        _currentHealth -= damage;
         AudioManager.Instance?.PlayHitSFX();
 
         if (anim != null)
@@ -41,9 +83,9 @@ public class EnemyHealth : MonoBehaviour
             anim.SetTrigger("Hurt");
         }
 
-        Debug.Log($"<color=red>{gameObject.name} took {damage} damage. HP: {currentHealth}</color>");
+        Debug.Log($"<color=red>{gameObject.name} took {damage} damage. HP: {_currentHealth}</color>");
 
-        if (currentHealth <= 0)
+        if (_currentHealth <= 0)
         {
             Die();
         }
@@ -76,6 +118,15 @@ public class EnemyHealth : MonoBehaviour
 
     private void GiveGoldToPlayer()
     {
+        // Versuche zuerst unser neues LootSystem, dann das alte EnemyLoot
+        EnemyLootSystem lootSystem = GetComponent<EnemyLootSystem>();
+        if (lootSystem != null)
+        {
+            lootSystem.DropLoot();
+            return;
+        }
+        
+        // Fallback für das alte Asset Pack Script
         EnemyLoot loot = GetComponent<EnemyLoot>();
         if (loot != null) loot.DropLoot();
     }

@@ -66,6 +66,77 @@ public class PlayerInventory : MonoBehaviour
         }
     }
     // ---------------------
+    
+    // --- ITEM DROPPEN ---
+    [Header("Drop Settings")]
+    public GameObject itemPickupPrefab; // Im Inspector zuweisen!
+    public float dropOffset = 2.5f; // Abstand vom Spieler (größer = weiter weg)
+    
+    /// <summary>
+    /// Droppt ein Item aus einem bestimmten Slot auf den Boden
+    /// </summary>
+    public void DropItem(int slotIndex, int amount = -1)
+    {
+        if (slotIndex < 0 || slotIndex >= inventory.slots.Count) return;
+        
+        InventorySlot slot = inventory.slots[slotIndex];
+        if (slot == null || slot.item == null || slot.quantity <= 0) return;
+        
+        // Wenn amount nicht angegeben, droppe alles
+        int dropAmount = (amount <= 0 || amount > slot.quantity) ? slot.quantity : amount;
+        
+        // Item spawnen
+        SpawnDroppedItem(slot.item, dropAmount);
+        
+        // Aus Inventar entfernen - nutze die vorhandene Methode die das Event triggert
+        if (dropAmount >= slot.quantity)
+        {
+            // Alles droppen
+            inventory.RemoveItemAt(slotIndex);
+        }
+        else
+        {
+            // Nur teilweise droppen
+            inventory.RemoveItem(slot.item, dropAmount);
+        }
+        
+        UpdateUISlots();
+    }
+    
+    /// <summary>
+    /// Spawnt ein Item auf dem Boden neben dem Spieler
+    /// </summary>
+    private void SpawnDroppedItem(ItemData item, int quantity)
+    {
+        if (item == null) return;
+        
+        // Position berechnen (vor dem Spieler)
+        Vector2 dropPosition = (Vector2)transform.position + Random.insideUnitCircle.normalized * dropOffset;
+        
+        GameObject droppedItem;
+        
+        if (itemPickupPrefab != null)
+        {
+            droppedItem = Instantiate(itemPickupPrefab, dropPosition, Quaternion.identity);
+        }
+        else
+        {
+            // Fallback: Einfaches GameObject erstellen
+            droppedItem = new GameObject($"DroppedItem_{item.itemName}");
+            droppedItem.transform.position = dropPosition;
+            droppedItem.AddComponent<SpriteRenderer>();
+            droppedItem.AddComponent<CircleCollider2D>().isTrigger = true;
+        }
+        
+        ItemPickup pickup = droppedItem.GetComponent<ItemPickup>();
+        if (pickup == null)
+            pickup = droppedItem.AddComponent<ItemPickup>();
+            
+        pickup.InitializeDroppedItem(item, quantity, 60f); // 60 Sekunden despawn
+        
+        Debug.Log($"Dropped {quantity}x {item.itemName}");
+    }
+    // ---------------------
 
     public void ToggleInventory()
     {
