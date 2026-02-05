@@ -2,24 +2,63 @@ using UnityEngine;
 
 public class EnemyHealth : MonoBehaviour
 {
-    [Header("Stats")]
+    [Header("Stats - Werden von EnemyStats überschrieben wenn vorhanden")]
     public float maxHealth = 100f;
     private float currentHealth;
     
-    [Header("XP Reward")]
+    [Header("XP Reward - Wird von EnemyStats überschrieben wenn vorhanden")]
     public int xpReward = 25;
 
     // --- NEU: Sicherung gegen Mehrfach-Drops ---
     private bool isDead = false; 
     // -------------------------------------------
 
+    // Referenz auf EnemyStats (optional)
+    private EnemyStats enemyStats;
+
     private Animator anim;
     private Vector2 facingDirection = Vector2.down;
 
+    void Awake()
+    {
+        // Versuche EnemyStats zu finden
+        enemyStats = GetComponent<EnemyStats>();
+        anim = GetComponent<Animator>();
+    }
+
     void Start()
     {
+        // Wenn EnemyStats vorhanden, warte auf Stats-Berechnung
+        if (enemyStats != null)
+        {
+            enemyStats.OnStatsCalculated += ApplyStatsFromEnemyStats;
+            // Falls Stats bereits berechnet wurden
+            ApplyStatsFromEnemyStats();
+        }
+        else
+        {
+            // Fallback: Benutze Inspector-Werte
+            currentHealth = maxHealth;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (enemyStats != null)
+        {
+            enemyStats.OnStatsCalculated -= ApplyStatsFromEnemyStats;
+        }
+    }
+
+    private void ApplyStatsFromEnemyStats()
+    {
+        if (enemyStats == null) return;
+        
+        maxHealth = enemyStats.MaxHealth;
         currentHealth = maxHealth;
-        anim = GetComponent<Animator>();
+        xpReward = enemyStats.XPReward;
+        
+        Debug.Log($"{gameObject.name}: Stats von EnemyStats geladen - HP: {maxHealth}, XP: {xpReward}");
     }
 
     public void SetFacingDirection(Vector2 direction)

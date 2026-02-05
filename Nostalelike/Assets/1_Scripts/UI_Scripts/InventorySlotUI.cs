@@ -4,7 +4,7 @@ using UnityEngine.EventSystems; // WICHTIG: Das hat gefehlt!
 using TMPro;
 
 // WICHTIG: Jetzt erben wir von den Drag-Interfaces!
-public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler
+public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler, IPointerClickHandler
 {
     [Header("UI Components")]
     public Image icon;          
@@ -145,6 +145,19 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
         canvasGroup.alpha = 1f;
         canvasGroup.blocksRaycasts = true; // Wieder klickbar machen
+        
+        // --- DROP DETECTION ---
+        // Prüfe ob das Item außerhalb eines gültigen UI-Elements losgelassen wurde
+        if (currentItem != null && eventData.pointerCurrentRaycast.gameObject == null)
+        {
+            // Item wurde ins "Nichts" gezogen -> Droppen!
+            if (playerInventory != null)
+            {
+                playerInventory.DropItem(slotIndex);
+                Debug.Log($"Item {currentItem.itemName} aus Slot {slotIndex} gedroppt!");
+            }
+        }
+        // ----------------------
     }
 
     // Erlaubt das Empfangen von Items (z.B. wenn man Ausrüstung zurück ins Inventar legt)
@@ -154,4 +167,24 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         // Fürs Erste reicht es, wenn der EquipmentSlotUI das handled.
         // Wenn du Equipment ZURÜCK ins Inventar ziehst, kümmert sich EquipmentSlotUI darum.
     }
+
+    // --- RECHTSKLICK ZUM DROPPEN ---
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (eventData.button == PointerEventData.InputButton.Right)
+        {
+            // Rechtsklick -> Item droppen
+            if (currentItem != null && playerInventory != null)
+            {
+                // Bei gedrückter Shift-Taste nur 1 Item droppen, sonst alle
+                int dropAmount = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) 
+                    ? 1 
+                    : -1; // -1 bedeutet alle
+                
+                playerInventory.DropItem(slotIndex, dropAmount);
+                Debug.Log($"Item per Rechtsklick gedroppt!");
+            }
+        }
+    }
+    // -------------------------------
 }

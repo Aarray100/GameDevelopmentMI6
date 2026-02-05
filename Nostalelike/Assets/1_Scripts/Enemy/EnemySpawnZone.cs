@@ -19,6 +19,19 @@ public class EnemySpawnZone : MonoBehaviour
     [Tooltip("Anzahl Enemies die beim Start gespawnt werden")]
     public int initialSpawnCount = 2;
     
+    [Header("Level Scaling")]
+    [Tooltip("Sollen Gegner basierend auf Spieler-Level skalieren?")]
+    public bool scaleToPlayerLevel = true;
+    
+    [Tooltip("Minimaler Level-Offset zum Spieler (z.B. -3 = 3 Level unter Spieler möglich)")]
+    public int minLevelOffset = -3;
+    
+    [Tooltip("Maximaler Level-Offset zum Spieler (z.B. +1 = 1 Level über Spieler möglich)")]
+    public int maxLevelOffset = 1;
+    
+    [Tooltip("Festes Level wenn scaleToPlayerLevel = false")]
+    public int fixedEnemyLevel = 1;
+    
     [Header("Zone Settings")]
     [Tooltip("Größe der Spawn-Zone (Box)")]
     public Vector2 zoneSize = new Vector2(5f, 5f);
@@ -37,9 +50,16 @@ public class EnemySpawnZone : MonoBehaviour
     private List<GameObject> spawnedEnemies = new List<GameObject>();
     private float nextSpawnTime = 0f;
     private bool isSpawning = true;
+    
+    // Spieler-Referenz für Level-Skalierung
+    private PlayerStats playerStats;
+    private LevelSystem levelSystem;
 
     void Start()
     {
+        // Spieler finden für Level-Skalierung
+        FindPlayerReferences();
+        
         // Initial Spawns
         if (spawnOnStart)
         {
@@ -48,6 +68,30 @@ public class EnemySpawnZone : MonoBehaviour
                 SpawnEnemy();
             }
         }
+    }
+
+    private void FindPlayerReferences()
+    {
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+        {
+            playerStats = player.GetComponent<PlayerStats>();
+            levelSystem = player.GetComponent<LevelSystem>();
+        }
+    }
+
+    private int GetPlayerLevel()
+    {
+        // Versuche Level von verschiedenen Quellen zu bekommen
+        if (playerStats != null && playerStats.currentLevel > 0)
+        {
+            return playerStats.currentLevel;
+        }
+        if (levelSystem != null && levelSystem.level > 0)
+        {
+            return levelSystem.level;
+        }
+        return 1; // Fallback
     }
 
     void Update()
@@ -87,6 +131,22 @@ public class EnemySpawnZone : MonoBehaviour
         
         // Spawnen
         GameObject newEnemy = Instantiate(prefabToSpawn, spawnPos, Quaternion.identity);
+        
+        // --- LEVEL SKALIERUNG ---
+        EnemyStats enemyStats = newEnemy.GetComponent<EnemyStats>();
+        if (enemyStats != null)
+        {
+            if (scaleToPlayerLevel)
+            {
+                int playerLevel = GetPlayerLevel();
+                enemyStats.SetLevelBasedOnPlayer(playerLevel, minLevelOffset, maxLevelOffset);
+            }
+            else
+            {
+                enemyStats.SetLevel(fixedEnemyLevel);
+            }
+        }
+        // ------------------------
         
         // Layer auf Enemy setzen
         int enemyLayer = LayerMask.NameToLayer("Enemy");

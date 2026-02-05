@@ -102,6 +102,32 @@ public class Inventory
     }
     // -------------------------------------------------------------
 
+    // --- DROP ITEM FUNKTION ---
+    // Gibt das Item und die Menge zurück, die gedroppt werden soll, und entfernt es aus dem Inventar
+    public (ItemData item, int quantity) DropItemAt(int index, int dropQuantity = -1)
+    {
+        if (index < 0 || index >= slots.Count) return (null, 0);
+        
+        InventorySlot slot = slots[index];
+        if (slot == null || slot.item == null || slot.quantity <= 0) return (null, 0);
+        
+        ItemData itemToDrop = slot.item;
+        int actualDropQuantity = dropQuantity <= 0 || dropQuantity >= slot.quantity 
+            ? slot.quantity 
+            : dropQuantity;
+        
+        slot.quantity -= actualDropQuantity;
+        if (slot.quantity <= 0)
+        {
+            slot.item = null;
+            slot.quantity = 0;
+        }
+        
+        OnInventoryChanged?.Invoke();
+        return (itemToDrop, actualDropQuantity);
+    }
+    // --------------------------
+
     public void Clear()
     {
         foreach (var slot in slots)
