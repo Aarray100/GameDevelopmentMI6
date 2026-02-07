@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 8786169201362702396}
   - component: {fileID: -3317076996815080382}
   - component: {fileID: 7670498250907837671}
+  - component: {fileID: -7109718120634979525}
   m_Layer: 6
   m_Name: Prefab_Character_4
   m_TagString: Player
@@ -122,8 +123,12 @@ MonoBehaviour:
   mudSpeedMultiplier: 0.5
   footOffset: {x: 0, y: -0.7, z: 0}
   sensorRadius: 0.15
+  walkStepInterval: 0.4
+  runStepInterval: 0.25
+  currentGround: 0
   anim: {fileID: 9180847507587466117}
   visuals: {fileID: 0}
+  movementLocked: 0
 --- !u!114 &-1979071940492990035
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -141,7 +146,10 @@ MonoBehaviour:
   slotPrefab: {fileID: 0}
   inventoryPanelObject: {fileID: 0}
   equipmentPanelObject: {fileID: 0}
+  statSheetPanelObject: {fileID: 0}
   uiSlots: []
+  itemPickupPrefab: {fileID: 0}
+  dropOffset: 2.5
 --- !u!114 &4181540082403830764
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -180,25 +188,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54fc1a5f3c7925231a671a45b5030b81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStats
-  baseMaxHealth: 100
-  baseMaxMana: 50
-  baseMaxStamina: 75
-  currentHealth: 0
-  currentMana: 0
-  currentStamina: 0
-  baseHealthRegenRate: 5
-  baseManaRegenRate: 3
-  baseStaminaRegenRate: 4
-  baseDamage: 10
-  baseAttackSpeed: 1
-  baseCriticalChance: 0.1
-  baseCriticalDamage: 1.5
-  baseDefense: 5
-  baseResistance: 3
-  baseEvasion: 0.05
   maxHealth: 0
+  currentHealth: 0
   maxMana: 0
+  currentMana: 0
   maxStamina: 0
+  currentStamina: 0
+  baseDamage: 10
   totalDamage: 0
   totalAttackSpeed: 0
   totalCriticalChance: 0
@@ -211,14 +207,8 @@ MonoBehaviour:
   totalStaminaRegen: 0
   currentLevel: 1
   experiencePoints: 0
-  experienceToNextLevel: 100
   experienceRequired: 0
-  healthPerLevel: 10
-  manaPerLevel: 8
-  staminaPerLevel: 5
-  damagePerLevel: 2
-  defensePerLevel: 1
-  criticalChancePerLevel: 0.005
+  experienceToNextLevel: 100
 --- !u!114 &7670498250907837671
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -238,6 +228,21 @@ MonoBehaviour:
     m_Bits: 128
   attackDamage: 20
   attackRate: 2
+--- !u!114 &-7109718120634979525
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 156682719049003078}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5175e2f243cd389d2b305a89f817274b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::JournalOverlay
+  journalCanvasPrefab: {fileID: 3840265824916444147, guid: 06229a07f1b8dac6ea0a0fa9e266d457, type: 3}
+  panelName: JournalRoot
+  movement: {fileID: 0}
 --- !u!1 &4497145319168448195
 GameObject:
   m_ObjectHideFlags: 0
