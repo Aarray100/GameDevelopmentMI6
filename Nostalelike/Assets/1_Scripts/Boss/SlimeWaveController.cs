@@ -27,6 +27,10 @@ public class SlimeWaveController : MonoBehaviour
     [SerializeField] private GameObject bridgeToPortal;
     [SerializeField] private GameObject bridgeAntiFall; // Unsichtbare Wand die deaktiviert wird
     
+    [Header("Camera Cinematic")]
+    [SerializeField] private Transform cameraTarget; // Das CamTarget für die Brücke
+    [SerializeField] private float cinematicDuration = 3f; // Wie lange die Kamerafahrt dauert
+    
     [Header("Journal")]
     [SerializeField] private JournalDatabase journalDb;
     
@@ -210,7 +214,20 @@ public class SlimeWaveController : MonoBehaviour
     IEnumerator VictorySequence()
     {
         // Kurze Stille
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(1f);
+        
+        // Spiel pausieren & Kamerafahrt starten
+        if (cameraTarget != null && Camera.main != null)
+        {
+            // Pausiere Spieler-Input
+            Time.timeScale = 0f;
+            
+            // Starte Kamerafahrt zur Brücke (mit unscaled time)
+            yield return StartCoroutine(CameraFocusCinematic());
+            
+            // Spiel fortsetzen
+            Time.timeScale = 1f;
+        }
         
         // Journal-Eintrag
         JournalProgress.Unlock("012");
@@ -226,6 +243,64 @@ public class SlimeWaveController : MonoBehaviour
         // Brücke spawnen
         if (bridgeToPortal != null)
             bridgeToPortal.SetActive(true);
+    }
+    
+    IEnumerator CameraFocusCinematic()
+    {
+        Camera mainCam = Camera.main;
+        Vector3 originalPosition = mainCam.transform.position;
+        float elapsed = 0f;
+        
+        // Kamera zur Brücke bewegen
+        while (elapsed < cinematicDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = elapsed / cinematicDuration;
+            
+            // Smooth interpolation zur target position
+            Vector3 targetPos = new Vector3(
+                cameraTarget.position.x, 
+                cameraTarget.position.y, 
+                originalPosition.z
+            );
+            
+            mainCam.transform.position = Vector3.Lerp(
+                originalPosition, 
+                targetPos, 
+                t
+            );
+            
+            yield return null;
+        }
+        
+        // Kurz auf der Brücke verweilen
+        yield return new WaitForSecondsRealtime(1.5f);
+        
+        // Zurück zum Spieler
+        elapsed = 0f;
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+        {
+            while (elapsed < cinematicDuration * 0.5f)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float t = elapsed / (cinematicDuration * 0.5f);
+                
+                Vector3 playerPos = new Vector3(
+                    player.transform.position.x,
+                    player.transform.position.y,
+                    originalPosition.z
+                );
+                
+                mainCam.transform.position = Vector3.Lerp(
+                    mainCam.transform.position,
+                    playerPos,
+                    t
+                );
+                
+                yield return null;
+            }
+        }
     }
 }
 
