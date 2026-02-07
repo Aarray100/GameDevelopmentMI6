@@ -339,7 +339,6 @@ public class SaveManager : MonoBehaviour
             Debug.Log($"Loading save: {data.saveName} from {data.saveDate}");
             
             // WICHTIG: Chest-Daten VOR dem Szenenwechsel laden!
-            // So haben die Truhen beim Spawnen bereits die korrekten Daten
             if (ChestManager.Instance != null)
             {
                 ChestManager.Instance.LoadSaveData(data.openedChests);
@@ -350,7 +349,10 @@ public class SaveManager : MonoBehaviour
             
             if (!string.IsNullOrEmpty(data.currentSceneName))
             {
-                SceneManager.LoadScene(data.currentSceneName);
+                if (LoadingScreen.Instance != null)
+                    LoadingScreen.Instance.LoadSceneWithScreen(data.currentSceneName);
+                else
+                    SceneManager.LoadScene(data.currentSceneName);
             }
         }
         catch (System.Exception e)

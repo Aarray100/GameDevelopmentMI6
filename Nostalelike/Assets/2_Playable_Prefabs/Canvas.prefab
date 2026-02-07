@@ -3325,6 +3325,7 @@ GameObject:
   - component: {fileID: 7602874142121424886}
   - component: {fileID: 20021675860117765}
   - component: {fileID: 5953940943922786779}
+  - component: {fileID: 1709616398293679955}
   m_Layer: 5
   m_Name: Panel
   m_TagString: Untagged
@@ -3390,6 +3391,32 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &1709616398293679955
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3968456714861332839}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a56f5de74c33a49ad9dc78cbbec0142e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LoadingScreen
+  loadingPanel: {fileID: 3968456714861332839}
+  progressBar: {fileID: 0}
+  loadingText: {fileID: 0}
+  tipText: {fileID: 0}
+  fadeSpeed: 2
+  minimumDisplayTime: 1
+  loadingTips:
+  - "Tipp: Sammle M\xFCnzen f\xFCr bessere Ausr\xFCstung!"
+  - "Tipp: Vergiss nicht regelm\xE4\xDFig zu speichern!"
+  - "Tipp: Erkunde jeden Winkel f\xFCr versteckte Sch\xE4tze."
+  - "Tipp: Truhen bleiben nach dem \xD6ffnen f\xFCr immer ge\xF6ffnet."
+  - 'Tipp: Im Journal findest du wichtige Informationen.'
+  - "Tipp: Verschiedene Gegner haben verschiedene Schw\xE4chen."
+  - "Tipp: Tr\xE4nke k\xF6nnen dir im Kampf das Leben retten!"
 --- !u!1 &4089039725526078332
 GameObject:
   m_ObjectHideFlags: 0
@@ -7595,7 +7622,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

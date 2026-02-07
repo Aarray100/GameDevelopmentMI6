@@ -62,7 +62,10 @@ public class CharacterManager : MonoBehaviour
 
         // Load the main game scene (replace "MainGameScene" with your actual scene name)
         int nextSceneIndex = SceneManager.GetActiveScene().buildIndex + 1;
-        SceneManager.LoadScene(nextSceneIndex);
+        if (LoadingScreen.Instance != null)
+            LoadingScreen.Instance.LoadSceneWithScreen(nextSceneIndex);
+        else
+            SceneManager.LoadScene(nextSceneIndex);
     }
 
 
