@@ -4,7 +4,7 @@ public class SlimeButton : MonoBehaviour
 {
     [Header("Slime Settings")]
     [SerializeField] private GameObject slimePrefab; // Welche Farbe spawnt hier
-    [SerializeField] private int slimesToSpawn = 5;
+    [SerializeField] private int slimesToSpawn = 3;
     
     [Header("Spawn Points")]
     [SerializeField] private Transform[] spawnPoints;
