@@ -167,7 +167,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Press "F"
+  m_text: Press "E"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: dc36b3fdc14f47ebb36fd484a67e268a, type: 2}
   m_sharedMaterial: {fileID: 2140032, guid: dc36b3fdc14f47ebb36fd484a67e268a, type: 2}
@@ -319,7 +319,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 42
+  m_SortingOrder: 1
   m_Sprite: {fileID: 3430901871213666316, guid: fd83f7b98b35cde4aa3748efd1646779, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -365,7 +365,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -0.0000019073486, y: -0.05025673}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -375,7 +375,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 3.7809715, y: 4.116024}
   m_EdgeRadius: 0
 --- !u!114 &889036118465787961
 MonoBehaviour:
@@ -391,5 +391,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ButtonInteraction
   wallTilemap: {fileID: 0}
   tilesToDelete: []
+  objectToActivate: {fileID: 0}
+  objectToDeactivate: {fileID: 0}
+  cameraTarget: {fileID: 0}
+  waitTimeAtTarget: 1.5
+  slowMotionFactor: 0.05
+  cameraSpeed: 5
   pressedSprite: {fileID: 0}
   uiPopup: {fileID: 0}

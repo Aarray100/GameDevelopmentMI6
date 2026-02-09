@@ -85,8 +85,21 @@ public class SlimeWaveController : MonoBehaviour
         
         Transform randomSpawn = spawnPoints[Random.Range(0, spawnPoints.Length)];
         GameObject slime = Instantiate(slimePrefab, randomSpawn.position, Quaternion.identity);
-        
-        // Registriere Slime-Tod beim EnemyHealth-Script
+                // Setze Level auf Spieler-Level +3
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+        {
+            PlayerStats playerStats = player.GetComponent<PlayerStats>();
+            if (playerStats != null)
+            {
+                EnemyStats enemyStats = slime.GetComponent<EnemyStats>();
+                if (enemyStats != null)
+                {
+                    enemyStats.SetLevel(playerStats.currentLevel + 3);
+                }
+            }
+        }
+                // Registriere Slime-Tod beim EnemyHealth-Script
         var slimeEnemy = slime.GetComponent<EnemyHealth>();
         if (slimeEnemy != null)
         {

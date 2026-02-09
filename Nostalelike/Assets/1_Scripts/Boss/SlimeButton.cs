@@ -20,6 +20,7 @@ public class SlimeButton : MonoBehaviour
     [SerializeField] private bool deactivateAfterPress = false;
     [SerializeField] private float deactivateDelay = 0.5f;
     [SerializeField] private float cooldownTime = 3f; // Zeit bis Button wieder drückbar ist
+    [SerializeField] private bool startActive = true; // Button ist direkt aktiv beim Start
     
     private SlimeWaveController controller;
     private bool isActive = false;
@@ -28,18 +29,55 @@ public class SlimeButton : MonoBehaviour
     
     void Start()
     {
+        // Auto-Finde SpriteRenderer wenn nicht zugewiesen
+        if (buttonRenderer == null)
+        {
+            buttonRenderer = GetComponent<SpriteRenderer>();
+            if (buttonRenderer != null)
+                Debug.Log($"<color=green>SlimeButton '{gameObject.name}': SpriteRenderer automatisch gefunden!</color>");
+            else
+                Debug.LogWarning($"SlimeButton '{gameObject.name}': Kein SpriteRenderer gefunden! Sprite wird nicht geändert.");
+        }
+        
         if (uiPrompt != null)
             uiPrompt.SetActive(false);
+        
+        // Testing: Sofort aktivieren wenn gewünscht
+        if (startActive)
+        {
+            isActive = true;
+            Debug.Log($"<color=yellow>SlimeButton '{gameObject.name}': Sofort aktiviert (startActive=true)</color>");
+        }
+        
+        // Status-Check
+        Debug.Log($"<color=cyan>SlimeButton '{gameObject.name}' Setup:</color>\n" +
+                  $"  - SpriteRenderer: {(buttonRenderer != null ? "✓" : "✗")}\n" +
+                  $"  - Pressed Sprite: {(pressedSprite != null ? "✓" : "✗")}\n" +
+                  $"  - Slime Prefab: {(slimePrefab != null ? "✓" : "✗")}\n" +
+                  $"  - Spawn Points: {spawnPoints?.Length ?? 0}\n" +
+                  $"  - Is Active: {isActive}");
     }
     
     public void Activate(SlimeWaveController waveController)
     {
         controller = waveController;
         isActive = true;
+        Debug.Log($"<color=green>SlimeButton '{gameObject.name}': Aktiviert vom WaveController!</color>");
     }
     
     void Update()
     {
+        // Debug-Info wenn E gedrückt wird aber Button nicht reagiert
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            if (!isActive)
+                Debug.LogWarning($"SlimeButton '{gameObject.name}': E gedrückt aber Button ist NICHT aktiv! Warte auf Aktivierung.");
+            else if (!playerInRange)
+                Debug.Log($"SlimeButton '{gameObject.name}': E gedrückt aber Spieler NICHT in Range!");
+            else if (isOnCooldown)
+                Debug.Log($"SlimeButton '{gameObject.name}': E gedrückt aber Button auf Cooldown!");
+        }
+        
         if (!playerInRange || !isActive || isOnCooldown) return;
         
         if (Input.GetKeyDown(KeyCode.E))
@@ -62,10 +100,24 @@ public class SlimeButton : MonoBehaviour
         // Spawne Welle von Slimes
         if (slimePrefab != null && spawnPoints.Length > 0)
         {
+            // Finde Spieler-Level für +3 Skalierung
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            PlayerStats playerStats = player?.GetComponent<PlayerStats>();
+            
             for (int i = 0; i < slimesToSpawn; i++)
             {
                 Transform randomSpawn = spawnPoints[Random.Range(0, spawnPoints.Length)];
                 GameObject slime = Instantiate(slimePrefab, randomSpawn.position, Quaternion.identity);
+                
+                // Setze Level auf Spieler-Level +3
+                if (playerStats != null)
+                {
+                    EnemyStats enemyStats = slime.GetComponent<EnemyStats>();
+                    if (enemyStats != null)
+                    {
+                        enemyStats.SetLevel(playerStats.currentLevel + 3);
+                    }
+                }
                 
                 // Registriere beim Controller
                 var slimeEnemy = slime.GetComponent<EnemyHealth>();
@@ -105,12 +157,22 @@ public class SlimeButton : MonoBehaviour
     
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Player") && isActive)
+        Debug.Log($"SlimeButton '{gameObject.name}': Trigger Enter von '{other.name}' (Tag: {other.tag})");
+        
+        if (other.CompareTag("Player"))
         {
             playerInRange = true;
+            Debug.Log($"<color=cyan>SlimeButton '{gameObject.name}': Spieler in Range! isActive={isActive}</color>");
             
-            if (uiPrompt != null && !isOnCooldown)
-                uiPrompt.SetActive(true);
+            if (isActive)
+            {
+                if (uiPrompt != null && !isOnCooldown)
+                    uiPrompt.SetActive(true);
+            }
+            else
+            {
+                Debug.LogWarning($"SlimeButton '{gameObject.name}': Spieler in Range aber Button noch nicht aktiviert!");
+            }
         }
     }
     
@@ -119,6 +181,7 @@ public class SlimeButton : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             playerInRange = false;
+            Debug.Log($"SlimeButton '{gameObject.name}': Spieler verlässt Range");
             
             if (uiPrompt != null)
                 uiPrompt.SetActive(false);

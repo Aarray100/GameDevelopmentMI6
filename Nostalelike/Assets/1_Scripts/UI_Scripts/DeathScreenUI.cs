@@ -40,6 +40,24 @@ public class DeathScreenUI : MonoBehaviour
 
     private void ShowDeathScreen()
     {
+        // Tod kostet Gold!
+        if (GoldManager.Instance != null)
+        {
+            int deathCost = 200;
+            int currentGold = GoldManager.Instance.aktuellesGold;
+            int actualCost = Mathf.Min(deathCost, currentGold); // Maximal das was der Spieler hat
+            
+            if (actualCost > 0)
+            {
+                GoldManager.Instance.GoldAbziehen(actualCost);
+                Debug.Log($"<color=red>Tod: {actualCost} Gold verloren! (Verbleibend: {GoldManager.Instance.aktuellesGold})</color>");
+            }
+            else
+            {
+                Debug.Log("<color=red>Tod: Kein Gold zum Verlieren!</color>");
+            }
+        }
+        
         if (deathScreenPanel != null)
         {
             StartCoroutine(ShowDeathScreenCoroutine());
