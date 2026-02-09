@@ -4,7 +4,7 @@ public class SlimeButton : MonoBehaviour
 {
     [Header("Slime Settings")]
     [SerializeField] private GameObject slimePrefab; // Welche Farbe spawnt hier
-    [SerializeField] private int slimesToSpawn = 3;
+    [SerializeField] private int slimesToSpawn = 6;
     
     [Header("Spawn Points")]
     [SerializeField] private Transform[] spawnPoints;
@@ -15,10 +15,15 @@ public class SlimeButton : MonoBehaviour
     [Header("Visuals (optional)")]
     [SerializeField] private SpriteRenderer buttonRenderer;
     [SerializeField] private Sprite pressedSprite;
+
+    [Header("Behavior")]
+    [SerializeField] private bool deactivateAfterPress = false;
+    [SerializeField] private float deactivateDelay = 0.5f;
+    [SerializeField] private float cooldownTime = 3f; // Zeit bis Button wieder drückbar ist
     
     private SlimeWaveController controller;
     private bool isActive = false;
-    private bool isCompleted = false;
+    private bool isOnCooldown = false;
     private bool playerInRange = false;
     
     void Start()
@@ -35,7 +40,9 @@ public class SlimeButton : MonoBehaviour
     
     void Update()
     {
-        if (playerInRange && isActive && !isCompleted && Input.GetKeyDown(KeyCode.E))
+        if (!playerInRange || !isActive || isOnCooldown) return;
+        
+        if (Input.GetKeyDown(KeyCode.E))
         {
             PressButton();
         }
@@ -43,7 +50,7 @@ public class SlimeButton : MonoBehaviour
     
     void PressButton()
     {
-        isCompleted = true;
+        isOnCooldown = true;
         
         if (uiPrompt != null)
             uiPrompt.SetActive(false);
@@ -75,8 +82,20 @@ public class SlimeButton : MonoBehaviour
         
         Debug.Log($"Button gedrückt! {slimesToSpawn} Slimes spawnen.");
         
-        // Button nach kurzer Zeit deaktivieren
-        Invoke(nameof(DeactivateButton), 0.5f);
+        // Cooldown starten
+        Invoke(nameof(ResetCooldown), cooldownTime);
+        
+        // Button nach kurzer Zeit deaktivieren (optional)
+        if (deactivateAfterPress)
+        {
+            Invoke(nameof(DeactivateButton), deactivateDelay);
+        }
+    }
+    
+    void ResetCooldown()
+    {
+        isOnCooldown = false;
+        Debug.Log($"Button wieder bereit!");
     }
     
     void DeactivateButton()
@@ -86,11 +105,11 @@ public class SlimeButton : MonoBehaviour
     
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Player") && isActive && !isCompleted)
+        if (other.CompareTag("Player") && isActive)
         {
             playerInRange = true;
             
-            if (uiPrompt != null)
+            if (uiPrompt != null && !isOnCooldown)
                 uiPrompt.SetActive(true);
         }
     }

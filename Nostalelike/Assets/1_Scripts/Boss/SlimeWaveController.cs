@@ -43,11 +43,14 @@ public class SlimeWaveController : MonoBehaviour
     {
         bridgeToPortal?.SetActive(false);
         
-        // Buttons am Anfang deaktivieren
+        // Buttons sichtbar machen aber inaktiv halten
         foreach (var button in colorButtons)
         {
             if (button != null)
-                button.gameObject.SetActive(false);
+            {
+                button.gameObject.SetActive(true);
+                // Button ist noch nicht interaktiv (wird in Phase 2 aktiviert)
+            }
         }
         
         StartPhase1();
@@ -215,6 +218,13 @@ public class SlimeWaveController : MonoBehaviour
     {
         // Kurze Stille
         yield return new WaitForSeconds(1f);
+
+        // Brücke spawnen bevor die Kamera rüberschwenkt
+        if (bridgeAntiFall != null)
+            bridgeAntiFall.SetActive(false);
+
+        if (bridgeToPortal != null)
+            bridgeToPortal.SetActive(true);
         
         // Spiel pausieren & Kamerafahrt starten
         if (cameraTarget != null && Camera.main != null)
@@ -235,14 +245,6 @@ public class SlimeWaveController : MonoBehaviour
         
         if (NotificationManager.Instance != null)
             NotificationManager.Instance.ShowNotification("SIEG! Portal freigeschaltet!");
-        
-        // Unsichtbare Wand deaktivieren
-        if (bridgeAntiFall != null)
-            bridgeAntiFall.SetActive(false);
-        
-        // Brücke spawnen
-        if (bridgeToPortal != null)
-            bridgeToPortal.SetActive(true);
     }
     
     IEnumerator CameraFocusCinematic()

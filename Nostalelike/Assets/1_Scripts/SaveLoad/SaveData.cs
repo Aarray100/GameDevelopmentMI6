@@ -41,6 +41,12 @@ public class SaveData
     public float musicVolume;
     public float sfxVolume;
     
+    // Gold
+    public int playerGold;
+    
+    // Journal
+    public JournalSaveData journalData;
+    
     public SaveData()
     {
         saveDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");

@@ -312,6 +312,17 @@ public class SaveManager : MonoBehaviour
             data.sfxVolume = AudioManager.Instance.GetSFXVolume();
         }
         
+        // Gold
+        if (GoldManager.Instance != null)
+        {
+            data.playerGold = GoldManager.Instance.aktuellesGold;
+            Debug.Log($"<color=cyan>SaveManager: Gold gespeichert ({data.playerGold})</color>");
+        }
+        
+        // Journal
+        data.journalData = JournalProgress.GetSaveData();
+        Debug.Log($"<color=cyan>SaveManager: Journal gespeichert ({data.journalData?.unlockedIds?.Count ?? 0} Einträge)</color>");
+        
         return data;
     }
     
@@ -436,6 +447,18 @@ public class SaveManager : MonoBehaviour
             AudioManager.Instance.SetMusicVolume(data.musicVolume);
             AudioManager.Instance.SetSFXVolume(data.sfxVolume);
         }
+        
+        // Gold
+        if (GoldManager.Instance != null)
+        {
+            GoldManager.Instance.aktuellesGold = data.playerGold;
+            GoldManager.Instance.UpdateGoldAnzeige();
+            Debug.Log($"<color=green>SaveManager: Gold geladen ({data.playerGold})</color>");
+        }
+        
+        // Journal
+        JournalProgress.LoadSaveData(data.journalData);
+        Debug.Log($"<color=green>SaveManager: Journal geladen ({data.journalData?.unlockedIds?.Count ?? 0} Einträge)</color>");
         
         Debug.Log("<color=green>SaveManager: === SAVE DATA APPLIED SUCCESSFULLY ===</color>");
     }
