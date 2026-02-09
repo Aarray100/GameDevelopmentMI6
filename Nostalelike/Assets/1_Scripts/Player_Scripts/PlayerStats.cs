@@ -142,6 +142,11 @@ public class PlayerStats : MonoBehaviour
     // --- BERECHNUNGEN ---
     public void RecalculateStats()
     {
+        // Spieler-Schadensberechnung:
+        // 1. Basis-Schaden (baseDamage)
+        // 2. +2 pro Level
+        // 3. +Waffen-Bonus +Ausrüstungs-Bonus
+        // 4. Multipliziert mit Waffen-Multiplier (z.B. Buffs)
         float levelDamage = baseDamage + (currentLevel * 2f);
         totalDamage = (levelDamage + equipmentBonus.bonusDamage + activeWeaponBonus.bonusDamage) * temporaryDamageMultiplier;
         
@@ -201,7 +206,11 @@ public class PlayerStats : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
-        float damageAfterDef = Mathf.Max(damage - totalDefense, 1); 
+        // Prozentuale Schadensreduktion mit Diminishing Returns
+        float K = 20f; // Balancing-Faktor, je höher desto weniger Defense bringt viel
+        float reduction = totalDefense / (totalDefense + K);
+        reduction = Mathf.Min(reduction, 0.8f); // Maximal 80% Reduktion
+        float damageAfterDef = Mathf.Max(damage * (1f - reduction), 1f);
         currentHealth -= damageAfterDef;
         OnHealthChanged?.Invoke();
         if (currentHealth <= 0) Die();

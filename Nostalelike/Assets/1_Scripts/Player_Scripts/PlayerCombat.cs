@@ -103,13 +103,14 @@ public class PlayerCombat : MonoBehaviour
         
         foreach (Collider2D target in potentialTargets)
         {
-            // Richtung zum Gegner berechnen
-            Vector2 directionToEnemy = ((Vector2)target.transform.position - origin).normalized;
-            // float distanceToEnemy = Vector2.Distance(origin, target.transform.position); // (Optional für Logik)
-            
+            // Richtung und Distanz zum Gegner berechnen
+            Vector2 toEnemy = (Vector2)target.transform.position - origin;
+            float distanceToEnemy = toEnemy.magnitude;
+            if (distanceToEnemy > attackRange) continue; // Nur Gegner im Kreis
+
+            Vector2 directionToEnemy = toEnemy.normalized;
             // Winkel zwischen Angriffsrichtung und Richtung zum Gegner
             float angleToEnemy = Vector2.Angle(attackDirection, directionToEnemy);
-            
             // Ist der Gegner innerhalb des Angriffs-Kegels?
             if (angleToEnemy <= attackAngle / 2f)
             {

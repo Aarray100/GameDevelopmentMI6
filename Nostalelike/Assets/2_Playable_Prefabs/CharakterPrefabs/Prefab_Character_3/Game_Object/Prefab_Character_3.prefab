@@ -275,7 +275,7 @@ MonoBehaviour:
   statSheetPanelObject: {fileID: 0}
   uiSlots: []
   itemPickupPrefab: {fileID: 0}
-  dropOffset: 2.5
+  dropOffset: 4
 --- !u!114 &5481757460807396862
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -347,8 +347,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1135cd2c2871d6b75bfdcdd70946ea23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCombat
-  attackRange: 1
-  attackAngle: 90
+  attackRange: 1.6
+  attackAngle: 120
   enemyLayers:
     serializedVersion: 2
     m_Bits: 128
@@ -380,6 +380,7 @@ GameObject:
   - component: {fileID: 7618051585136207132}
   - component: {fileID: 4164603074541463195}
   - component: {fileID: 9136776046421608411}
+  - component: {fileID: 2497780546839286067}
   m_Layer: 6
   m_Name: Camera
   m_TagString: MainCamera
@@ -497,3 +498,11 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
+--- !u!81 &2497780546839286067
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7117355210593490008}
+  m_Enabled: 1
