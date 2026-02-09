@@ -161,6 +161,13 @@ public class NPCSpawner : MonoBehaviour
                 // Füge zur Liste hinzu
                 spawnedNPCs.Add(npcInstance);
                 
+                // Animator-Culling für Performance
+                Animator npcAnimator = npcInstance.GetComponentInChildren<Animator>();
+                if (npcAnimator != null && npcAnimator.GetComponent<AnimatorCulling>() == null)
+                {
+                    npcAnimator.gameObject.AddComponent<AnimatorCulling>();
+                }
+                
                 // Mache NPC persistent über Szenenwechsel
                 DontDestroyOnLoad(npcInstance);
                 

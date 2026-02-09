@@ -50,6 +50,8 @@ public class EnemySpawnZone : MonoBehaviour
     private List<GameObject> spawnedEnemies = new List<GameObject>();
     private float nextSpawnTime = 0f;
     private bool isSpawning = true;
+    private float nextCleanupTime = 0f;
+    private const float cleanupInterval = 0.5f;
     
     // Spieler-Referenz für Level-Skalierung
     private PlayerStats playerStats;
@@ -96,8 +98,16 @@ public class EnemySpawnZone : MonoBehaviour
 
     void Update()
     {
-        // Entferne zerstörte Enemies aus der Liste
-        spawnedEnemies.RemoveAll(enemy => enemy == null);
+        // Entferne zerstörte Enemies aus der Liste (nur alle 0.5 Sekunden statt jeden Frame)
+        if (Time.time >= nextCleanupTime)
+        {
+            nextCleanupTime = Time.time + cleanupInterval;
+            for (int i = spawnedEnemies.Count - 1; i >= 0; i--)
+            {
+                if (spawnedEnemies[i] == null)
+                    spawnedEnemies.RemoveAt(i);
+            }
+        }
         
         // Spawne neue Enemies wenn unter Maximum
         if (isSpawning && Time.time >= nextSpawnTime && spawnedEnemies.Count < maxEnemies)
@@ -131,6 +141,13 @@ public class EnemySpawnZone : MonoBehaviour
         
         // Spawnen
         GameObject newEnemy = Instantiate(prefabToSpawn, spawnPos, Quaternion.identity);
+        
+        // Animator-Culling für Performance
+        Animator enemyAnimator = newEnemy.GetComponentInChildren<Animator>();
+        if (enemyAnimator != null && enemyAnimator.GetComponent<AnimatorCulling>() == null)
+        {
+            enemyAnimator.gameObject.AddComponent<AnimatorCulling>();
+        }
         
         // --- LEVEL SKALIERUNG ---
         EnemyStats enemyStats = newEnemy.GetComponent<EnemyStats>();

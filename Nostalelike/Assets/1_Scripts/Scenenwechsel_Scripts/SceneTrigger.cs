@@ -38,7 +38,10 @@ public class SceneTrigger : MonoBehaviour
             {
                 // Andere Szene - normal laden
                 Debug.Log($"SceneTrigger: Wechsel von '{currentSceneName}' zu Szene: '{sceneToLoad}' → Spawn bei: '{targetSpawnPointID}'");
-                SceneManager.LoadScene(sceneToLoad);
+                if (LoadingScreen.Instance != null)
+                    LoadingScreen.Instance.LoadSceneWithScreen(sceneToLoad, targetSpawnPointID);
+                else
+                    SceneManager.LoadScene(sceneToLoad);
             }
         }
     }

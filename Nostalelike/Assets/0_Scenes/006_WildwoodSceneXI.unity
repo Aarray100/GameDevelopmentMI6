@@ -131,7 +131,7 @@ GameObject:
   - component: {fileID: 74552375}
   - component: {fileID: 74552374}
   - component: {fileID: 74552376}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: House
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1579,7 +1579,7 @@ GameObject:
   - component: {fileID: 185153877}
   - component: {fileID: 185153876}
   - component: {fileID: 185153878}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Collision low with offset 2r
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5785,7 +5785,7 @@ GameObject:
   - component: {fileID: 346467817}
   - component: {fileID: 346467816}
   - component: {fileID: 346467815}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Collision_High
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6672,7 +6672,7 @@ GameObject:
   - component: {fileID: 440935402}
   - component: {fileID: 440935401}
   - component: {fileID: 440935403}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Non Collision High 1r
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -17736,7 +17736,7 @@ GameObject:
   - component: {fileID: 554730389}
   - component: {fileID: 554730391}
   - component: {fileID: 554730390}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Third Row Tree
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -26037,7 +26037,7 @@ Tilemap:
       - {fileID: 6898035379108858973, guid: 0f3ed8e63d1dc708ead34def9e49958a, type: 3}
       - {fileID: -8868248462342347919, guid: 0f3ed8e63d1dc708ead34def9e49958a, type: 3}
       - {fileID: -1605707320451941170, guid: 0f3ed8e63d1dc708ead34def9e49958a, type: 3}
-      m_AnimationSpeed: 2.2736561
+      m_AnimationSpeed: 2.3315556
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 2, y: -48, z: 0}
@@ -26048,7 +26048,7 @@ Tilemap:
       - {fileID: 6898035379108858973, guid: 0f3ed8e63d1dc708ead34def9e49958a, type: 3}
       - {fileID: -8868248462342347919, guid: 0f3ed8e63d1dc708ead34def9e49958a, type: 3}
       - {fileID: -1605707320451941170, guid: 0f3ed8e63d1dc708ead34def9e49958a, type: 3}
-      m_AnimationSpeed: 1.8458226
+      m_AnimationSpeed: 2.777361
       m_AnimationTimeOffset: 0
       m_Flags: 0
   m_TileAssetArray:
@@ -26333,7 +26333,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8499590474042792741, guid: e0334bda1e97a28c0833520ec705182f, type: 3}
       propertyPath: maxEnemies
-      value: 30
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 8499590474042792741, guid: e0334bda1e97a28c0833520ec705182f, type: 3}
       propertyPath: zoneSize.x
@@ -26342,6 +26342,10 @@ PrefabInstance:
     - target: {fileID: 8499590474042792741, guid: e0334bda1e97a28c0833520ec705182f, type: 3}
       propertyPath: zoneSize.y
       value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 8499590474042792741, guid: e0334bda1e97a28c0833520ec705182f, type: 3}
+      propertyPath: maxLevelOffset
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8499590474042792741, guid: e0334bda1e97a28c0833520ec705182f, type: 3}
       propertyPath: useWeightedSpawn
@@ -26813,7 +26817,7 @@ GameObject:
   - component: {fileID: 695378370}
   - component: {fileID: 695378369}
   - component: {fileID: 695378371}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Non Collision High 3r
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -50734,7 +50738,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8499590474042792741, guid: e0334bda1e97a28c0833520ec705182f, type: 3}
       propertyPath: maxEnemies
-      value: 30
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 8499590474042792741, guid: e0334bda1e97a28c0833520ec705182f, type: 3}
       propertyPath: zoneSize.x
@@ -50743,6 +50747,10 @@ PrefabInstance:
     - target: {fileID: 8499590474042792741, guid: e0334bda1e97a28c0833520ec705182f, type: 3}
       propertyPath: zoneSize.y
       value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 8499590474042792741, guid: e0334bda1e97a28c0833520ec705182f, type: 3}
+      propertyPath: spawnInterval
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 8499590474042792741, guid: e0334bda1e97a28c0833520ec705182f, type: 3}
       propertyPath: useWeightedSpawn
@@ -52059,7 +52067,7 @@ GameObject:
   - component: {fileID: 922854010}
   - component: {fileID: 922854012}
   - component: {fileID: 922854011}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: First Row Tree
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -53052,7 +53060,7 @@ GameObject:
   - component: {fileID: 1101225165}
   - component: {fileID: 1101225167}
   - component: {fileID: 1101225166}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: NOn Collision High 2r
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -99631,7 +99639,7 @@ GameObject:
   - component: {fileID: 1342397566}
   - component: {fileID: 1342397565}
   - component: {fileID: 1342397567}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Collision low with offset 3r
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -111494,7 +111502,7 @@ GameObject:
   - component: {fileID: 1453951064}
   m_Layer: 0
   m_Name: Ground
-  m_TagString: Untagged
+  m_TagString: Grass
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -217925,7 +217933,7 @@ GameObject:
   - component: {fileID: 1489584648}
   - component: {fileID: 1489584647}
   - component: {fileID: 1489584649}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Collision low with offset 1r
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -224099,7 +224107,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2005800440}
   - component: {fileID: 2005800439}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Collision Tree
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -304150,7 +304158,7 @@ GameObject:
   - component: {fileID: 2103472671}
   - component: {fileID: 2103472673}
   - component: {fileID: 2103472672}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Second Row Tree
   m_TagString: Untagged
   m_Icon: {fileID: 0}

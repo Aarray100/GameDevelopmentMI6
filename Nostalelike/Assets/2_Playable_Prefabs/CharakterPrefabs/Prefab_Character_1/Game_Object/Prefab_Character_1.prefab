@@ -280,6 +280,7 @@ GameObject:
   - component: {fileID: -7881059819434155054}
   - component: {fileID: -6881245915184006642}
   - component: {fileID: -4128209418525308761}
+  - component: {fileID: 8147549238724735256}
   m_Layer: 6
   m_Name: Prefab_Character_1
   m_TagString: Player
@@ -408,7 +409,10 @@ MonoBehaviour:
   slotPrefab: {fileID: 0}
   inventoryPanelObject: {fileID: 0}
   equipmentPanelObject: {fileID: 0}
+  statSheetPanelObject: {fileID: 0}
   uiSlots: []
+  itemPickupPrefab: {fileID: 0}
+  dropOffset: 2.5
 --- !u!114 &7589266553844486403
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -447,25 +451,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54fc1a5f3c7925231a671a45b5030b81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStats
-  baseMaxHealth: 100
-  baseMaxMana: 50
-  baseMaxStamina: 75
-  currentHealth: 0
-  currentMana: 0
-  currentStamina: 0
-  baseHealthRegenRate: 5
-  baseManaRegenRate: 3
-  baseStaminaRegenRate: 4
-  baseDamage: 10
-  baseAttackSpeed: 1
-  baseCriticalChance: 0.1
-  baseCriticalDamage: 1.5
-  baseDefense: 5
-  baseResistance: 3
-  baseEvasion: 0.05
   maxHealth: 0
+  currentHealth: 0
   maxMana: 0
+  currentMana: 0
   maxStamina: 0
+  currentStamina: 0
+  baseDamage: 10
   totalDamage: 0
   totalAttackSpeed: 0
   totalCriticalChance: 0
@@ -478,14 +470,8 @@ MonoBehaviour:
   totalStaminaRegen: 0
   currentLevel: 1
   experiencePoints: 0
-  experienceToNextLevel: 100
   experienceRequired: 0
-  healthPerLevel: 10
-  manaPerLevel: 8
-  staminaPerLevel: 5
-  damagePerLevel: 2
-  defensePerLevel: 1
-  criticalChancePerLevel: 0.005
+  experienceToNextLevel: 100
 --- !u!114 &-4128209418525308761
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -505,3 +491,18 @@ MonoBehaviour:
     m_Bits: 128
   attackDamage: 20
   attackRate: 2
+--- !u!114 &8147549238724735256
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7477086312278696024}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5175e2f243cd389d2b305a89f817274b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::JournalOverlay
+  journalCanvasPrefab: {fileID: 3840265824916444147, guid: 06229a07f1b8dac6ea0a0fa9e266d457, type: 3}
+  panelName: JournalRoot
+  movement: {fileID: 0}

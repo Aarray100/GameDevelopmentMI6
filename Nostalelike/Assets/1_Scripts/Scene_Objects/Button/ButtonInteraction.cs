@@ -44,7 +44,7 @@ public class ButtonInteraction : MonoBehaviour
 
     void Update()
     {
-        if (isPlayerInRange && !isActivated && Input.GetKeyDown(KeyCode.G))
+        if (isPlayerInRange && !isActivated && Input.GetKeyDown(KeyCode.E))
         {
             StartCoroutine(CutsceneRoutine());
         }

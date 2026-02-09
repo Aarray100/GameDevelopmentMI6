@@ -281,7 +281,10 @@ public class PlayerStats : MonoBehaviour
             }
             
             // JETZT lade die Scene
-            SceneManager.LoadScene("002_HomeScene");
+            if (LoadingScreen.Instance != null)
+                LoadingScreen.Instance.LoadSceneWithScreen("002_HomeScene", "deathSpawn");
+            else
+                SceneManager.LoadScene("002_HomeScene");
         }
         else
         {

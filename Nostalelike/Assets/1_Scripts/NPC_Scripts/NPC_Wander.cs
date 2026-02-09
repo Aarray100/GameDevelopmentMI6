@@ -78,6 +78,10 @@ public class NPC_Wander : MonoBehaviour
     // NPC Kollision
     private bool isAvoidingNPC = false;
     private float npcAvoidanceTimer = 0f;
+    
+    // Player-Suche throttle
+    private float nextPlayerSearchTime = 0f;
+    private const float playerSearchInterval = 1f;
 
     private void Awake()
     {
@@ -124,9 +128,10 @@ public class NPC_Wander : MonoBehaviour
 
     private void Update()
     {
-        // Versuche Spieler zu finden falls noch nicht gefunden
-        if (playerTransform == null)
+        // Versuche Spieler zu finden falls noch nicht gefunden (nur alle 1 Sekunde)
+        if (playerTransform == null && Time.time >= nextPlayerSearchTime)
         {
+            nextPlayerSearchTime = Time.time + playerSearchInterval;
             GameObject player = GameObject.FindGameObjectWithTag("Player");
             if (player != null)
             {

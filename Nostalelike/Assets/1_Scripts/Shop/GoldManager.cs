@@ -21,20 +21,22 @@ public class GoldManager : MonoBehaviour
 
     void Awake()
     {
-        // Wenn der Haken im Inspector an ist, löschen wir den Speicherstand sofort
-        if (resetOnStart)
-        {
-            PlayerPrefs.DeleteKey("GespeichertesGold");
-            Debug.Log("<color=yellow>TEST-MODUS: Gold wurde automatisch auf 0 gesetzt!</color>");
-        }
-
         if (Instance == null) 
         { 
             Instance = this; 
             DontDestroyOnLoad(gameObject); 
             
-            // Gold laden (oder 0 nehmen, falls gerade gelöscht wurde)
-            LadeGold();
+            // Startgold setzen (wird vom SaveSystem überschrieben wenn geladen wird)
+            if (resetOnStart)
+            {
+                aktuellesGold = 0;
+                Debug.Log("<color=yellow>TEST-MODUS: Gold auf 0 gesetzt (wird vom SaveSystem überschrieben falls geladen)</color>");
+            }
+            else
+            {
+                aktuellesGold = startGold;
+            }
+            UpdateGoldAnzeige();
         }
         else 
         { 
@@ -61,7 +63,6 @@ public class GoldManager : MonoBehaviour
     {
         aktuellesGold += menge;
         UpdateGoldAnzeige();
-        SpeichereGold(); 
     }
 
     // Gibt 'true' zurück, wenn genug Gold da war (wichtig für Shop!)
@@ -71,7 +72,6 @@ public class GoldManager : MonoBehaviour
         {
             aktuellesGold -= menge;
             UpdateGoldAnzeige();
-            SpeichereGold(); 
             return true; 
         }
         return false; 
@@ -85,26 +85,13 @@ public class GoldManager : MonoBehaviour
         }
     }
 
-    private void SpeichereGold()
-    {
-        PlayerPrefs.SetInt("GespeichertesGold", aktuellesGold);
-        PlayerPrefs.Save();
-    }
-
-    private void LadeGold()
-    {
-        aktuellesGold = PlayerPrefs.GetInt("GespeichertesGold", startGold);
-        UpdateGoldAnzeige();
-    }
-
-    // Kleiner Zusatz: Du kannst auch während des Spiels im Inspector "Reset Gold" klicken
+    // Debug-Methode zum Zurücksetzen
     [ContextMenu("Reset Gold")]
     public void ResetGold()
     {
-        PlayerPrefs.DeleteKey("GespeichertesGold");
         aktuellesGold = startGold;
         UpdateGoldAnzeige();
-        Debug.Log("Gold manuell zurückgesetzt!");
+        Debug.Log("Gold manuell zurückgesetzt auf " + startGold);
     }
 
     // Debug-Methoden zum Erhöhen von Gold im Inspector

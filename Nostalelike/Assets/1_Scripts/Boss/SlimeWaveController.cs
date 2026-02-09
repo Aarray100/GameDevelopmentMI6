@@ -27,6 +27,10 @@ public class SlimeWaveController : MonoBehaviour
     [SerializeField] private GameObject bridgeToPortal;
     [SerializeField] private GameObject bridgeAntiFall; // Unsichtbare Wand die deaktiviert wird
     
+    [Header("Camera Cinematic")]
+    [SerializeField] private Transform cameraTarget; // Das CamTarget für die Brücke
+    [SerializeField] private float cinematicDuration = 3f; // Wie lange die Kamerafahrt dauert
+    
     [Header("Journal")]
     [SerializeField] private JournalDatabase journalDb;
     
@@ -39,11 +43,14 @@ public class SlimeWaveController : MonoBehaviour
     {
         bridgeToPortal?.SetActive(false);
         
-        // Buttons am Anfang deaktivieren
+        // Buttons sichtbar machen aber inaktiv halten
         foreach (var button in colorButtons)
         {
             if (button != null)
-                button.gameObject.SetActive(false);
+            {
+                button.gameObject.SetActive(true);
+                // Button ist noch nicht interaktiv (wird in Phase 2 aktiviert)
+            }
         }
         
         StartPhase1();
@@ -66,9 +73,9 @@ public class SlimeWaveController : MonoBehaviour
         {
             // Spawne abwechselnd blaue & grüne Slimes
             SpawnSlime(blueSlimePrefab);
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(5f);
             SpawnSlime(greenSlimePrefab);
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(5f);
         }
     }
     
@@ -78,8 +85,21 @@ public class SlimeWaveController : MonoBehaviour
         
         Transform randomSpawn = spawnPoints[Random.Range(0, spawnPoints.Length)];
         GameObject slime = Instantiate(slimePrefab, randomSpawn.position, Quaternion.identity);
-        
-        // Registriere Slime-Tod beim EnemyHealth-Script
+                // Setze Level auf Spieler-Level +3
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+        {
+            PlayerStats playerStats = player.GetComponent<PlayerStats>();
+            if (playerStats != null)
+            {
+                EnemyStats enemyStats = slime.GetComponent<EnemyStats>();
+                if (enemyStats != null)
+                {
+                    enemyStats.SetLevel(playerStats.currentLevel + 3);
+                }
+            }
+        }
+                // Registriere Slime-Tod beim EnemyHealth-Script
         var slimeEnemy = slime.GetComponent<EnemyHealth>();
         if (slimeEnemy != null)
         {
@@ -161,7 +181,7 @@ public class SlimeWaveController : MonoBehaviour
             SpawnSlime(greenSlimePrefab);
             SpawnSlime(redSlimePrefab);
             SpawnSlime(yellowSlimePrefab);
-            yield return new WaitForSeconds(3f);
+            yield return new WaitForSeconds(10f);
         }
     }
     
@@ -190,10 +210,10 @@ public class SlimeWaveController : MonoBehaviour
             // SCHNELLER spawnen!
             SpawnSlime(blueSlimePrefab);
             SpawnSlime(greenSlimePrefab);
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(3f);
             SpawnSlime(redSlimePrefab);
             SpawnSlime(yellowSlimePrefab);
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(4f);
         }
     }
     
@@ -210,7 +230,27 @@ public class SlimeWaveController : MonoBehaviour
     IEnumerator VictorySequence()
     {
         // Kurze Stille
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(1f);
+
+        // Brücke spawnen bevor die Kamera rüberschwenkt
+        if (bridgeAntiFall != null)
+            bridgeAntiFall.SetActive(false);
+
+        if (bridgeToPortal != null)
+            bridgeToPortal.SetActive(true);
+        
+        // Spiel pausieren & Kamerafahrt starten
+        if (cameraTarget != null && Camera.main != null)
+        {
+            // Pausiere Spieler-Input
+            Time.timeScale = 0f;
+            
+            // Starte Kamerafahrt zur Brücke (mit unscaled time)
+            yield return StartCoroutine(CameraFocusCinematic());
+            
+            // Spiel fortsetzen
+            Time.timeScale = 1f;
+        }
         
         // Journal-Eintrag
         JournalProgress.Unlock("012");
@@ -218,14 +258,64 @@ public class SlimeWaveController : MonoBehaviour
         
         if (NotificationManager.Instance != null)
             NotificationManager.Instance.ShowNotification("SIEG! Portal freigeschaltet!");
+    }
+    
+    IEnumerator CameraFocusCinematic()
+    {
+        Camera mainCam = Camera.main;
+        Vector3 originalPosition = mainCam.transform.position;
+        float elapsed = 0f;
         
-        // Unsichtbare Wand deaktivieren
-        if (bridgeAntiFall != null)
-            bridgeAntiFall.SetActive(false);
+        // Kamera zur Brücke bewegen
+        while (elapsed < cinematicDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = elapsed / cinematicDuration;
+            
+            // Smooth interpolation zur target position
+            Vector3 targetPos = new Vector3(
+                cameraTarget.position.x, 
+                cameraTarget.position.y, 
+                originalPosition.z
+            );
+            
+            mainCam.transform.position = Vector3.Lerp(
+                originalPosition, 
+                targetPos, 
+                t
+            );
+            
+            yield return null;
+        }
         
-        // Brücke spawnen
-        if (bridgeToPortal != null)
-            bridgeToPortal.SetActive(true);
+        // Kurz auf der Brücke verweilen
+        yield return new WaitForSecondsRealtime(1.5f);
+        
+        // Zurück zum Spieler
+        elapsed = 0f;
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+        {
+            while (elapsed < cinematicDuration * 0.5f)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float t = elapsed / (cinematicDuration * 0.5f);
+                
+                Vector3 playerPos = new Vector3(
+                    player.transform.position.x,
+                    player.transform.position.y,
+                    originalPosition.z
+                );
+                
+                mainCam.transform.position = Vector3.Lerp(
+                    mainCam.transform.position,
+                    playerPos,
+                    t
+                );
+                
+                yield return null;
+            }
+        }
     }
 }
 

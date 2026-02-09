@@ -34,6 +34,9 @@ public class PlayerMovement2D : MonoBehaviour
     // --- NEU: Variable für Speed Bonus ---
     private float activeSpeedMultiplier = 1.0f; 
     // ------------------------------------
+    
+    // GC-freier Buffer für Physics Queries
+    private static readonly Collider2D[] hitBuffer = new Collider2D[8];
 
    
     void Start() {
@@ -124,8 +127,9 @@ public class PlayerMovement2D : MonoBehaviour
     }
 
     private bool CheckFootSensor() {
-        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position + footOffset, sensorRadius);
-        foreach (Collider2D hit in hits) {
+        int hitCount = Physics2D.OverlapCircleNonAlloc(transform.position + footOffset, sensorRadius, hitBuffer);
+        for (int i = 0; i < hitCount; i++) {
+            Collider2D hit = hitBuffer[i];
             if (hit.transform == transform || hit.transform.IsChildOf(transform)) continue;
             if (hit.GetComponent<Mud>() != null) return true;
         }
