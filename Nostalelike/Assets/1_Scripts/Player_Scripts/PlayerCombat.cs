@@ -4,8 +4,8 @@ using UnityEngine.EventSystems; // <--- WICHTIG: Das hier wurde hinzugefügt!
 public class PlayerCombat : MonoBehaviour
 {
     [Header("Combat Settings")]
-    public float attackRange = 1.5f;          // Reichweite des Schwerts
-    public float attackAngle = 90f;           // Winkel des Angriffs-Kegels (90° = halber Kreis)
+    public float attackRange = 2.0f;          // Reichweite des Schwerts
+    public float attackAngle = 60f;           // Winkel des Angriffs-Kegels (60° = 30° links + 30° rechts)
     public LayerMask enemyLayers;             // Bitmaske für Filterung
     public float attackDamage = 20f;          // Schaden pro Treffer
 

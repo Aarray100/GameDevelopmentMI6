@@ -12,6 +12,13 @@ public class EnemyHealth : MonoBehaviour
     [Header("XP Reward - Wird von EnemyStats überschrieben wenn vorhanden")]
     public int xpReward = 25;
 
+    [Header("Gold Reward - Wird von Level-Formel berechnet")]
+    [Tooltip("Basis-Gold bei Level 1")]
+    public int baseGoldReward = 20;
+
+    [Tooltip("Zusätzliches Gold pro Level")]
+    public int goldPerLevel = 5;
+
     // --- NEU: Sicherung gegen Mehrfach-Drops ---
     private bool isDead = false; 
     // -------------------------------------------
@@ -98,10 +105,11 @@ public class EnemyHealth : MonoBehaviour
         isDead = true; 
 
         Debug.Log($"{gameObject.name} died!");
-        
+
         GiveXPToPlayer();
-        GiveGoldToPlayer(); // Wird jetzt garantiert nur 1x ausgeführt
-        
+        GiveRewardsToPlayer(); // Wird jetzt garantiert nur 1x ausgeführt
+        DeductDeathPenalty(); // Goldstrafe für den Sieg
+
         AudioManager.Instance?.PlayEnemyDeathSFX();
         
         if (anim != null)
@@ -116,8 +124,12 @@ public class EnemyHealth : MonoBehaviour
         Destroy(gameObject, 1f);
     }
 
-    private void GiveGoldToPlayer()
+    private void GiveRewardsToPlayer()
     {
+        // 1. Award gold first (guaranteed reward)
+        GiveGoldToEnemy();
+
+        // 2. Then roll for item drops (RNG-based)
         // Versuche zuerst unser neues LootSystem, dann das alte EnemyLoot
         EnemyLootSystem lootSystem = GetComponent<EnemyLootSystem>();
         if (lootSystem != null)
@@ -125,7 +137,7 @@ public class EnemyHealth : MonoBehaviour
             lootSystem.DropLoot();
             return;
         }
-        
+
         // Fallback für das alte Asset Pack Script
         EnemyLoot loot = GetComponent<EnemyLoot>();
         if (loot != null) loot.DropLoot();
@@ -141,7 +153,80 @@ public class EnemyHealth : MonoBehaviour
             if (playerStats != null) playerStats.GainExperience(xpReward);
         }
     }
-    
+
+    private void GiveGoldToEnemy()
+    {
+        int goldAmount = CalculateGoldReward();
+
+        if (goldAmount <= 0) return;
+
+        // Award gold via GoldManager singleton
+        if (GoldManager.Instance != null)
+        {
+            GoldManager.Instance.GoldHinzufuegen(goldAmount);
+            Debug.Log($"<color=yellow>{gameObject.name} dropped {goldAmount} gold!</color>");
+        }
+        else
+        {
+            Debug.LogWarning($"{gameObject.name}: GoldManager not found! Could not award {goldAmount} gold.");
+        }
+
+        // TODO: Add audio feedback when gold-specific combat SFX is added to AudioManager
+    }
+
+    private void DeductDeathPenalty()
+    {
+        // Berechne Goldstrafe basierend auf Spieler-Level
+        int penaltyGold = 100; // Standard: 100 Gold
+        if (penaltyGold <= 0) return;
+
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+        {
+            PlayerStats playerStats = player.GetComponent<PlayerStats>();
+            if (playerStats != null)
+            {
+                // Bei Level 5+ kostet der Tod 200 Gold, ansonsten 100 Gold
+                int playerLevel = playerStats.currentLevel;
+                if (playerLevel >= 5)
+                {
+                    penaltyGold = 200;
+                }
+
+                // Versuche Gold abzuziehen
+                if (GoldManager.Instance != null)
+                {
+                    if (GoldManager.Instance.GoldAbziehen(penaltyGold))
+                    {
+                        Debug.Log($"<color=orange>Tod-Strafe: {penaltyGold} Gold abgezogen!</color>");
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"<color=red>Nicht genug Gold für Tod-Strafe! Benötigt: {penaltyGold}, Aktuell: {GoldManager.Instance.aktuellesGold}</color>");
+                    }
+                }
+            }
+        }
+    }
+
+    private int CalculateGoldReward()
+    {
+        int level = 1; // Default fallback
+
+        // Try to get level from EnemyStats if available
+        if (enemyStats != null)
+        {
+            level = enemyStats.Level;
+        }
+
+        // Formula: baseGold + (goldPerLevel * level)
+        // Example: 20 + (5 * 3) = 35 gold for level 3 enemy
+        int goldAmount = baseGoldReward + (goldPerLevel * level);
+
+        // Safety: Ensure at least 1 gold (in case of negative inspector values)
+        return Mathf.Max(1, goldAmount);
+    }
+
     private void SetAnimationDirection()
     {
         if (anim != null)

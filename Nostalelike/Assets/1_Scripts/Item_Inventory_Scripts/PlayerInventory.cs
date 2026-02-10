@@ -109,12 +109,12 @@ public class PlayerInventory : MonoBehaviour
     private void SpawnDroppedItem(ItemData item, int quantity)
     {
         if (item == null) return;
-        
+
         // Position berechnen (vor dem Spieler)
         Vector2 dropPosition = (Vector2)transform.position + Random.insideUnitCircle.normalized * dropOffset;
-        
+
         GameObject droppedItem;
-        
+
         if (itemPickupPrefab != null)
         {
             droppedItem = Instantiate(itemPickupPrefab, dropPosition, Quaternion.identity);
@@ -124,16 +124,24 @@ public class PlayerInventory : MonoBehaviour
             // Fallback: Einfaches GameObject erstellen
             droppedItem = new GameObject($"DroppedItem_{item.itemName}");
             droppedItem.transform.position = dropPosition;
-            droppedItem.AddComponent<SpriteRenderer>();
+            SpriteRenderer sr = droppedItem.AddComponent<SpriteRenderer>();
+            sr.sortingOrder = 99;
             droppedItem.AddComponent<CircleCollider2D>().isTrigger = true;
         }
-        
+
+        // Stelle sicher, dass SpriteRenderer den richtigen sortingOrder hat (auch bei Prefab)
+        SpriteRenderer spriteRenderer = droppedItem.GetComponent<SpriteRenderer>();
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.sortingOrder = 99;
+        }
+
         ItemPickup pickup = droppedItem.GetComponent<ItemPickup>();
         if (pickup == null)
             pickup = droppedItem.AddComponent<ItemPickup>();
-            
+
         pickup.InitializeDroppedItem(item, quantity, 60f); // 60 Sekunden despawn
-        
+
         Debug.Log($"Dropped {quantity}x {item.itemName}");
     }
     // ---------------------

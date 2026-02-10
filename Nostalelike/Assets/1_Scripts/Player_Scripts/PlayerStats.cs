@@ -297,7 +297,7 @@ public class PlayerStats : MonoBehaviour
         }
         else
         {
-            // Wir sind schon in HomeScene, teleportiere direkt
+            // Wir sind schon in HomeScene - direkter Teleport
             PlayerSceneHandler handler = GetComponent<PlayerSceneHandler>();
             if (handler != null)
             {

@@ -617,7 +617,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyStats
   baseHealth: 50
-  baseDamage: 7
+  baseDamage: 6
   baseXPReward: 20
   _level: 1
   statsPerLevelMultiplier: 0.08
@@ -799,6 +799,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
   maxHealth: 100
   xpReward: 25
+  baseGoldReward: 20
+  goldPerLevel: 5
 --- !u!114 &2006850142575486072
 MonoBehaviour:
   m_ObjectHideFlags: 0

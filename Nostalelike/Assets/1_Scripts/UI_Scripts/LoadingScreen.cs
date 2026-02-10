@@ -303,6 +303,69 @@ public class LoadingScreen : MonoBehaviour
         StartCoroutine(LoadSceneCoroutine(sceneName, spawnPointID));
     }
 
+    /// <summary>
+    /// Zeigt Loading Screen für Teleport innerhalb der gleichen Scene
+    /// </summary>
+    public void TeleportWithScreen(string spawnPointID)
+    {
+        if (isLoading) return;
+        StartCoroutine(LocalTeleportCoroutine(spawnPointID));
+    }
+
+    private IEnumerator LocalTeleportCoroutine(string spawnPointID)
+    {
+        Debug.Log($"<color=cyan>LoadingScreen: LocalTeleportCoroutine started for '{spawnPointID}'</color>");
+        Show("Teleportiere...");
+
+        // Teleport Sound abspielen
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlayTeleportSFX();
+
+        // Kurze Pause für visuellen Effekt
+        yield return new WaitForSecondsRealtime(0.3f);
+        UpdateProgress(0.5f, "Bereite Zielort vor...");
+
+        // Finde und teleportiere zum Spawn-Punkt
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        Debug.Log($"<color=cyan>LoadingScreen: Player gefunden? {player != null}</color>");
+
+        if (player != null)
+        {
+            // Direkt zum Spawn-Punkt teleportieren
+            SceneSpawnPoint[] spawnPoints = FindObjectsByType<SceneSpawnPoint>(FindObjectsSortMode.None);
+            Debug.Log($"<color=cyan>LoadingScreen: Gefunden {spawnPoints.Length} Spawn-Points</color>");
+
+            bool teleported = false;
+            foreach (SceneSpawnPoint sp in spawnPoints)
+            {
+                if (sp.spawnPointID == spawnPointID)
+                {
+                    player.transform.position = sp.transform.position;
+                    Debug.Log($"<color=green>LoadingScreen: Teleport successful to '{spawnPointID}' at {sp.transform.position}</color>");
+                    teleported = true;
+                    break;
+                }
+            }
+
+            if (!teleported)
+            {
+                Debug.LogError($"<color=red>LoadingScreen: Spawn-Point '{spawnPointID}' not found!</color>");
+            }
+        }
+        else
+        {
+            Debug.LogError($"<color=red>LoadingScreen: Player GameObject not found! Cannot teleport.</color>");
+        }
+
+        UpdateProgress(1f, "Bereit!");
+        yield return new WaitForSecondsRealtime(0.2f);
+
+        Debug.Log($"<color=cyan>LoadingScreen: Calling Hide()</color>");
+        Hide();
+
+        Debug.Log($"<color=cyan>LoadingScreen: LocalTeleportCoroutine finished</color>");
+    }
+
     private IEnumerator LoadSceneByIndexCoroutine(int buildIndex)
     {
         Show("Lade...");
@@ -310,6 +373,17 @@ public class LoadingScreen : MonoBehaviour
         UpdateProgress(0.1f, "Lade Szene...");
 
         AsyncOperation operation = SceneManager.LoadSceneAsync(buildIndex);
+        
+        // Prüfe ob die Szene geladen werden kann
+        if (operation == null)
+        {
+            Debug.LogError($"<color=red>LoadingScreen: Szene mit Index {buildIndex} konnte nicht geladen werden! Ist sie im Build Profile?</color>");
+            UpdateProgress(1f, "Fehler beim Laden!");
+            yield return new WaitForSecondsRealtime(1f);
+            Hide();
+            yield break;
+        }
+        
         operation.allowSceneActivation = false;
 
         while (!operation.isDone)
@@ -345,6 +419,17 @@ public class LoadingScreen : MonoBehaviour
         UpdateProgress(0.1f, "Lade Szene...");
 
         AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName);
+        
+        // Prüfe ob die Szene geladen werden kann
+        if (operation == null)
+        {
+            Debug.LogError($"<color=red>LoadingScreen: Szene '{sceneName}' konnte nicht geladen werden! Ist sie im Build Profile?</color>");
+            UpdateProgress(1f, "Fehler beim Laden!");
+            yield return new WaitForSecondsRealtime(1f);
+            Hide();
+            yield break;
+        }
+        
         operation.allowSceneActivation = false;
 
         while (!operation.isDone)

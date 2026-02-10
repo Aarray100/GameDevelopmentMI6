@@ -30,9 +30,12 @@ public class SceneTrigger : MonoBehaviour
             
             if (sceneToLoad == currentSceneName)
             {
-                // Gleiche Szene - nur teleportieren, nicht neu laden
+                // Gleiche Szene - Teleport mit Loading Screen
                 Debug.Log($"SceneTrigger: Teleportiere in gleicher Szene zum Spawn-Punkt: {targetSpawnPointID}");
-                TeleportPlayerToSpawnPoint(targetSpawnPointID, other.gameObject);
+                if (LoadingScreen.Instance != null)
+                    LoadingScreen.Instance.TeleportWithScreen(targetSpawnPointID);
+                else
+                    TeleportPlayerToSpawnPoint(targetSpawnPointID, other.gameObject);
             }
             else
             {

@@ -333,7 +333,7 @@ public class EnemyLootSystem : MonoBehaviour
             // SpriteRenderer
             SpriteRenderer sr = droppedItem.AddComponent<SpriteRenderer>();
             sr.sprite = item.itemIcon;
-            sr.sortingOrder = 5;
+            sr.sortingOrder = 99;
             
             // Collider für Pickup
             CircleCollider2D col = droppedItem.AddComponent<CircleCollider2D>();
