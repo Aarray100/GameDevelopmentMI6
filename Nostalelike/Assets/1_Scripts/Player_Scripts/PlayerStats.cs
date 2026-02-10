@@ -297,19 +297,11 @@ public class PlayerStats : MonoBehaviour
         }
         else
         {
-            // Wir sind schon in HomeScene - mit Loading Screen teleportieren
-            if (LoadingScreen.Instance != null)
+            // Wir sind schon in HomeScene - direkter Teleport
+            PlayerSceneHandler handler = GetComponent<PlayerSceneHandler>();
+            if (handler != null)
             {
-                LoadingScreen.Instance.TeleportWithScreen("deathSpawn");
-            }
-            else
-            {
-                // Fallback ohne Loading Screen
-                PlayerSceneHandler handler = GetComponent<PlayerSceneHandler>();
-                if (handler != null)
-                {
-                    handler.TeleportToSpawnPoint("deathSpawn");
-                }
+                handler.TeleportToSpawnPoint("deathSpawn");
             }
         }
         

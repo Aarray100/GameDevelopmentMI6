@@ -187,7 +187,7 @@ public class EnemyHealth : MonoBehaviour
             if (playerStats != null)
             {
                 // Bei Level 5+ kostet der Tod 200 Gold, ansonsten 100 Gold
-                int playerLevel = playerStats.CurrentLevel;
+                int playerLevel = playerStats.currentLevel;
                 if (playerLevel >= 5)
                 {
                     penaltyGold = 200;

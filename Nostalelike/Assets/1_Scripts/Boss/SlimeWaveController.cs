@@ -3,89 +3,81 @@ using System.Collections;
 
 public class SlimeWaveController : MonoBehaviour
 {
-    [Header("Wave Settings")]
-    [SerializeField] private int totalSlimesToDefeat = 60; // Gesamt-Ziel
+    [Header("Kill Target")]
+    [SerializeField] private int totalSlimesToDefeat = 60;
     private int slimesDefeated = 0;
-    
-    [Header("Phase Thresholds")]
-    [SerializeField] private float phase2Threshold = 0.33f; // Bei 20 Slimes (33%)
-    [SerializeField] private float phase3Threshold = 0.66f; // Bei 40 Slimes (66%)
-    
+
     [Header("Slime Prefabs")]
     [SerializeField] private GameObject blueSlimePrefab;
     [SerializeField] private GameObject greenSlimePrefab;
     [SerializeField] private GameObject redSlimePrefab;
     [SerializeField] private GameObject yellowSlimePrefab;
-    
+
     [Header("Spawn Points")]
-    [SerializeField] private Transform[] spawnPoints; // Spawn-Positionen
-    
-    [Header("Phase 2 Buttons")]
-    [SerializeField] private SlimeButton[] colorButtons; // 4 Buttons in den Ecken
-    
+    [SerializeField] private Transform[] spawnPoints;
+
+    [Header("Buttons")]
+    [SerializeField] private SlimeButton[] colorButtons;
+
     [Header("Victory")]
     [SerializeField] private GameObject bridgeToPortal;
-    [SerializeField] private GameObject bridgeAntiFall; // Unsichtbare Wand die deaktiviert wird
-    
+    [SerializeField] private GameObject bridgeAntiFall;
+
     [Header("Camera Cinematic")]
-    [SerializeField] private Transform cameraTarget; // Das CamTarget für die Brücke
-    [SerializeField] private float cinematicDuration = 3f; // Wie lange die Kamerafahrt dauert
-    
+    [SerializeField] private Transform cameraTarget;
+    [SerializeField] private float cinematicDuration = 3f;
+
     [Header("Journal")]
     [SerializeField] private JournalDatabase journalDb;
-    
-    private int currentPhase = 1;
-    private bool phase2Started = false;
-    private bool phase3Started = false;
-    private int buttonsActivated = 0;
-    
+
+    private bool victoryTriggered = false;
+    private bool journal010Unlocked = false;
+    private bool journal011Unlocked = false;
+
     void Start()
     {
         bridgeToPortal?.SetActive(false);
-        
-        // Buttons sichtbar machen aber inaktiv halten
+
+        // Buttons sofort aktivieren - Spieler steuert das Spawning
         foreach (var button in colorButtons)
         {
             if (button != null)
             {
                 button.gameObject.SetActive(true);
-                // Button ist noch nicht interaktiv (wird in Phase 2 aktiviert)
+                button.Activate(this);
             }
         }
-        
-        StartPhase1();
+
+        // Langsames automatisches Spawning nebenbei
+        StartCoroutine(AutoSpawnSlimes());
     }
-    
-    void StartPhase1()
+
+    IEnumerator AutoSpawnSlimes()
     {
-        currentPhase = 1;
-        Debug.Log("🟦 PHASE 1: Erste Welle - Besiege Slimes!");
-        
-        if (NotificationManager.Instance != null)
-            NotificationManager.Instance.ShowNotification("Slime-Angriff!");
-        
-        StartCoroutine(SpawnPhase1Slimes());
-    }
-    
-    IEnumerator SpawnPhase1Slimes()
-    {
-        while (currentPhase == 1)
+        GameObject[] prefabs = { blueSlimePrefab, greenSlimePrefab, redSlimePrefab, yellowSlimePrefab };
+
+        while (!victoryTriggered)
         {
-            // Spawne abwechselnd blaue & grüne Slimes
-            SpawnSlime(blueSlimePrefab);
-            yield return new WaitForSeconds(5f);
-            SpawnSlime(greenSlimePrefab);
-            yield return new WaitForSeconds(5f);
+            yield return new WaitForSeconds(60f);
+            if (victoryTriggered) break;
+
+            // 2 zufällige Slimes spawnen
+            for (int i = 0; i < 2; i++)
+            {
+                GameObject randomPrefab = prefabs[Random.Range(0, prefabs.Length)];
+                SpawnSlime(randomPrefab);
+            }
         }
     }
-    
-    void SpawnSlime(GameObject slimePrefab)
+
+    public void SpawnSlime(GameObject slimePrefab)
     {
         if (slimePrefab == null || spawnPoints.Length == 0) return;
-        
+
         Transform randomSpawn = spawnPoints[Random.Range(0, spawnPoints.Length)];
         GameObject slime = Instantiate(slimePrefab, randomSpawn.position, Quaternion.identity);
-                // Setze Level auf Spieler-Level +3
+
+        // Setze Level auf Spieler-Level +3
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)
         {
@@ -99,199 +91,101 @@ public class SlimeWaveController : MonoBehaviour
                 }
             }
         }
-                // Registriere Slime-Tod beim EnemyHealth-Script
+
+        // Registriere Slime-Tod
         var slimeEnemy = slime.GetComponent<EnemyHealth>();
         if (slimeEnemy != null)
         {
-            // Füge temporären Listener hinzu
             slimeEnemy.gameObject.AddComponent<SlimeDeathNotifier>().Initialize(this);
         }
     }
-    
+
     public void OnSlimeDefeated()
     {
         slimesDefeated++;
-        float progress = (float)slimesDefeated / totalSlimesToDefeat;
-        
-        Debug.Log($"Slimes besiegt: {slimesDefeated}/{totalSlimesToDefeat} ({progress:P0})");
-        
-        // Phase-Übergänge
-        if (!phase2Started && progress >= phase2Threshold)
+        Debug.Log($"Slimes besiegt: {slimesDefeated}/{totalSlimesToDefeat}");
+
+        // Journal-Einträge bei Meilensteinen
+        if (slimesDefeated >= 20 && !journal010Unlocked)
         {
-            StartPhase2();
+            journal010Unlocked = true;
+            JournalProgress.Unlock("010");
+            JournalToast.Enqueue("📖 Kampfprotokoll aktualisiert");
         }
-        else if (!phase3Started && progress >= phase3Threshold)
+
+        if (slimesDefeated >= 40 && !journal011Unlocked)
         {
-            StartPhase3();
+            journal011Unlocked = true;
+            JournalProgress.Unlock("011");
+            JournalToast.Enqueue("📖 Protokoll: Omnis' Entschluss");
         }
-        
-        // Victory
-        if (slimesDefeated >= totalSlimesToDefeat)
+
+        // Victory bei 60 Kills
+        if (slimesDefeated >= totalSlimesToDefeat && !victoryTriggered)
         {
             Victory();
         }
     }
-    
-    void StartPhase2()
-    {
-        phase2Started = true;
-        currentPhase = 2;
-        StopAllCoroutines();
-        
-        Debug.Log("🟨 PHASE 2: Die Prüfung - Aktiviere die 4 Buttons!");
-        
-        if (NotificationManager.Instance != null)
-            NotificationManager.Instance.ShowNotification("Die Buttons erscheinen!");
-        
-        // Journal-Eintrag
-        JournalProgress.Unlock("010");
-        JournalToast.Enqueue("📖 Kampfprotokoll aktualisiert");
-        
-        // Buttons aktivieren
-        foreach (var button in colorButtons)
-        {
-            if (button != null)
-            {
-                button.gameObject.SetActive(true);
-                button.Activate(this);
-            }
-        }
-        
-        buttonsActivated = 0;
-    }
-    
-    public void OnButtonPressed()
-    {
-        buttonsActivated++;
-        Debug.Log($"Button aktiviert! ({buttonsActivated}/4)");
-        
-        if (buttonsActivated >= 4)
-        {
-            Debug.Log("✅ Alle Buttons aktiviert! Alle Farben spawnen jetzt!");
-            // Spawne jetzt alle 4 Farben
-            StartCoroutine(SpawnAllColors());
-        }
-    }
-    
-    IEnumerator SpawnAllColors()
-    {
-        while (currentPhase == 2)
-        {
-            SpawnSlime(blueSlimePrefab);
-            SpawnSlime(greenSlimePrefab);
-            SpawnSlime(redSlimePrefab);
-            SpawnSlime(yellowSlimePrefab);
-            yield return new WaitForSeconds(10f);
-        }
-    }
-    
-    void StartPhase3()
-    {
-        phase3Started = true;
-        currentPhase = 3;
-        StopAllCoroutines();
-        
-        Debug.Log("🔴 PHASE 3: Finale Welle!");
-        
-        if (NotificationManager.Instance != null)
-            NotificationManager.Instance.ShowNotification("FINALE WELLE!");
-        
-        // Journal-Eintrag
-        JournalProgress.Unlock("011");
-        JournalToast.Enqueue("📖 Protokoll: Omnis' Entschluss");
-        
-        StartCoroutine(SpawnPhase3Slimes());
-    }
-    
-    IEnumerator SpawnPhase3Slimes()
-    {
-        while (currentPhase == 3)
-        {
-            // SCHNELLER spawnen!
-            SpawnSlime(blueSlimePrefab);
-            SpawnSlime(greenSlimePrefab);
-            yield return new WaitForSeconds(3f);
-            SpawnSlime(redSlimePrefab);
-            SpawnSlime(yellowSlimePrefab);
-            yield return new WaitForSeconds(4f);
-        }
-    }
-    
+
     void Victory()
     {
-        StopAllCoroutines();
-        currentPhase = 0;
-        
+        victoryTriggered = true;
         Debug.Log("🎉 SIEG! Alle Slimes besiegt!");
-        
         StartCoroutine(VictorySequence());
     }
-    
+
     IEnumerator VictorySequence()
     {
-        // Kurze Stille
         yield return new WaitForSeconds(1f);
 
-        // Brücke spawnen bevor die Kamera rüberschwenkt
         if (bridgeAntiFall != null)
             bridgeAntiFall.SetActive(false);
 
         if (bridgeToPortal != null)
             bridgeToPortal.SetActive(true);
-        
-        // Spiel pausieren & Kamerafahrt starten
+
         if (cameraTarget != null && Camera.main != null)
         {
-            // Pausiere Spieler-Input
             Time.timeScale = 0f;
-            
-            // Starte Kamerafahrt zur Brücke (mit unscaled time)
             yield return StartCoroutine(CameraFocusCinematic());
-            
-            // Spiel fortsetzen
             Time.timeScale = 1f;
         }
-        
-        // Journal-Eintrag
+
         JournalProgress.Unlock("012");
         JournalToast.Enqueue("📖 Der Guide: Liturgie der Ordnung");
-        
+
         if (NotificationManager.Instance != null)
             NotificationManager.Instance.ShowNotification("SIEG! Portal freigeschaltet!");
     }
-    
+
     IEnumerator CameraFocusCinematic()
     {
         Camera mainCam = Camera.main;
         Vector3 originalPosition = mainCam.transform.position;
         float elapsed = 0f;
-        
-        // Kamera zur Brücke bewegen
+
         while (elapsed < cinematicDuration)
         {
             elapsed += Time.unscaledDeltaTime;
             float t = elapsed / cinematicDuration;
-            
-            // Smooth interpolation zur target position
+
             Vector3 targetPos = new Vector3(
-                cameraTarget.position.x, 
-                cameraTarget.position.y, 
+                cameraTarget.position.x,
+                cameraTarget.position.y,
                 originalPosition.z
             );
-            
+
             mainCam.transform.position = Vector3.Lerp(
-                originalPosition, 
-                targetPos, 
+                originalPosition,
+                targetPos,
                 t
             );
-            
+
             yield return null;
         }
-        
-        // Kurz auf der Brücke verweilen
+
         yield return new WaitForSecondsRealtime(1.5f);
-        
-        // Zurück zum Spieler
+
         elapsed = 0f;
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)
@@ -300,19 +194,19 @@ public class SlimeWaveController : MonoBehaviour
             {
                 elapsed += Time.unscaledDeltaTime;
                 float t = elapsed / (cinematicDuration * 0.5f);
-                
+
                 Vector3 playerPos = new Vector3(
                     player.transform.position.x,
                     player.transform.position.y,
                     originalPosition.z
                 );
-                
+
                 mainCam.transform.position = Vector3.Lerp(
                     mainCam.transform.position,
                     playerPos,
                     t
                 );
-                
+
                 yield return null;
             }
         }
@@ -323,15 +217,14 @@ public class SlimeWaveController : MonoBehaviour
 public class SlimeDeathNotifier : MonoBehaviour
 {
     private SlimeWaveController controller;
-    
+
     public void Initialize(SlimeWaveController waveController)
     {
         controller = waveController;
     }
-    
+
     void OnDestroy()
     {
-        // Wenn Slime stirbt, informiere Controller
         if (controller != null)
         {
             controller.OnSlimeDefeated();
