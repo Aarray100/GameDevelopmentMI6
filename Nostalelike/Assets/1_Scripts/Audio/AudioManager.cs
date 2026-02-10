@@ -1,5 +1,7 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using System.Collections;
+using System;
 
 public class AudioManager : MonoBehaviour
 {
@@ -12,6 +14,10 @@ public class AudioManager : MonoBehaviour
     [Header("Music Tracks")]
     public AudioClip peacefulMusic;
     public AudioClip combatMusic;
+
+    [Header("Scene Music")]
+    [Tooltip("Musik für bestimmte Szenen - wenn leer, wird peacefulMusic verwendet")]
+    public SceneMusic[] sceneMusicList;
     
     [Header("Music Settings")]
     [Range(0f, 1f)] public float musicVolume = 0.5f;
@@ -61,22 +67,74 @@ public class AudioManager : MonoBehaviour
 
     private void Awake()
     {
+        Debug.Log($"[AudioManager] Awake called. Instance exists: {Instance != null}");
+        
         if (Instance == null)
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
+            SceneManager.sceneLoaded += OnSceneLoaded;
+            Debug.Log("[AudioManager] Created and set to DontDestroyOnLoad");
         }
         else
         {
+            Debug.Log("[AudioManager] Duplicate found, destroying this one");
             Destroy(gameObject);
         }
+    }
+
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // Beim Szenenwechsel: Passende Musik abspielen
+        PlaySceneMusic(scene.name);
     }
 
     private void Start()
     {
         LoadVolumeSettings();
         ApplyVolumes();
-        PlayMusic(peacefulMusic);
+        // Spiele Musik für aktuelle Szene
+        PlaySceneMusic(SceneManager.GetActiveScene().name);
+    }
+
+    /// <summary>
+    /// Spielt die Musik für eine bestimmte Szene ab.
+    /// </summary>
+    public void PlaySceneMusic(string sceneName)
+    {
+        if (isInCombat) return; // Nicht wechseln während Kampf
+        
+        AudioClip musicForScene = GetMusicForScene(sceneName);
+        
+        // Nur wechseln wenn andere Musik
+        if (musicSource.clip != musicForScene)
+        {
+            if (musicFadeCoroutine != null) StopCoroutine(musicFadeCoroutine);
+            musicFadeCoroutine = StartCoroutine(CrossfadeMusic(musicForScene));
+        }
+    }
+
+    /// <summary>
+    /// Findet die passende Musik für eine Szene.
+    /// </summary>
+    private AudioClip GetMusicForScene(string sceneName)
+    {
+        if (sceneMusicList != null)
+        {
+            foreach (var sceneMusic in sceneMusicList)
+            {
+                if (sceneMusic.sceneName == sceneName && sceneMusic.music != null)
+                {
+                    return sceneMusic.music;
+                }
+            }
+        }
+        return peacefulMusic; // Fallback
     }
 
     #region Volume Control
@@ -156,9 +214,16 @@ public class AudioManager : MonoBehaviour
     {
         if (!isInCombat) return;
         isInCombat = false;
-        if (peacefulMusic == null) return;
+        
+        // Spiele die korrekte Szenen-Musik, nicht einfach peacefulMusic!
+        string currentSceneName = SceneManager.GetActiveScene().name;
+        AudioClip sceneMusic = GetMusicForScene(currentSceneName);
+        
+        if (sceneMusic == null) return;
         if (musicFadeCoroutine != null) StopCoroutine(musicFadeCoroutine);
-        musicFadeCoroutine = StartCoroutine(CrossfadeMusic(peacefulMusic));
+        musicFadeCoroutine = StartCoroutine(CrossfadeMusic(sceneMusic));
+        
+        Debug.Log($"[AudioManager] Kampf beendet - spiele Musik für Szene: {currentSceneName}");
     }
 
     private IEnumerator CrossfadeMusic(AudioClip newClip)
@@ -234,6 +299,19 @@ public class AudioManager : MonoBehaviour
     public void PlayTeleportSFX() => PlaySFX(teleportSFX);
     
     #endregion
+}
+
+/// <summary>
+/// Verknüpft eine Szene mit einem Musik-Clip.
+/// </summary>
+[Serializable]
+public class SceneMusic
+{
+    [Tooltip("Exakter Name der Szene (wie im Build Settings)")]
+    public string sceneName;
+    
+    [Tooltip("Musik für diese Szene")]
+    public AudioClip music;
 }
 
 public enum GroundType { Grass, Rock, Wood, Water }

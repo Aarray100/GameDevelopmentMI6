@@ -11,7 +11,7 @@ public class EnemyStats : MonoBehaviour
     public float baseHealth = 50f;
     
     [Tooltip("Basis-Schaden bei Level 1")]
-    public float baseDamage = 5f;
+    public float baseDamage = 7f; // Erhöht für mehr Gefahr
     
     [Tooltip("Basis-XP Belohnung bei Level 1")]
     public int baseXPReward = 20;
@@ -32,7 +32,10 @@ public class EnemyStats : MonoBehaviour
     [Header("Scaling Settings")]
     [Tooltip("Wie stark die Stats pro Level steigen (0.08 = 8% pro Level)")]
     [Range(0.03f, 0.15f)]
-    public float statsPerLevelMultiplier = 0.08f; // 8% pro Level - schwächer als Spieler!
+    public float statsPerLevelMultiplier = 0.11f; // 11% pro Level - Gegner skalieren stärker
+    [Header("Defense")]
+    [Tooltip("Rüstung des Gegners. Reduziert eingehenden Schaden prozentual.")]
+    public float defense = 10f; // Gegner haben jetzt Rüstung
     
     [Tooltip("Wie stark der XP-Reward pro Level steigt (0.12 = 12% pro Level)")]
     [Range(0.05f, 0.20f)]

@@ -52,31 +52,17 @@ public class NPCSpawner : MonoBehaviour
     [SerializeField] private bool showDebugInfo = true;
 
     private List<GameObject> spawnedNPCs = new List<GameObject>();
-    private static NPCSpawner instance;
-    private static bool hasSpawnedNPCs = false;
-
-    private void Awake()
-    {
-        // Singleton Pattern - damit NPCs nicht mehrfach gespawnt werden
-        if (instance == null)
-        {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-            return;
-        }
-    }
+    
+    // Entfernt: Singleton Pattern - jetzt können mehrere Spawner existieren
+    private bool hasSpawned = false;
 
     private void Start()
     {
-        // Nur einmal spawnen
-        if (!hasSpawnedNPCs)
+        // Jeder Spawner spawnt einmal seine NPCs
+        if (!hasSpawned)
         {
             SpawnNPCs();
-            hasSpawnedNPCs = true;
+            hasSpawned = true;
         }
     }
 
@@ -267,7 +253,7 @@ public class NPCSpawner : MonoBehaviour
             }
         }
         spawnedNPCs.Clear();
-        hasSpawnedNPCs = false;
+        hasSpawned = false;
 
         if (showDebugInfo)
         {

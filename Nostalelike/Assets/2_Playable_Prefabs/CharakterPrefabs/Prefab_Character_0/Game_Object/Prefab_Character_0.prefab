@@ -146,7 +146,10 @@ MonoBehaviour:
   slotPrefab: {fileID: 0}
   inventoryPanelObject: {fileID: 0}
   equipmentPanelObject: {fileID: 0}
+  statSheetPanelObject: {fileID: 0}
   uiSlots: []
+  itemPickupPrefab: {fileID: 0}
+  dropOffset: 4
 --- !u!114 &41267744655470098
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -185,25 +188,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54fc1a5f3c7925231a671a45b5030b81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStats
-  baseMaxHealth: 100
-  baseMaxMana: 50
-  baseMaxStamina: 75
-  currentHealth: 0
-  currentMana: 0
-  currentStamina: 0
-  baseHealthRegenRate: 5
-  baseManaRegenRate: 3
-  baseStaminaRegenRate: 4
-  baseDamage: 10
-  baseAttackSpeed: 1
-  baseCriticalChance: 0.1
-  baseCriticalDamage: 1.5
-  baseDefense: 5
-  baseResistance: 3
-  baseEvasion: 0.05
   maxHealth: 0
+  currentHealth: 0
   maxMana: 0
+  currentMana: 0
   maxStamina: 0
+  currentStamina: 0
+  baseDamage: 10
   totalDamage: 0
   totalAttackSpeed: 0
   totalCriticalChance: 0
@@ -216,14 +207,8 @@ MonoBehaviour:
   totalStaminaRegen: 0
   currentLevel: 1
   experiencePoints: 0
-  experienceToNextLevel: 100
   experienceRequired: 0
-  healthPerLevel: 10
-  manaPerLevel: 8
-  staminaPerLevel: 5
-  damagePerLevel: 2
-  defensePerLevel: 1
-  criticalChancePerLevel: 0.005
+  experienceToNextLevel: 100
 --- !u!114 &4082221159162644116
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -236,8 +221,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1135cd2c2871d6b75bfdcdd70946ea23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCombat
-  attackRange: 1
-  attackAngle: 90
+  attackRange: 0.35
+  attackAngle: 120
   enemyLayers:
     serializedVersion: 2
     m_Bits: 128
