@@ -1,5 +1,7 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using System.Collections;
+using System;
 
 public class AudioManager : MonoBehaviour
 {
@@ -12,6 +14,10 @@ public class AudioManager : MonoBehaviour
     [Header("Music Tracks")]
     public AudioClip peacefulMusic;
     public AudioClip combatMusic;
+
+    [Header("Scene Music")]
+    [Tooltip("Musik für bestimmte Szenen - wenn leer, wird peacefulMusic verwendet")]
+    public SceneMusic[] sceneMusicList;
     
     [Header("Music Settings")]
     [Range(0f, 1f)] public float musicVolume = 0.5f;
@@ -43,6 +49,11 @@ public class AudioManager : MonoBehaviour
     public AudioClip declineSFX;
     public AudioClip deniedSFX;
 
+    [Header("Shop Specific SFX")]
+    public AudioClip shopOpenSFX;
+    public AudioClip itemSoldSFX;
+    public AudioClip insufficientGoldSFX; // Der Blipp-Sound bei zu wenig Geld
+
     [Header("Movement SFX")]
     public AudioClip jumpSFX;
     public AudioClip landingSFX;
@@ -56,47 +67,85 @@ public class AudioManager : MonoBehaviour
 
     private void Awake()
     {
+        Debug.Log($"[AudioManager] Awake called. Instance exists: {Instance != null}");
+        
         if (Instance == null)
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
+            SceneManager.sceneLoaded += OnSceneLoaded;
+            Debug.Log("[AudioManager] Created and set to DontDestroyOnLoad");
         }
         else
         {
+            Debug.Log("[AudioManager] Duplicate found, destroying this one");
             Destroy(gameObject);
         }
     }
 
-    private void Start()
+    private void OnDestroy()
     {
-        // Gespeicherte Lautstärke laden
-        LoadVolumeSettings();
-        
-        // Initiale Lautstärke setzen
-        ApplyVolumes();
-        
-        // Peaceful Music starten
-        PlayMusic(peacefulMusic);
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
-    #region Volume Control (für Settings Menu)
-    
-    public float GetMusicVolume()
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        return musicVolume;
+        // Beim Szenenwechsel: Passende Musik abspielen
+        PlaySceneMusic(scene.name);
     }
-    
-    public float GetSFXVolume()
+
+    private void Start()
     {
-        return sfxVolume;
+        LoadVolumeSettings();
+        ApplyVolumes();
+        // Spiele Musik für aktuelle Szene
+        PlaySceneMusic(SceneManager.GetActiveScene().name);
     }
+
+    /// <summary>
+    /// Spielt die Musik für eine bestimmte Szene ab.
+    /// </summary>
+    public void PlaySceneMusic(string sceneName)
+    {
+        if (isInCombat) return; // Nicht wechseln während Kampf
+        
+        AudioClip musicForScene = GetMusicForScene(sceneName);
+        
+        // Nur wechseln wenn andere Musik
+        if (musicSource.clip != musicForScene)
+        {
+            if (musicFadeCoroutine != null) StopCoroutine(musicFadeCoroutine);
+            musicFadeCoroutine = StartCoroutine(CrossfadeMusic(musicForScene));
+        }
+    }
+
+    /// <summary>
+    /// Findet die passende Musik für eine Szene.
+    /// </summary>
+    private AudioClip GetMusicForScene(string sceneName)
+    {
+        if (sceneMusicList != null)
+        {
+            foreach (var sceneMusic in sceneMusicList)
+            {
+                if (sceneMusic.sceneName == sceneName && sceneMusic.music != null)
+                {
+                    return sceneMusic.music;
+                }
+            }
+        }
+        return peacefulMusic; // Fallback
+    }
+
+    #region Volume Control
+    
+    public float GetMusicVolume() => musicVolume;
+    public float GetSFXVolume() => sfxVolume;
     
     public void SetMusicVolume(float volume)
     {
         musicVolume = Mathf.Clamp01(volume);
-        if (musicSource != null)
-            musicSource.volume = musicVolume;
-        
+        if (musicSource != null) musicSource.volume = musicVolume;
         PlayerPrefs.SetFloat("MusicVolume", musicVolume);
         PlayerPrefs.Save();
     }
@@ -127,20 +176,15 @@ public class AudioManager : MonoBehaviour
     public void PlayMusic(AudioClip clip, bool loop = true)
     {
         if (clip == null || musicSource == null) return;
-        
         musicSource.clip = clip;
         musicSource.loop = loop;
         musicSource.volume = musicVolume;
         musicSource.Play();
     }
 
-    /// <summary>
-    /// Wird von Enemy aufgerufen wenn er den Spieler jagt
-    /// </summary>
     public void EnterCombat()
     {
         lastCombatTime = Time.time;
-        
         if (!isInCombat)
         {
             isInCombat = true;
@@ -148,65 +192,43 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Wechselt zur Kampfmusik mit Fade
-    /// </summary>
     private void SwitchToCombatMusic()
     {
         if (combatMusic == null) return;
-        
-        if (musicFadeCoroutine != null)
-            StopCoroutine(musicFadeCoroutine);
-            
+        if (musicFadeCoroutine != null) StopCoroutine(musicFadeCoroutine);
         musicFadeCoroutine = StartCoroutine(CrossfadeMusic(combatMusic));
-        
-        // Starte den Check für "Combat vorbei"
-        if (combatCheckCoroutine != null)
-            StopCoroutine(combatCheckCoroutine);
+        if (combatCheckCoroutine != null) StopCoroutine(combatCheckCoroutine);
         combatCheckCoroutine = StartCoroutine(CheckCombatEnd());
     }
 
-    /// <summary>
-    /// Prüft kontinuierlich ob Kampf vorbei ist
-    /// </summary>
     private IEnumerator CheckCombatEnd()
     {
         while (isInCombat)
         {
-            // Wenn seit combatMusicDelay Sekunden kein Combat mehr
-            if (Time.time - lastCombatTime > combatMusicDelay)
-            {
-                ExitCombat();
-            }
+            if (Time.time - lastCombatTime > combatMusicDelay) ExitCombat();
             yield return new WaitForSeconds(0.5f);
         }
     }
 
-    /// <summary>
-    /// Wechselt zurück zur friedlichen Musik
-    /// </summary>
     private void ExitCombat()
     {
         if (!isInCombat) return;
-        
         isInCombat = false;
         
-        if (peacefulMusic == null) return;
+        // Spiele die korrekte Szenen-Musik, nicht einfach peacefulMusic!
+        string currentSceneName = SceneManager.GetActiveScene().name;
+        AudioClip sceneMusic = GetMusicForScene(currentSceneName);
         
-        if (musicFadeCoroutine != null)
-            StopCoroutine(musicFadeCoroutine);
-            
-        musicFadeCoroutine = StartCoroutine(CrossfadeMusic(peacefulMusic));
+        if (sceneMusic == null) return;
+        if (musicFadeCoroutine != null) StopCoroutine(musicFadeCoroutine);
+        musicFadeCoroutine = StartCoroutine(CrossfadeMusic(sceneMusic));
+        
+        Debug.Log($"[AudioManager] Kampf beendet - spiele Musik für Szene: {currentSceneName}");
     }
 
-    /// <summary>
-    /// Sanfter Übergang zwischen zwei Musikstücken
-    /// </summary>
     private IEnumerator CrossfadeMusic(AudioClip newClip)
     {
         float startVolume = musicSource.volume;
-        
-        // Fade out
         float timer = 0f;
         while (timer < musicFadeDuration / 2f)
         {
@@ -214,12 +236,8 @@ public class AudioManager : MonoBehaviour
             musicSource.volume = Mathf.Lerp(startVolume, 0f, timer / (musicFadeDuration / 2f));
             yield return null;
         }
-        
-        // Switch clip
         musicSource.clip = newClip;
         musicSource.Play();
-        
-        // Fade in
         timer = 0f;
         while (timer < musicFadeDuration / 2f)
         {
@@ -227,7 +245,6 @@ public class AudioManager : MonoBehaviour
             musicSource.volume = Mathf.Lerp(0f, musicVolume, timer / (musicFadeDuration / 2f));
             yield return null;
         }
-        
         musicSource.volume = musicVolume;
     }
     
@@ -243,7 +260,6 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    // Footsteps
     public void PlayFootstep(GroundType groundType)
     {
         AudioClip clip = groundType switch
@@ -257,7 +273,6 @@ public class AudioManager : MonoBehaviour
         PlaySFX(clip);
     }
 
-    // Battle
     public void PlayAttackSFX() => PlaySFX(attackSFX);
     public void PlayHitSFX() => PlaySFX(hitSFX);
     public void PlaySlashSFX() => PlaySFX(slashSFX);
@@ -265,7 +280,6 @@ public class AudioManager : MonoBehaviour
     public void PlayBlockSFX() => PlaySFX(blockSFX);
     public void PlayMissEvadeSFX() => PlaySFX(missEvadeSFX);
 
-    // UI/Menu
     public void PlayEquipSFX() => PlaySFX(equipSFX);
     public void PlayUnequipSFX() => PlaySFX(unequipSFX);
     public void PlayBuySellSFX() => PlaySFX(buySellSFX);
@@ -275,7 +289,11 @@ public class AudioManager : MonoBehaviour
     public void PlayDeclineSFX() => PlaySFX(declineSFX);
     public void PlayDeniedSFX() => PlaySFX(deniedSFX);
 
-    // Movement
+    // Shop Specific
+    public void PlayShopOpenSFX() => PlaySFX(shopOpenSFX);
+    public void PlayItemSoldSFX() => PlaySFX(itemSoldSFX);
+    public void PlayInsufficientGoldSFX() => PlaySFX(insufficientGoldSFX);
+
     public void PlayJumpSFX() => PlaySFX(jumpSFX);
     public void PlayLandingSFX() => PlaySFX(landingSFX);
     public void PlayTeleportSFX() => PlaySFX(teleportSFX);
@@ -283,10 +301,17 @@ public class AudioManager : MonoBehaviour
     #endregion
 }
 
-public enum GroundType
+/// <summary>
+/// Verknüpft eine Szene mit einem Musik-Clip.
+/// </summary>
+[Serializable]
+public class SceneMusic
 {
-    Grass,
-    Rock,
-    Wood,
-    Water
+    [Tooltip("Exakter Name der Szene (wie im Build Settings)")]
+    public string sceneName;
+    
+    [Tooltip("Musik für diese Szene")]
+    public AudioClip music;
 }
+
+public enum GroundType { Grass, Rock, Wood, Water }

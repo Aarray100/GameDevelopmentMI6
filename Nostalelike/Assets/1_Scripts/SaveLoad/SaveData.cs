@@ -34,9 +34,18 @@ public class SaveData
     // Hotbar
     public List<HotbarSlotData> hotbarSlots = new List<HotbarSlotData>();
     
+    // Chests
+    public List<ChestStateData> openedChests = new List<ChestStateData>();
+    
     // Audio Settings
     public float musicVolume;
     public float sfxVolume;
+    
+    // Gold
+    public int playerGold;
+    
+    // Journal
+    public JournalSaveData journalData;
     
     public SaveData()
     {
@@ -83,4 +92,11 @@ public class HotbarSlotData
     public string itemID;
     public int quantity;
     public bool isEmpty;
+}
+
+[Serializable]
+public class ChestStateData
+{
+    public string chestID;
+    public bool isOpened;
 }

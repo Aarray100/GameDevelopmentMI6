@@ -4,7 +4,6 @@ using System;
 
 public class Inventory
 {
-
     public event Action OnInventoryChanged;
     public List<InventorySlot> slots = new List<InventorySlot>();
     private int _maxSlots = 49;
@@ -31,12 +30,43 @@ public class Inventory
             slots.Add(new InventorySlot(null, 0));
         }
     }
+    
+    /// <summary>
+    /// Prüft ob ein Item ins Inventar passt (ohne es hinzuzufügen)
+    /// </summary>
+    public bool CanAddItem(ItemData item, int quantity = 1)
+    {
+        if (item == null) return false;
+        
+        // Stackable Items: Prüfe ob bereits ein Stack existiert
+        if (item.isStackable)
+        {
+            InventorySlot existingSlot = slots.Find(s => s.item == item);
+            if (existingSlot != null)
+            {
+                // Es gibt bereits einen Stack - immer Platz!
+                return true;
+            }
+        }
+        
+        // Prüfe ob leere Slots vorhanden sind
+        if (item.isStackable)
+        {
+            // Braucht nur 1 freien Slot für den ganzen Stack
+            return slots.Exists(s => s.item == null);
+        }
+        else
+        {
+            // Nicht-stackable: Braucht 'quantity' freie Slots
+            int emptySlots = slots.FindAll(s => s.item == null).Count;
+            return emptySlots >= quantity;
+        }
+    }
 
     public void AddItem(ItemData item, int quantity)
     {
         if (item.isStackable)
         {
-            // Suche nach einem Slot mit dem gleichen Item
             InventorySlot existingSlot = slots.Find(s => s.item == item);
             if (existingSlot != null)
             {
@@ -46,7 +76,6 @@ public class Inventory
             }
         }
 
-        // Finde den ersten leeren Slot
         if (item.isStackable)
         {
             InventorySlot emptySlot = slots.Find(s => s.item == null);
@@ -56,14 +85,10 @@ public class Inventory
                 emptySlot.quantity = quantity;
                 OnInventoryChanged?.Invoke();
             }
-            else
-            {
-                Debug.Log("Inventory is full!");
-            }
+            else { Debug.Log("Inventory is full!"); }
         }
         else
         {
-            // Für nicht-stapelbare Items, füge jedes einzeln hinzu
             for (int i = 0; i < quantity; i++)
             {
                 InventorySlot emptySlot = slots.Find(s => s.item == null);
@@ -91,7 +116,6 @@ public class Inventory
             slot.quantity -= quantity;
             if (slot.quantity <= 0)
             {
-                // Leere den Slot statt ihn zu entfernen
                 slot.item = null;
                 slot.quantity = 0;
             }
@@ -99,69 +123,61 @@ public class Inventory
         }
     }
 
-    // Füge Item an spezifischem Index hinzu
-    public void AddItemAt(ItemData item, int index)
-    {
-        if (index < 0 || index >= slots.Count)
-        {
-            Debug.LogWarning($"Invalid slot index: {index}");
-            return;
-        }
-
-        InventorySlot targetSlot = slots[index];
-        
-        if (targetSlot.item == null)
-        {
-            // Slot ist leer - einfach hinzufügen
-            targetSlot.item = item;
-            targetSlot.quantity = 1;
-        }
-        else if (targetSlot.item == item && item.isStackable)
-        {
-            // Gleicher stackbarer Item - erhöhe quantity
-            targetSlot.quantity++;
-        }
-        else
-        {
-            Debug.LogWarning($"Slot {index} is already occupied!");
-            return;
-        }
-        
-        OnInventoryChanged?.Invoke();
-    }
-
-    // Entferne Item an spezifischem Index
+    // --- HIER IST DIE FUNKTION, DIE DEINE HOTBAR VERMISST HAT ---
     public void RemoveItemAt(int index)
     {
-        if (index < 0 || index >= slots.Count)
-        {
-            Debug.LogWarning($"Invalid slot index: {index}");
-            return;
-        }
-
+        if (index < 0 || index >= slots.Count) return;
         InventorySlot slot = slots[index];
         slot.item = null;
         slot.quantity = 0;
+        OnInventoryChanged?.Invoke();
+    }
+    // -------------------------------------------------------------
+
+    /// <summary>
+    /// Tauscht zwei Slots im Inventar
+    /// </summary>
+    public void SwapSlots(int indexA, int indexB)
+    {
+        if (indexA < 0 || indexA >= slots.Count) return;
+        if (indexB < 0 || indexB >= slots.Count) return;
+        if (indexA == indexB) return;
+        
+        // Temporär speichern
+        ItemData tempItem = slots[indexA].item;
+        int tempQuantity = slots[indexA].quantity;
+        
+        // A = B
+        slots[indexA].item = slots[indexB].item;
+        slots[indexA].quantity = slots[indexB].quantity;
+        
+        // B = temp (ursprünglich A)
+        slots[indexB].item = tempItem;
+        slots[indexB].quantity = tempQuantity;
         
         OnInventoryChanged?.Invoke();
     }
-    
-    public bool HasItem(ItemData item, int quantity)
-    {
-        InventorySlot slot = slots.Find(s => s.item == item);
-        if (slot != null)
-        {
-            return slot.quantity >= quantity;
-        }
-        else
-        {
-            return false;
-        }
-    }
 
     /// <summary>
-    /// Leert das gesamte Inventar
+    /// Setzt ein Item direkt in einen bestimmten Slot
     /// </summary>
+    public void SetItemAt(int index, ItemData item, int quantity)
+    {
+        if (index < 0 || index >= slots.Count) return;
+        slots[index].item = item;
+        slots[index].quantity = quantity;
+        OnInventoryChanged?.Invoke();
+    }
+    
+    /// <summary>
+    /// Prüft ob ein bestimmter Slot leer ist
+    /// </summary>
+    public bool IsSlotEmpty(int index)
+    {
+        if (index < 0 || index >= slots.Count) return false;
+        return slots[index].item == null || slots[index].quantity <= 0;
+    }
+
     public void Clear()
     {
         foreach (var slot in slots)
@@ -172,10 +188,6 @@ public class Inventory
         OnInventoryChanged?.Invoke();
     }
 }
-
-   
-
-
 
 [System.Serializable]
 public class InventorySlot

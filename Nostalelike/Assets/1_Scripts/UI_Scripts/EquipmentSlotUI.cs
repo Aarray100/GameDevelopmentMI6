@@ -14,7 +14,7 @@ public class EquipmentSlotUI : MonoBehaviour, IDropHandler, IBeginDragHandler, I
     public Image slotBackgroundImage;
     
     [Header("References")]
-    public PlayerEquipment playerEquipment;
+    public PlayerEquipment playerEquipment; // Kann im Inspector LEER bleiben!
     
     private CanvasGroup canvasGroup;
     private static GameObject currentlyDraggedIcon;
@@ -67,6 +67,27 @@ public class EquipmentSlotUI : MonoBehaviour, IDropHandler, IBeginDragHandler, I
     {
         Initialize();
     }
+
+    // --- NEU: WICHTIG FÜR CHARAKTER-AUSWAHL ---
+    private void Update()
+    {
+        // Wenn der Spieler noch fehlt (weil er noch ausgewählt wird)...
+        if (playerEquipment == null)
+        {
+            // ... suchen wir ihn in jedem Frame neu.
+            playerEquipment = FindFirstObjectByType<PlayerEquipment>();
+            
+            // Haben wir ihn JETZT endlich gefunden?
+            if (playerEquipment != null)
+            {
+                // Ja! Sofort verbinden und das Bild aktualisieren!
+                Initialize();
+                UpdateSlotVisual();
+                // Debug.Log("Slot " + slotType + " hat den Spieler gefunden!");
+            }
+        }
+    }
+    // -------------------------------------------
     
     private void OnEnable()
     {
@@ -82,7 +103,7 @@ public class EquipmentSlotUI : MonoBehaviour, IDropHandler, IBeginDragHandler, I
     
     private void Initialize()
     {
-        if (isInitialized) return;
+        if (isInitialized && playerEquipment != null) return;
         
         // Auto-finde PlayerEquipment falls nicht gesetzt
         if (playerEquipment == null)
@@ -91,7 +112,7 @@ public class EquipmentSlotUI : MonoBehaviour, IDropHandler, IBeginDragHandler, I
             
             if (playerEquipment == null)
             {
-                Debug.LogError($"PlayerEquipment not found for {slotType} slot!");
+                // Noch kein Spieler da - wir warten auf Update()
                 return;
             }
         }
@@ -101,9 +122,8 @@ public class EquipmentSlotUI : MonoBehaviour, IDropHandler, IBeginDragHandler, I
         {
             playerEquipment.OnEquipmentChanged -= UpdateSlotVisual; // Avoid duplicates
             playerEquipment.OnEquipmentChanged += UpdateSlotVisual;
+            isInitialized = true;
         }
-        
-        isInitialized = true;
     }
     
     private void OnDestroy()

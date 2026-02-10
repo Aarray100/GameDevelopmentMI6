@@ -19,6 +19,19 @@ public class EnemySpawnZone : MonoBehaviour
     [Tooltip("Anzahl Enemies die beim Start gespawnt werden")]
     public int initialSpawnCount = 2;
     
+    [Header("Level Scaling")]
+    [Tooltip("Sollen Gegner basierend auf Spieler-Level skalieren?")]
+    public bool scaleToPlayerLevel = true;
+    
+    [Tooltip("Minimaler Level-Offset zum Spieler (z.B. -3 = 3 Level unter Spieler möglich)")]
+    public int minLevelOffset = -3;
+    
+    [Tooltip("Maximaler Level-Offset zum Spieler (z.B. +1 = 1 Level über Spieler möglich)")]
+    public int maxLevelOffset = 1;
+    
+    [Tooltip("Festes Level wenn scaleToPlayerLevel = false")]
+    public int fixedEnemyLevel = 1;
+    
     [Header("Zone Settings")]
     [Tooltip("Größe der Spawn-Zone (Box)")]
     public Vector2 zoneSize = new Vector2(5f, 5f);
@@ -37,9 +50,21 @@ public class EnemySpawnZone : MonoBehaviour
     private List<GameObject> spawnedEnemies = new List<GameObject>();
     private float nextSpawnTime = 0f;
     private bool isSpawning = true;
+    private float nextCleanupTime = 0f;
+    private const float cleanupInterval = 0.5f;
+    
+    // Spieler-Referenz für Level-Skalierung
+    private PlayerStats playerStats;
+    private LevelSystem levelSystem;
 
     void Start()
     {
+        // Spieler finden für Level-Skalierung
+        FindPlayerReferences();
+
+        // Bereinige null-Einträge aus der Prefab-Liste
+        CleanupPrefabList();
+
         // Initial Spawns
         if (spawnOnStart)
         {
@@ -50,10 +75,53 @@ public class EnemySpawnZone : MonoBehaviour
         }
     }
 
+    private void FindPlayerReferences()
+    {
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+        {
+            playerStats = player.GetComponent<PlayerStats>();
+            levelSystem = player.GetComponent<LevelSystem>();
+        }
+    }
+
+    private void CleanupPrefabList()
+    {
+        int originalCount = enemyPrefabs.Count;
+        enemyPrefabs.RemoveAll(prefab => prefab == null);
+
+        if (enemyPrefabs.Count < originalCount)
+        {
+            Debug.LogWarning($"{gameObject.name}: {originalCount - enemyPrefabs.Count} null-Einträge aus enemyPrefabs-Liste entfernt. Verbleibende Prefabs: {enemyPrefabs.Count}");
+        }
+    }
+
+    private int GetPlayerLevel()
+    {
+        // Versuche Level von verschiedenen Quellen zu bekommen
+        if (playerStats != null && playerStats.currentLevel > 0)
+        {
+            return playerStats.currentLevel;
+        }
+        if (levelSystem != null && levelSystem.level > 0)
+        {
+            return levelSystem.level;
+        }
+        return 1; // Fallback
+    }
+
     void Update()
     {
-        // Entferne zerstörte Enemies aus der Liste
-        spawnedEnemies.RemoveAll(enemy => enemy == null);
+        // Entferne zerstörte Enemies aus der Liste (nur alle 0.5 Sekunden statt jeden Frame)
+        if (Time.time >= nextCleanupTime)
+        {
+            nextCleanupTime = Time.time + cleanupInterval;
+            for (int i = spawnedEnemies.Count - 1; i >= 0; i--)
+            {
+                if (spawnedEnemies[i] == null)
+                    spawnedEnemies.RemoveAt(i);
+            }
+        }
         
         // Spawne neue Enemies wenn unter Maximum
         if (isSpawning && Time.time >= nextSpawnTime && spawnedEnemies.Count < maxEnemies)
@@ -81,12 +149,42 @@ public class EnemySpawnZone : MonoBehaviour
         
         // Zufälliges Prefab wählen
         GameObject prefabToSpawn = GetRandomPrefab();
-        
+
+        // Sicherheitscheck falls Prefab null ist
+        if (prefabToSpawn == null)
+        {
+            Debug.LogWarning($"{gameObject.name}: GetRandomPrefab() hat null zurückgegeben!");
+            return;
+        }
+
         // Zufällige Position in der Zone
         Vector2 spawnPos = GetRandomPositionInZone();
         
         // Spawnen
         GameObject newEnemy = Instantiate(prefabToSpawn, spawnPos, Quaternion.identity);
+        
+        // Animator-Culling für Performance
+        Animator enemyAnimator = newEnemy.GetComponentInChildren<Animator>();
+        if (enemyAnimator != null && enemyAnimator.GetComponent<AnimatorCulling>() == null)
+        {
+            enemyAnimator.gameObject.AddComponent<AnimatorCulling>();
+        }
+        
+        // --- LEVEL SKALIERUNG ---
+        EnemyStats enemyStats = newEnemy.GetComponent<EnemyStats>();
+        if (enemyStats != null)
+        {
+            if (scaleToPlayerLevel)
+            {
+                int playerLevel = GetPlayerLevel();
+                enemyStats.SetLevelBasedOnPlayer(playerLevel, minLevelOffset, maxLevelOffset);
+            }
+            else
+            {
+                enemyStats.SetLevel(fixedEnemyLevel);
+            }
+        }
+        // ------------------------
         
         // Layer auf Enemy setzen
         int enemyLayer = LayerMask.NameToLayer("Enemy");
