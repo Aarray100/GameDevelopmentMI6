@@ -154,8 +154,7 @@ public class NPCSpawner : MonoBehaviour
                     npcAnimator.gameObject.AddComponent<AnimatorCulling>();
                 }
                 
-                // Mache NPC persistent über Szenenwechsel
-                DontDestroyOnLoad(npcInstance);
+               
                 
                 totalNPCIndex++;
 
