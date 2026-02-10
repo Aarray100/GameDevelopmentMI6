@@ -10,7 +10,7 @@ public class Enemy_Movement : MonoBehaviour
     [Header("Detection")]
     public float detectionRange = 5f;       // Reichweite um Spieler zu entdecken
     public float attackRange = 2.0f;        // Reichweite für Angriffs-ENTSCHEIDUNG (MUSS größer sein!)
-    public float attackHitRange = 1.2f;     // Reichweite für tatsächlichen TREFFER (kleiner, Spieler kann ausweichen)
+    public float attackHitRange = 1.0f;     // Reichweite für tatsächlichen TREFFER (kleiner, Spieler kann ausweichen)
     
     [Header("Combat")]
     public float attackCooldown = 1.5f;     // Zeit zwischen Angriffen

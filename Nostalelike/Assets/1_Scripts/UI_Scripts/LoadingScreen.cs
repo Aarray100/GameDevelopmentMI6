@@ -303,6 +303,44 @@ public class LoadingScreen : MonoBehaviour
         StartCoroutine(LoadSceneCoroutine(sceneName, spawnPointID));
     }
 
+    /// <summary>
+    /// Zeigt Loading Screen für Teleport innerhalb der gleichen Scene
+    /// </summary>
+    public void TeleportWithScreen(string spawnPointID)
+    {
+        if (isLoading) return;
+        StartCoroutine(LocalTeleportCoroutine(spawnPointID));
+    }
+
+    private IEnumerator LocalTeleportCoroutine(string spawnPointID)
+    {
+        Show("Teleportiere...");
+
+        // Teleport Sound abspielen
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlayTeleportSFX();
+
+        yield return new WaitForSecondsRealtime(0.5f);
+        UpdateProgress(0.5f, "Bereite Zielort vor...");
+
+        yield return new WaitForSecondsRealtime(0.3f);
+
+        // Finde und teleportiere zum Spawn-Punkt
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+        {
+            PlayerSceneHandler handler = player.GetComponent<PlayerSceneHandler>();
+            if (handler != null)
+            {
+                handler.TeleportToSpawnPoint(spawnPointID);
+            }
+        }
+
+        UpdateProgress(1f, "Bereit!");
+        yield return new WaitForSecondsRealtime(0.2f);
+        Hide();
+    }
+
     private IEnumerator LoadSceneByIndexCoroutine(int buildIndex)
     {
         Show("Lade...");
