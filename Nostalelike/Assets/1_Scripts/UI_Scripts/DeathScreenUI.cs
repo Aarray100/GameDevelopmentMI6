@@ -43,7 +43,13 @@ public class DeathScreenUI : MonoBehaviour
         // Tod kostet Gold!
         if (GoldManager.Instance != null)
         {
-            int deathCost = 200;
+            // Berechne Tod-Kosten basierend auf Spieler-Level
+            int deathCost = 100; // Standard: 100 Gold
+            if (playerStats != null && playerStats.currentLevel >= 15)
+            {
+                deathCost = 200; // Ab Level 15: 200 Gold
+            }
+            
             int currentGold = GoldManager.Instance.aktuellesGold;
             int actualCost = Mathf.Min(deathCost, currentGold); // Maximal das was der Spieler hat
             

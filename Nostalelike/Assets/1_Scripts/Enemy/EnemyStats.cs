@@ -16,6 +16,11 @@ public class EnemyStats : MonoBehaviour
     [Tooltip("Basis-XP Belohnung bei Level 1")]
     public int baseXPReward = 20;
     
+    [Header("Enemy Type Bonus")]
+    [Tooltip("XP-Multiplikator für spezielle Gegnertypen (1.3 = +30% XP für Slimes)")]
+    [Range(1.0f, 2.0f)]
+    public float xpBonusMultiplier = 1.0f; // 1.0 = normal, 1.3 = +30% für Slimes
+    
     [Header("Current Level & Stats (Calculated)")]
     [SerializeField] private int _level = 1;
     public int Level 
@@ -92,13 +97,15 @@ public class EnemyStats : MonoBehaviour
         
         MaxHealth = Mathf.Round(baseHealth * levelMultiplier);
         Damage = Mathf.Round(baseDamage * levelMultiplier * 10f) / 10f; // Eine Dezimalstelle
-        XPReward = Mathf.RoundToInt(baseXPReward * xpLevelMultiplier);
+        XPReward = Mathf.RoundToInt(baseXPReward * xpLevelMultiplier * xpBonusMultiplier); // XP-Bonus für spezielle Gegnertypen
         
         statsInitialized = true;
         OnStatsCalculated?.Invoke();
         
+        // Log mit Bonus-Hinweis
+        string bonusInfo = xpBonusMultiplier > 1.0f ? $" <color=yellow>(+{(xpBonusMultiplier - 1f) * 100}% XP Bonus!)</color>" : "";
         Debug.Log($"<color=orange>{gameObject.name} Stats berechnet:</color> " +
-                  $"Level {Level} | HP: {MaxHealth} | DMG: {Damage} | XP: {XPReward}");
+                  $"Level {Level} | HP: {MaxHealth} | DMG: {Damage} | XP: {XPReward}{bonusInfo}");
     }
 
     /// <summary>

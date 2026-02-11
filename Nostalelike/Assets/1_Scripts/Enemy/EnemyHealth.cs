@@ -108,7 +108,8 @@ public class EnemyHealth : MonoBehaviour
 
         GiveXPToPlayer();
         GiveRewardsToPlayer(); // Wird jetzt garantiert nur 1x ausgeführt
-        DeductDeathPenalty(); // Goldstrafe für den Sieg
+        // DeductDeathPenalty() wurde ENTFERNT - das war der Bug!
+        // Diese Methode sollte nur beim Spieler-Tod aufgerufen werden, nicht beim Enemy-Tod!
 
         AudioManager.Instance?.PlayEnemyDeathSFX();
         
@@ -172,41 +173,6 @@ public class EnemyHealth : MonoBehaviour
         }
 
         // TODO: Add audio feedback when gold-specific combat SFX is added to AudioManager
-    }
-
-    private void DeductDeathPenalty()
-    {
-        // Berechne Goldstrafe basierend auf Spieler-Level
-        int penaltyGold = 100; // Standard: 100 Gold
-        if (penaltyGold <= 0) return;
-
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if (player != null)
-        {
-            PlayerStats playerStats = player.GetComponent<PlayerStats>();
-            if (playerStats != null)
-            {
-                // Bei Level 5+ kostet der Tod 200 Gold, ansonsten 100 Gold
-                int playerLevel = playerStats.currentLevel;
-                if (playerLevel >= 5)
-                {
-                    penaltyGold = 200;
-                }
-
-                // Versuche Gold abzuziehen
-                if (GoldManager.Instance != null)
-                {
-                    if (GoldManager.Instance.GoldAbziehen(penaltyGold))
-                    {
-                        Debug.Log($"<color=orange>Tod-Strafe: {penaltyGold} Gold abgezogen!</color>");
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"<color=red>Nicht genug Gold für Tod-Strafe! Benötigt: {penaltyGold}, Aktuell: {GoldManager.Instance.aktuellesGold}</color>");
-                    }
-                }
-            }
-        }
     }
 
     private int CalculateGoldReward()
