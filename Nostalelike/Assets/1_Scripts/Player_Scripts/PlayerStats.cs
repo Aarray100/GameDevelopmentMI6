@@ -7,7 +7,14 @@ public class PlayerStats : MonoBehaviour
 {
     [Header("Base Stats")]
     public float maxHealth = 100f;
-    public float currentHealth;
+    private float _currentHealth;
+    
+    // DEMO MODE: Character wird unsterblich
+    public float currentHealth
+    {
+        get { return _currentHealth; }
+        set { _currentHealth = Mathf.Max(_currentHealth, value); } // Health kann nie sinken
+    }
     
     // UI Dummies (Damit die Anzeigen voll bleiben)
     [HideInInspector] public float maxMana = 100f;

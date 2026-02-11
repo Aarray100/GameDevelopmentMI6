@@ -100,6 +100,11 @@ public class SlimeWaveController : MonoBehaviour
         }
     }
 
+    public void OnButtonPressed()
+    {
+        Debug.Log("SlimeWaveController: Button wurde gedrückt!");
+    }
+
     public void OnSlimeDefeated()
     {
         slimesDefeated++;
