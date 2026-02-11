@@ -52,17 +52,31 @@ public class NPCSpawner : MonoBehaviour
     [SerializeField] private bool showDebugInfo = true;
 
     private List<GameObject> spawnedNPCs = new List<GameObject>();
-    
-    // Entfernt: Singleton Pattern - jetzt können mehrere Spawner existieren
-    private bool hasSpawned = false;
+    private static NPCSpawner instance;
+    private static bool hasSpawnedNPCs = false;
+
+    private void Awake()
+    {
+        // Singleton Pattern - damit NPCs nicht mehrfach gespawnt werden
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
+    }
 
     private void Start()
     {
-        // Jeder Spawner spawnt einmal seine NPCs
-        if (!hasSpawned)
+        // Nur einmal spawnen
+        if (!hasSpawnedNPCs)
         {
             SpawnNPCs();
-            hasSpawned = true;
+            hasSpawnedNPCs = true;
         }
     }
 
@@ -154,7 +168,8 @@ public class NPCSpawner : MonoBehaviour
                     npcAnimator.gameObject.AddComponent<AnimatorCulling>();
                 }
                 
-               
+                // Mache NPC persistent über Szenenwechsel
+                DontDestroyOnLoad(npcInstance);
                 
                 totalNPCIndex++;
 
@@ -252,7 +267,7 @@ public class NPCSpawner : MonoBehaviour
             }
         }
         spawnedNPCs.Clear();
-        hasSpawned = false;
+        hasSpawnedNPCs = false;
 
         if (showDebugInfo)
         {

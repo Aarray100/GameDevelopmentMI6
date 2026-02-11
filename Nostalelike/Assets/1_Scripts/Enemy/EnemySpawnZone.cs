@@ -61,10 +61,7 @@ public class EnemySpawnZone : MonoBehaviour
     {
         // Spieler finden für Level-Skalierung
         FindPlayerReferences();
-
-        // Bereinige null-Einträge aus der Prefab-Liste
-        CleanupPrefabList();
-
+        
         // Initial Spawns
         if (spawnOnStart)
         {
@@ -82,17 +79,6 @@ public class EnemySpawnZone : MonoBehaviour
         {
             playerStats = player.GetComponent<PlayerStats>();
             levelSystem = player.GetComponent<LevelSystem>();
-        }
-    }
-
-    private void CleanupPrefabList()
-    {
-        int originalCount = enemyPrefabs.Count;
-        enemyPrefabs.RemoveAll(prefab => prefab == null);
-
-        if (enemyPrefabs.Count < originalCount)
-        {
-            Debug.LogWarning($"{gameObject.name}: {originalCount - enemyPrefabs.Count} null-Einträge aus enemyPrefabs-Liste entfernt. Verbleibende Prefabs: {enemyPrefabs.Count}");
         }
     }
 
@@ -149,14 +135,7 @@ public class EnemySpawnZone : MonoBehaviour
         
         // Zufälliges Prefab wählen
         GameObject prefabToSpawn = GetRandomPrefab();
-
-        // Sicherheitscheck falls Prefab null ist
-        if (prefabToSpawn == null)
-        {
-            Debug.LogWarning($"{gameObject.name}: GetRandomPrefab() hat null zurückgegeben!");
-            return;
-        }
-
+        
         // Zufällige Position in der Zone
         Vector2 spawnPos = GetRandomPositionInZone();
         
