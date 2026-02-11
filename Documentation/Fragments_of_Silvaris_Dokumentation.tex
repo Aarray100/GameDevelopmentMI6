@@ -153,7 +153,7 @@ Das Herzstück des Spiels ist ein raycasting-basiertes System, das Gegnern ermö
 
 Weitere Highlights sind ein arc-basiertes Kampfsystem mit 60°-Angriffskegel, ein umfassendes RPG-System mit Inventar, Ausrüstung und Levelprogressionen, sowie ein dynamisches Audio-System, das zwischen Kampf- und Friedensmusik wechselt. Das Spiel bietet 10 miteinander verbundene Szenen mit Boss-Begegnungen, ein Journal-System für die Story und eine polierte Benutzeroberfläche.
 
-Das Projekt wurde von einem Team über einen Zeitraum von September 2025 bis Februar 2026 entwickelt und erfolgreich umgesetzt.
+Das Projekt wurde von einem Team über einen Zeitraum von Oktober 2025 bis Februar 2026 entwickelt und erfolgreich umgesetzt.
 
 \newpage
 
@@ -182,15 +182,15 @@ Das Projekt wurde von einem Team über einen Zeitraum von September 2025 bis Feb
 \chapter*{Abkürzungsverzeichnis}
 
 \begin{acronym}
-\acro{RPG}{Rollenspiel (Role-Playing Game)}
-\acro{NPC}{Nicht-Spieler Charakter (Non-Player Character)}
-\acro{UI}{Benutzeroberfläche (User Interface)}
+\acro{RPG}{Role-Playing Game}
+\acro{NPC}{Non-Player Character}
+\acro{UI}{User Interface}
 \acro{URP}{Universal Render Pipeline}
-\acro{XP}{Erfahrungspunkte (Experience Points)}
-\acro{HP}{Gesundheitspunkte (Health Points)}
-\acro{FPS}{Frames Per Second (Bilder pro Sekunde)}
-\acro{FSM}{Zustandsmaschine (Finite State Machine)}
-\acro{SFX}{Soundeffekte (Sound Effects)}
+\acro{XP}{Experience Points}
+\acro{HP}{Health Points}
+\acro{FPS}{Frames Per Second}
+\acro{FSM}{Finite State Machine}
+\acro{SFX}{Sound Effects}
 \acro{MVP}{Minimum Viable Product}
 \acro{A*}{A* Pathfinding-Algorithmus}
 \acro{MVC}{Model-View-Controller}
@@ -253,7 +253,7 @@ Das Projekt wurde von einem Team bestehend aus vier Entwicklern umgesetzt:
     \item \textbf{Paul Weber (88487)}: NPC Systems, Ice Map Development
 \end{itemize}
 
-Entwicklungszeitraum: September 2025 -- Februar 2026
+Entwicklungszeitraum: Oktober 2025 -- Februar 2026
 
 % ============================================================================
 % KAPITEL 2: GAMEPLAY UND MECHANIKEN
@@ -404,7 +404,7 @@ Die Geschichte wird nicht durch Zwischensequenzen, sondern durch das Journal-Sys
 
 \subsection{Spieler-Charakter}
 
-Der Spieler kontrolliert einen Abenteurer, der die Mission hat, die Slime-Invasion zu stoppen. Der Charakter hat vier verschiedene Erscheinungsformen zur Auswahl, was eine gewisse Personalisierung ermöglicht.
+Der Spieler kontrolliert einen Abenteurer, der die Mission hat, die Slime-Invasion zu stoppen. Der Charakter hat fünf verschiedene Erscheinungsformen zur Auswahl, was eine gewisse Personalisierung ermöglicht.
 
 \begin{figure}[H]
     \centering
@@ -417,7 +417,7 @@ Der Spieler kontrolliert einen Abenteurer, der die Mission hat, die Slime-Invasi
 
 \begin{itemize}
     \item \textbf{Wandernde NPCs}: Freundliche Charaktere, die in den Dörfern herumlaufen und mit dem Spieler interagieren können
-    \item \textbf{Kaufleute}: NPCs die Items kaufen und verkaufen
+    \item \textbf{Kaufleute}: NPCs die Items verkaufen
     \item \textbf{Händler}: Spezialisierte NPCs für bestimmte Güter
 \end{itemize}
 
@@ -500,7 +500,7 @@ Die UI ist funktional und wird mit TextMesh Pro \cite{unity_textmesh_pro} gerend
     \item \textbf{Health/Mana/Stamina Bars}: Oben links, zeigt aktuelle und maximale Werte
     \item \textbf{Inventory System}: 49-Slot Grid (7x7) für Items
     \item \textbf{Equipment Screen}: 6 Ausrüstungsplätze (Waffe, Helm, Rüstung, Stiefel, Handschuhe, Accessoire)
-    \item \textbf{Hotbar}: Schnellzugriff auf 5 Items
+    \item \textbf{Hotbar}: Schnellzugriff auf 10 Items
     \item \textbf{Minimap}: Kleine Karte mit Spieler-Position
     \item \textbf{Stats Sheet}: Zeigt alle Charakterstatistiken
     \item \textbf{Pause Menu}: Einstellungen, Volumenregler, Quit
@@ -686,7 +686,7 @@ Das Wandering-Verhalten nutzt auch das Obstacle Avoidance System (siehe Abschnit
 
 \subsubsection{Motivation und Problemstellung}
 
-Die ursprüngliche Implementierung der Enemy-Bewegung verwendete eine einfache direkte Verfolgung des Spielers. Dies führte zu folgendem Problem: Gegner würden in Wänden und anderen Hindernissen steckenbleiben, wenn der Spieler auf der anderen Seite eines Hindernisses war. Dies führte zu schlechtem Gameplay, da Gegner nicht intelligent um Hindernisse navigieren konnten.
+Die ursprüngliche Implementierung der Enemy-Bewegung verwendete eine einfache direkte Verfolgung des Spielers. Dies führte zu folgendem Problem: \\Gegner würden in Wänden und anderen Hindernissen steckenbleiben, wenn der Spieler auf der anderen Seite eines Hindernisses war. Dies führte zu schlechtem Gameplay, da Gegner nicht intelligent um Hindernisse navigieren konnten.
 
 Das Obstacle Avoidance System löst dieses Problem durch Multi-direktionales Raycasting, das es Gegnern ermöglicht, Hindernisse intelligente zu umgehen.
 
@@ -811,7 +811,7 @@ Ein zentrales Feature der Combat-Mechanik ist das Attack Telegraph System. Dies 
 
 \subsubsection{Motivation}
 
-In frühen Spielversionen führten Gegner Angriffe instant durch. Dies führte zu Spieler-Frustration, da keine Reaktionsmöglichkeit existierte. Das Telegraph System löst dies durch eine "Vorwarnungszeit" vor dem eigentlichen Schaden.
+In frühen Spielversionen führten Gegner Angriffe ladezeit durch. Dies führte zu Spieler-Frustration, da keine Reaktionsmöglichkeit existierte. Das Telegraph System löst dies durch eine "Vorwarnungszeit" vor dem eigentlichen Schaden.
 
 \subsubsection{Parameter}
 
@@ -1117,7 +1117,7 @@ PerformanceOptimizer überwacht FPS und reduziert Quality bei Bedarf:
 Das Projekt wurde in 5 Phasen über ca. 6 Monate entwickelt:
 
 \begin{description}
-    \item[Phase 1 (Sep--Oct 2025)]: \textbf{Core Mechanics}
+    \item[Phase 1 (Oct 2025)]: \textbf{Core Mechanics}
     \begin{itemize}
         \item Movement System, Basic Combat, Player Sprites
         \item UI Grundlagen (Health Bar, Inventory)
@@ -1330,7 +1330,7 @@ Das Fragments of Silvaris Projekt ist fertig. Das Spiel funktioniert und zeigt v
 
 Alle Kern-Features sind implementiert und das Spiel erfüllt die Anforderungen der Spieleprogrammierung Vorlesung. Besonders das Raycasting-basierte System für Gegner-Verhalten zeigt, wie man mit cleveren Lösungen gute Ergebnisse erreichen kann.
 
-Das Team bestand aus Aaron Seitz (3006614), Robin Fitzek (3006199), Burak Yigit (3005865) und Paul Weber (88487), die gemeinsam über einen Zeitraum von September 2025 bis Februar 2026 an diesem Projekt gearbeitet haben.
+Das Team bestand aus Aaron Seitz (3006614), Robin Fitzek (3006199), Burak Yigit (3005865) und Paul Weber (88487), die gemeinsam über einen Zeitraum von Oktober 2025 bis Februar 2026 an diesem Projekt gearbeitet haben.
 
 \section{Erreichte Ziele}
 
