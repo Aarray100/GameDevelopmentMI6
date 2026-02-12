@@ -51,7 +51,7 @@ public class EnemyStats : MonoBehaviour
     
     private bool statsInitialized = false;
 
-    private void Awake()
+    protected virtual void Awake()
     {
         // Fallback: Falls Level nicht von außen gesetzt wird
         if (!statsInitialized)
